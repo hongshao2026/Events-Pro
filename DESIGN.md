@@ -29,12 +29,13 @@ spacing:
 components:
   classification: {}
   agenda: {}
+  seriesCatalog: {}
   select: {}
 ---
 
 ## Overview
 
-Product register: a Chinese-speaking player's personal decision desk for the November 27–December 21, 2026 Wynn WPT series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
+Product register: a Chinese-speaking player's festival directory and personal decision desk, starting with the November 27–December 21, 2026 Wynn WPT series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
 
 Signature: independent flight labels, a bounded festival calendar, and the persistent shortlist basket. The current user explicitly requested a phone-style product with a dedicated daily agenda. Muted purple recalls the supplied poster, with white working surfaces and tabular money. It must feel like a usable tournament notebook, not a casino advertisement.
 
@@ -50,7 +51,7 @@ Body 15px, search 14px, classification controls 13px, compact metadata 11–12px
 
 ## Layout
 
-A single responsive app canvas fills phones and stays centered at a maximum 480px on larger screens. Bottom navigation provides discovery, my schedule and shortlist. Discovery uses 15-flight paginated cards at every width. My schedule uses a month calendar followed by date groups, with one activity per line; inactive weeks before the festival are compact. A modal shortlist sheet and the agenda detail sheet fit the same canvas. Document owns main-page vertical scrolling; sheet bodies and the bounded discovery date popover scroll independently. Safe-area padding keeps bottom actions visible. Page-specific scroll positions are retained on navigation.
+A single responsive app canvas fills phones and stays centered at a maximum 480px on larger screens. Bottom navigation provides festivals, my schedule and shortlist. The homepage uses region chips, chronological month groups and linked series cards. Each card has a locally bundled brand logo on a purple surface, country/city, venue, dates and a complete-schedule action. Opening a series leads to its 15-flight paginated schedule; a visible back link returns to the catalog and retains the chosen region. My schedule uses a month calendar followed by date groups, with one activity per line; inactive weeks before the festival are compact. A modal shortlist sheet and the agenda detail sheet fit the same canvas. Document owns main-page vertical scrolling; sheet bodies and the bounded discovery date popover scroll independently. Safe-area padding keeps bottom actions visible. Page-specific scroll positions are retained on navigation.
 
 ## Elevation & Depth
 
@@ -62,7 +63,7 @@ Subtle border separates panels. Shadows only for popovers. No glass, gradients o
 
 ## Components
 
-Radix-backed supplied Select, Checkbox, RadioGroup, Sheet, Popover, AlertDialog and Sonner are canonical. Calendar wraps React DayPicker with the full zh-CN locale. StatusBadge and EntryDetails are shared owners across both pages. Selection has four reversible states and a stable saving label. Focus-visible purple outline; disabled controls retain geometry. Hover and pressed states are explicit. Discovery date filters use an inclusive range with Apply and Cancel. The agenda month calendar applies a single day immediately. All dates resets only the corresponding date choice. Select popups match trigger width. Global scrollbars use --scrollbar-* tokens with forced-colors fallbacks. Toasts sit above bottom navigation.
+Radix-backed supplied Select, Checkbox, RadioGroup, Sheet, Popover, AlertDialog and Sonner are canonical. Region chips are a single-choice RadioGroup, with an explicit all-regions option. Series cards are native links; logo slots reserve dimensions and fall back to brand text. Regions with no catalog entries explain that no schedules are collected yet and offer all-regions recovery. Calendar wraps React DayPicker with the full zh-CN locale. StatusBadge and EntryDetails are shared owners across both pages. Selection has four reversible states and a stable saving label. Focus-visible purple outline; disabled controls retain geometry. Hover and pressed states are explicit. Discovery date filters use an inclusive range with Apply and Cancel. The agenda month calendar applies a single day immediately. All dates resets only the corresponding date choice. Select popups match trigger width. Global scrollbars use --scrollbar-* tokens with forced-colors fallbacks. Toasts sit above bottom navigation.
 
 Motion is limited to color changes and canonical overlay transitions; reduced motion disables transitions. Monetary summaries default to one buy-in per selected flight; the basket offers a persistent alternative counting each event once. Guarantees are never summed. Satellites show seat guarantees separately from cash guarantees.
 

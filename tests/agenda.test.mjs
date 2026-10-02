@@ -21,6 +21,9 @@ assert.equal(agendaActivities(state).find(x=>x.event.id==='W01'&&x.kind==='conti
 state.pending.W01={status:'attend',version:1};
 assert.equal(agendaActivities(state).find(x=>x.event.id==='W01'&&x.kind==='continuation').status,'attend');pass('legacy unassigned attendance remains represented in the agenda');
 globalThis.window={location:{hash:'#view=schedule&day=2026-12-21&agendaStatuses=attend,watch&continuations=no'}};
-assert.deepEqual(agendaFromUrl(),{view:'schedule',day:'2026-12-21',statuses:['attend','watch'],continuations:false,month:'2026-12'});
+assert.deepEqual(agendaFromUrl(),{view:'schedule',region:'all',seriesId:'wpt-wynn-2026',day:'2026-12-21',statuses:['attend','watch'],continuations:false,month:'2026-12'});
 window.location.hash='#view=invalid&day=2026-12-22&agendaStatuses=invalid&month=2030-01';
-assert.deepEqual(agendaFromUrl(),{view:'discover',day:'',statuses:[],continuations:true,month:'2026-11'});pass('route restores valid day and month; rejects out-of-festival dates and invalid categories');
+assert.deepEqual(agendaFromUrl(),{view:'home',region:'all',seriesId:'wpt-wynn-2026',day:'',statuses:[],continuations:true,month:'2026-11'});pass('route restores valid day and month; rejects out-of-festival dates and invalid categories');
+window.location.hash='#statuses=none&day=2026-11-30';assert.equal(agendaFromUrl().view,'home');
+window.location.hash='#view=discover&series=wpt-wynn-2026&region=north-america';assert.equal(agendaFromUrl().view,'discover');assert.equal(agendaFromUrl().region,'north-america');
+window.location.hash='#series=not-found&region=invalid';assert.equal(agendaFromUrl().view,'discover');assert.equal(agendaFromUrl().seriesId,'not-found');assert.equal(agendaFromUrl().region,'all');pass('home is default; series links and valid regions restore; unknown series stays identifiable for recovery');

@@ -1,10 +1,12 @@
 import {entries,series,validDate,type Entry} from './catalog';
 import {statuses,type Status,type Slot,type Event} from './schedule';
 import type {PlannerState} from './local-store';
-export type AgendaRoute={view:'discover'|'schedule';day:string;statuses:Status[];continuations:boolean;month:string};
+import {regions,type RegionFilter} from './series';
+export type AgendaRoute={view:'home'|'discover'|'schedule';region:RegionFilter;seriesId:string;day:string;statuses:Status[];continuations:boolean;month:string};
 export function agendaFromUrl():AgendaRoute{
  const p=new URLSearchParams(window.location.hash.slice(1)),day=p.get('day')||'',raw=p.get('agendaStatuses');
- return {view:p.get('view')==='schedule'?'schedule':'discover',day:validDate(day)?day:'',statuses:raw===null?[...statuses]:statuses.filter(s=>raw.split(',').includes(s)),continuations:p.get('continuations')!=='no',month:['2026-11','2026-12'].includes(p.get('month')||'')?p.get('month')!:validDate(day)?day.slice(0,7):'2026-11'};
+ const view=p.get('view'),region=regions.find(item=>item.id===p.get('region'))?.id||'all';
+ return {view:view==='schedule'?'schedule':view==='discover'||(!view&&p.has('series'))?'discover':'home',region,seriesId:p.get('series')||series.id,day:validDate(day)?day:'',statuses:raw===null?[...statuses]:statuses.filter(s=>raw.split(',').includes(s)),continuations:p.get('continuations')!=='no',month:['2026-11','2026-12'].includes(p.get('month')||'')?p.get('month')!:validDate(day)?day.slice(0,7):'2026-11'};
 }
 export type AgendaActivity={id:string;date:string;hour:number;status:Status;kind:'start'|'continuation';event:Event;slot:Slot;entry:Entry;buyin:number};
 export function agendaActivities(state:PlannerState,supplement=false):AgendaActivity[]{

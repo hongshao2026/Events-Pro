@@ -17,6 +17,8 @@ Current user requirements and PRODUCT.md override the earlier event-grouped list
 | Overlay | components/ui/sheet.tsx, popover.tsx, alert-dialog.tsx | this contract | cart, calendar, restore | focus, Escape, viewport |
 | Classification color | app/globals.css, components/planner/status.tsx | DESIGN.md | blue/green/gold/gray; text and icon | equal colors on both pages |
 | Entry detail | components/planner/entry-details.tsx | actual schedule occurrence | inline discovery and modal agenda | correct flight or continuation date |
+| Series catalog | lib/series.ts, components/planner/series-home.tsx | PRODUCT.md | chronological month groups, single-choice region chips using shared RadioGroup | region empty state, ordering, keyboard, mobile |
+| Series logo | components/planner/series-home.tsx SeriesLogo, assets/ | local catalog metadata | reserved image dimensions, brand-text fallback | bundled offline image and failed-image recovery |
 
 ## State and recovery
 
@@ -28,7 +30,11 @@ Export includes selections, pending legacy attendance and budget mode. Restore v
 
 ## Navigation, locale and accessibility
 
+The default view is the series homepage (view=home). Region options are all, apac, north-america, south-america and europe; the URL region parameter restores the selection. All regions means one combined catalog, ascending by start date and grouped by starting month, not grouped by region first. The finite catalog currently contains only Wynn WPT in North America / US. No invented series appear in empty regions. Cards use native links with view=discover and a stable series ID; normal click opens the detailed schedule, and modified clicks retain browser link behavior. A back link and the Events bottom navigation return to the homepage. Region choice survives entering a series, returning and reloading. Invalid regions become all; unknown series show an explicit recovery page. Logo images are bundled in the HTML and fall back to brand text on failure. Adding future live series also requires their own schedule, bounds, currency and time-zone integration; catalog metadata alone does not implement that data pipeline.
+
 Search, OR categories, inclusive date range, other filters and page belong to URL hash parameters for file:// compatibility. Legacy status/date hashes are recognized. Local search waits for IME composition end; clear is immediate. 15 flights/page, page clamps when results shrink. Budget includes all attending records independent of filters. Category filters use OR, other filters use AND. All-checkbox is checked/indeterminate/unchecked; no statuses selected produces an actionable empty state. Hide skipped removes only skip; filter changes never mutate saved classifications.
+
+Old hashes without an explicit view open the new homepage; their detailed-schedule filters remain and apply on entering WPT. Explicit view=schedule links still open the agenda. Home region filters never alter starting-flight classifications or hide a festival based on its individual flight filters. No personal-storage schema changes accompany the new homepage.
 
 Discovery: all dates precedes its calendar popover. DayPicker uses full zh-CN locale, date-only values and bounded Nov 27–Dec 21 navigation. A day or range stays draft until Apply. Cancel/Escape retains the old filter. The phone canvas shows one month, with planned-day dots. Discovery filters concern starting dates.
 
@@ -42,4 +48,4 @@ zh-CN interface and aria labels, en-US USD numbers, Las Vegas PST dates. Native 
 
 ## Current verification
 
-2026-10-02 phone agenda delivery: TypeScript and ESLint pass; 8 local-state and 6 agenda-model checks pass. Isolated, offline Chrome exercises 23 UI checks including identical classification colors, calendar boundaries, independent filters, conditional continuations, backup/restore, failed writes, browser restart, keyboard focus, and 320/390/1440px layouts. No HTTP requests or page errors. Reviewed screenshots show the four-color daily rows, full-width phone detail and centered desktop canvas. Strict UI audit reports zero findings; DESIGN.md lint has zero errors and seven descriptive-token reference warnings. User browser records are untouched by QA.
+2026-10-02 regional homepage delivery: TypeScript and ESLint pass; 8 local-state, 7 agenda/route and 2 catalog-model checks pass. Isolated, offline Chrome exercises 29 UI checks including all regional empty states, local logo and fallback, homepage/card/history navigation, legacy hashes, identical classification colors, calendar boundaries, independent filters, conditional continuations, backup/restore, failed writes, browser restart, keyboard focus, and 320/390/1440px layouts. No HTTP requests or page errors. Reviewed screenshots show the new series catalog and empty state, four-color daily rows, full-width phone detail and centered desktop canvas. Strict UI audit reports zero findings; DESIGN.md lint has zero errors and seven descriptive-token reference warnings. User browser records are untouched by QA.

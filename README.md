@@ -10,7 +10,7 @@
 
 底部三个入口：
 
-- **赛事发现**：按报名费、保底、类型、日期和分类筛选；Day 1A、1B 等起始组各有独立条目。
+- **赛事**：首页按开赛时间展示赛事系列卡片，可筛选全部地区、亚太、北美、南美、欧洲。目前只有北美／美国的 Wynn WPT 一站；点击带 Logo 的卡片进入完整赛程，再按报名费、保底、类型、日期和分类筛选。Day 1A、1B 等起始组各有独立条目。
 - **我的日程**：月历选日期，比赛按时间逐行显示；可看全部日期、只看参加与关注、隐藏不考虑。
 - **我的自选**：参加和关注的场次按日期整理，显示美元和人民币预算。
 
@@ -51,8 +51,8 @@ npm run build
 
 ## 测试
 
-- `npm test`：本地状态和日程模型共 14 项检查，覆盖旧记录迁移、预算、无效备份、失败写入和续赛去重。
-- `npm run test:ui`：23 项离线浏览器检查，覆盖手机布局、日历、颜色同步、备份恢复、页面历史与浏览器重启保存。
+- `npm test`：本地状态、日程和赛事目录共 17 项检查，覆盖旧记录迁移、预算、无效备份、失败写入、续赛去重、地区过滤和跨系列时间排序。
+- `npm run test:ui`：29 项离线浏览器检查，覆盖地区首页、Logo、详情导航、手机布局、日历、颜色同步、备份恢复、页面历史与浏览器重启保存。
 
 首次运行浏览器测试前：
 
@@ -76,10 +76,12 @@ Events-Pro/
 ├── components/
 │   ├── planner/            # 赛事日历、我的日程、分类、详情等业务组件
 │   └── ui/                 # 共用基础控件：Calendar、Sheet、Select 等
+├── assets/                 # 本地赛事 Logo 与来源说明
 ├── lib/
+│   ├── series.ts           # 地区、系列元数据、Logo 与时间排序
 │   ├── schedule.json       # 原始赛事目录与起始组/续赛数据
 │   ├── schedule.ts         # 数据类型、分类、金额和显示工具
-│   ├── catalog.ts          # 系列元数据、场次 ID 与展平目录
+│   ├── catalog.ts          # 当前系列、场次 ID 与展平目录
 │   ├── agenda.ts           # 日程模型和 URL 状态
 │   └── local-store.ts      # 本地存储、迁移、JSON 备份、预算
 ├── scripts/build-local.mjs # 构建并打包为本地单文件
@@ -115,5 +117,7 @@ git worktree add ../events-catalog -b codex/multi-series origin/main
 ## 当前边界
 
 当前仅包含一个真实赛事系列。会员支付、广告、账户、跨设备同步、多赛事资料库和提醒尚未实现，路线见 [PRODUCT.md](PRODUCT.md)。选择“参加”是个人参赛计划，不会向赌场实际报名。
+
+系列卡片由 `lib/series.ts` 配置，Logo 及来源见 `assets/`。添加下一站时，还需要接入该站真实场次、日期边界、币种和时区；当前日程与预算仍基于 Wynn WPT，不能仅添加卡片就视为完成多系列支持。
 
 赛程保留 [Wynn 官方来源](https://cdn.wynnresorts.com/image/upload/v1757097329/visitwynn_pdfs_files/Poker/WPT/WPT_World_Championship_Schedule.pdf)；本项目不代表主办方，临行前请核对最新官方赛程。第三方样式许可见 `vendor/`。
