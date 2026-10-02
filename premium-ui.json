@@ -1,0 +1,1 @@
+{"profile":"product-admin","sourceRoots":["app","components/planner"],"locale":"zh-CN","canonicalMap":"UX-CONTRACT.md","requiredCapabilities":["Select/Listbox","Table Selection","Date","Scrollbar","Toast","CRUD"],"ownership":{"Select/Listbox":"authored","Date":"authored"}}

@@ -1,0 +1,4 @@
+import {execFileSync} from 'node:child_process';
+for(const file of ['tests/state.test.mjs','tests/agenda.test.mjs']){
+  execFileSync(process.execPath,[file],{stdio:'inherit'});
+}
