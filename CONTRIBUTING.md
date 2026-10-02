@@ -53,6 +53,8 @@ npm run build
 
 `release/WPT赛事自选表.html` 是仓库保留的可直接使用版本。功能分支通常只改源码；发布或集成时集中重新构建并提交它，避免多个功能同时修改大段构建代码。
 
+`release/` 已从 Tailwind 源码扫描中排除，避免旧打包内容影响下一次构建；保留 `app/globals.css` 中对应的 `@source not` 规则。
+
 不要提交 `node_modules`、个人 JSON 备份、浏览器配置、环境密钥或临时报告。`package-lock.json` 必须与依赖变更一起提交。
 
 PR 描述应包含：用户触发场景、实际行为变化、受影响模块、验证命令，以及任何存储或数据兼容影响。
