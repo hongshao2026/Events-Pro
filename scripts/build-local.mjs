@@ -17,5 +17,7 @@ html=html.replace(script[0],()=>`<script type="module">${js}</script>`).replace(
 // The delivered file cannot connect to remote APIs, load fonts or run workers.
 html=html.replace('<meta charset="UTF-8">',`<meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">`);
 const destination=resolve(root,'release');await mkdir(destination,{recursive:true});
-await writeFile(resolve(destination,'WPT赛事自选表.html'),html,'utf8');
+// Existing Windows directories can retain CRLF templates while new worktrees use
+// LF. Canonical output avoids a generated-file change with identical source.
+await writeFile(resolve(destination,'WPT赛事自选表.html'),html.replace(/\r\n/g,'\n'),'utf8');
 console.log(`Local standalone file: ${resolve(destination,'WPT赛事自选表.html')}`);
