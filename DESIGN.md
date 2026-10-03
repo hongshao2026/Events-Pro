@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: 赛事自选 · Poker Planner
-description: A local tournament discovery and shortlist product, covering the Wynn WPT and Triton ONE North Cyprus festivals.
+description: A local tournament discovery and shortlist product, covering QPC Circuit Hanoi, Triton ONE North Cyprus and Wynn WPT.
 colors:
   primary: "#542887"
   background: "#f5f6f9"
@@ -35,11 +35,11 @@ components:
 
 ## Overview
 
-Product register: a Chinese-speaking player's festival directory and personal decision desk for the 2026 Wynn WPT and Triton ONE North Cyprus series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
+Product register: a Chinese-speaking player's festival directory and personal decision desk for the 2026 QPC Circuit Hanoi, Triton ONE North Cyprus and Wynn WPT series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
 
 Signature: independent flight labels, a bounded festival calendar, and the persistent shortlist basket. The current user explicitly requested a phone-style product with a dedicated daily agenda. Muted purple recalls the supplied poster, with white working surfaces and tabular money. It must feel like a usable tournament notebook, not a casino advertisement.
 
-Runtime token ownership is Model B: `app/globals.css` owns CSS variables and Tailwind aliases; this file records their values and rationale. No independent theme provider. Light theme only. zh-CN UI, original English tournament names, series-local dates and times (WPT PST; Triton North Cyprus EET), fixed planning FX 6.7.
+Runtime token ownership is Model B: `app/globals.css` owns CSS variables and Tailwind aliases; this file records their values and rationale. No independent theme provider. Light theme only. zh-CN UI, original English tournament names, series-local dates and times (WPT PST; Triton North Cyprus EET; QPC Hanoi ICT). USD and VND retain exact comma-grouped native amounts. Only USD has a fixed 6.7 CNY planning estimate; no VND conversion.
 
 ## Colors
 
@@ -65,14 +65,14 @@ Subtle border separates panels. Shadows only for popovers. No glass, gradients o
 
 Radix-backed supplied Select, Checkbox, RadioGroup, Sheet, Popover, AlertDialog and Sonner are canonical. Region chips are a single-choice RadioGroup, with an explicit all-regions option. Series cards are native links; logo slots reserve dimensions and fall back to single-line brand text (28px), using the compact series mark in the detail header (21px). Regions with no catalog entries explain that no schedules are collected yet and offer all-regions recovery. Calendar wraps React DayPicker with the full zh-CN locale. StatusBadge and EntryDetails are shared owners across both pages. Selection has four reversible states and a stable saving label; the personal calendar only shows attend/watch rows, markers and counts. Focus-visible purple outline; disabled controls retain geometry. Hover and pressed states are explicit. Discovery date filters use an inclusive range with Apply and Cancel. The agenda month calendar applies a single day immediately. All dates resets only the corresponding date choice. Select popups match trigger width. Global scrollbars use --scrollbar-* tokens with forced-colors fallbacks. Toasts sit above bottom navigation.
 
-Motion is limited to color changes and canonical overlay transitions; reduced motion disables transitions. Monetary summaries default to one buy-in per selected flight; the basket offers a persistent alternative counting each event once. Guarantees are never summed. Satellites show seat guarantees separately from cash guarantees.
+Motion is limited to color changes and canonical overlay transitions; reduced motion disables transitions. Monetary summaries default to one buy-in per selected flight; the basket offers a persistent alternative counting each event once. Guarantees are never summed. Satellites show seat guarantees separately from cash guarantees. The shared money formatter owns amount labels; filter thresholds follow the active native currency. BudgetAmounts renders separate USD and VND lines, keeping full amounts readable at 320px. Source IDs stay internal; unnumbered QPC satellites show 未编号.
 
 ## Do's and Don'ts
 
 - Do preserve source date, exact buy-in, restrictions, continuation days and original-versus-supplement provenance.
 - Each starting flight is a separate actionable listing. Continuation days appear once per event/day in the agenda and in event details, inherit the event's selected-flight status and carry no new buy-in.
 - Status filters use OR across checked statuses; filtering never mutates classifications.
-- The catalog contains the supplied WPT and Triton ONE North Cyprus schedules. A shared FilterSelect switches the active series on discovery and agenda; shortlist and budget cover both series. Never fabricate series, guarantees or live availability.
+- The catalog contains the supplied WPT and Triton ONE North Cyprus schedules and the official QPC Circuit Hanoi schedule. A shared FilterSelect switches the active series on discovery and agenda; shortlist and budget cover all series, with a separate total for each currency. Never fabricate series, guarantees or live availability.
 - Do make participation a personal plan, never a real casino registration.
 - Don't preselect events, imply guaranteed profit, or count continuation days as new entries.
 - Don't communicate saved state before a successful browser-local write.

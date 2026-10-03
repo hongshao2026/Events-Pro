@@ -60,3 +60,4 @@ try{
 // Import checks run after the legacy WPT workflow closes its isolated browser.
 await import('./triton-ui.test.mjs');
 await import('./home-ui.test.mjs');
+await import('./qpc-ui.test.mjs');

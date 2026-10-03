@@ -1,4 +1,5 @@
 import wptLogo from '../assets/wpt-logo.png?inline';
+import type {Currency} from './money';
 
 export const regions = [
   {id:'all',label:'全部地区'}, {id:'apac',label:'亚太'},
@@ -10,7 +11,7 @@ export type Region = Exclude<RegionFilter,'all'>;
 export type Series = {
   id:string; title:string; shortTitle:string; mark:string; brand:string;
   country:string; countryCode?:string; region:Region; venue:string; city:string;
-  start:string; end:string; timeZone:string; timeLabel:string; currency:'USD';
+  start:string; end:string; timeZone:string; timeLabel:string; currency:Currency;
   eventCount:number; entryCount:number; logo?:{src:string;alt:string};
   sourceLabel:string; sourceUpdated?:string; sourceUrl?:string;
 };
@@ -27,6 +28,13 @@ export const seriesList:Series[] = [
     country:'塞浦路斯',region:'europe',venue:'Merit Royal Diamond',city:'北塞浦路斯',
     start:'2026-11-05',end:'2026-11-15',timeZone:'Asia/Famagusta',timeLabel:'EET',currency:'USD',
     eventCount:22,entryCount:29,sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09',
+  },
+  {
+    id:'qpc-circuit-2026',title:'QPC Circuit 2026',shortTitle:'QPC Circuit · 河内 2026',mark:'QPC',brand:'QPC',
+    country:'越南',countryCode:'VN',region:'apac',venue:'Quads Hanoi Poker Club',city:'河内',
+    start:'2026-10-12',end:'2026-10-21',timeZone:'Asia/Ho_Chi_Minh',timeLabel:'ICT',currency:'VND',
+    eventCount:77,entryCount:91,sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
+    sourceUrl:'https://quadspoker.vn/series/qpc-circuit-2026',
   },
 ];
 // Compatibility exports point to the same catalog; never maintain two lists.

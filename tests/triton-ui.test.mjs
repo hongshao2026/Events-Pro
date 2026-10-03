@@ -20,7 +20,7 @@ const first=`${series}/T01/T01-D1A`,wpt='wpt-wynn-2026/W01/R0';
 try{
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row(wpt).waitFor();await select(wpt,'参加');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('W01');
- await selector().focus();await page.keyboard.press('Enter');await page.getByRole('listbox').waitFor();await page.getByRole('option',{name:'WPT · Wynn 2026',exact:true}).focus();await page.keyboard.press('End');await page.waitForFunction(()=>document.activeElement?.textContent?.includes('北塞浦路斯'));await page.keyboard.press('Enter');
+ await selector().focus();await page.keyboard.press('Enter');await page.getByRole('listbox').waitFor();await page.getByRole('option',{name:'WPT · Wynn 2026',exact:true}).focus();await page.keyboard.press('ArrowDown');await page.waitForFunction(()=>document.activeElement?.textContent?.includes('北塞浦路斯'));await page.keyboard.press('Enter');
  await row(first).waitFor();assert.ok(page.url().includes(`series=${series}`));
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事'}).inputValue(),'');
  assert.match(await page.locator('.results-bar').innerText(),/29.*场次.*22.*赛事/s);

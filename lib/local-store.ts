@@ -1,5 +1,6 @@
 import {statuses,type Status} from './schedule';
 import {entries,entryMap,eventMap} from './catalog';
+import type {Currency} from './money';
 
 export const LEGACY_KEY='wpt-2026-local-selections-v1';
 export const STORAGE_KEY='poker-planner-local-v2';
@@ -54,8 +55,12 @@ export function downloadBackup(state:PlannerState):void {
 }
 export function budget(state:PlannerState){
  const selected=entries.filter(entry=>state.selections[entry.id]?.status==='attend');
- const grouped=new Map<string,number>();for(const entry of selected)grouped.set(entry.eventId,Math.max(grouped.get(entry.eventId)||0,entry.buyin));
- let total=state.budgetMode==='flights'?selected.reduce((sum,e)=>sum+e.buyin,0):[...grouped.values()].reduce((a,b)=>a+b,0);
- for(const id of Object.keys(state.pending))if(!grouped.has(id))total+=eventMap.get(id)?.buyin||0;
- return {total,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
+ const grouped=new Map<string,{buyin:number;currency:Currency}>();
+ for(const entry of selected)if(!grouped.has(entry.eventId)||grouped.get(entry.eventId)!.buyin<entry.buyin)grouped.set(entry.eventId,{buyin:entry.buyin,currency:entry.currency});
+ const totals:Partial<Record<Currency,number>>={};
+ const add=(value:number,currency:Currency)=>{totals[currency]=(totals[currency]||0)+value;};
+ for(const item of state.budgetMode==='flights'?selected:grouped.values())add(item.buyin,item.currency);
+ for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=eventMap.get(id);if(event)add(event.buyin||0,event.currency||'USD');}
+ // Preserve the old USD-only numeric field for callers; totals is the full budget.
+ return {total:totals.USD||0,totalCurrency:'USD' as const,totals,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
 }

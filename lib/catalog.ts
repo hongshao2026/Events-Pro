@@ -1,8 +1,9 @@
 import {events,slotName,type Event,type Slot} from './schedule';
 import {series,type Series} from './series';
+import type {Currency} from './money';
 export {series,seriesList,getSeries,type Series} from './series';
-export type Entry={id:string;seriesId:string;eventId:string;event:Event;slot:Slot;flightLabel:string;date:string;hour:number;buyin:number};
-export const entries:Entry[]=events.flatMap(event=>event.starts.map(slot=>({id:`${event.seriesId||series.id}/${event.id}/${slot.id}`,seriesId:event.seriesId||series.id,eventId:event.id,event,slot,flightLabel:slotName(slot),date:slot.date,hour:slot.hour,buyin:slot.buyin??event.buyin??0}))).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour);
+export type Entry={id:string;seriesId:string;eventId:string;event:Event;slot:Slot;flightLabel:string;date:string;hour:number;buyin:number;currency:Currency};
+export const entries:Entry[]=events.flatMap(event=>event.starts.map(slot=>({id:`${event.seriesId||series.id}/${event.id}/${slot.id}`,seriesId:event.seriesId||series.id,eventId:event.id,event,slot,flightLabel:slotName(slot),date:slot.date,hour:slot.hour,buyin:slot.buyin??event.buyin??0,currency:event.currency||'USD'}))).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour);
 export const entryMap=new Map(entries.map(entry=>[entry.id,entry]));
 export const eventMap=new Map(events.map(event=>[event.id,event]));
 export const entryName=(entry:Entry)=>`${entry.event.title}${entry.event.starts.length>1?' · '+entry.flightLabel:''}`;

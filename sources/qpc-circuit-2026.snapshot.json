@@ -1,0 +1,1925 @@
+{
+  "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026",
+  "accessedOn": "2026-10-03",
+  "currency": "VND",
+  "timeZone": "Asia/Ho_Chi_Minh",
+  "htmlSha256": "e9997ea982f008e2bf333dce86f04ebf925c56336d7b8fadcb33d4d3a7888b61",
+  "rows": [
+    {
+      "sourceId": "a3bc65893117410092a406893ef1eebc",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a3bc65893117410092a406893ef1eebc",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - BLASTOFF",
+      "date": "2026-10-12",
+      "time": "10:00",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "494a6fc75dcc4835a216c55b3f229f98",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/494a6fc75dcc4835a216c55b3f229f98",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/A",
+      "date": "2026-10-12",
+      "time": "10:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "73ac30a6170549b3b0edf7bb19c5128b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/73ac30a6170549b3b0edf7bb19c5128b",
+      "officialNumber": 2,
+      "title": "#2 [QPC-C High Roller] Warm-up Day 1",
+      "date": "2026-10-12",
+      "time": "12:00",
+      "buyinVnd": 16500000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:00",
+      "startingStack": 100000,
+      "levelMinutes": [
+        35,
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "8b7eae6ef8f0450294a149cc797f0bbc",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/8b7eae6ef8f0450294a149cc797f0bbc",
+      "officialNumber": 3,
+      "title": "#3 Megastack Turbo",
+      "date": "2026-10-12",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "b5f8543d567d4882a7ef638853033292",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/b5f8543d567d4882a7ef638853033292",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/B",
+      "date": "2026-10-12",
+      "time": "16:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 22:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "9100995e4e244426977d9658de19a52b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/9100995e4e244426977d9658de19a52b",
+      "officialNumber": 4,
+      "title": "#4 NLH Deepstack Turbo",
+      "date": "2026-10-12",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "a5496ca7154a42709d209138e64e036d",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a5496ca7154a42709d209138e64e036d",
+      "officialNumber": 5,
+      "title": "#5 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-12",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "551e650fec414feca353ee4bceb502fb",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/551e650fec414feca353ee4bceb502fb",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - BLASTOFF",
+      "date": "2026-10-12",
+      "time": "19:30",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "023c533b6696446898a93d405a87c25d",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/023c533b6696446898a93d405a87c25d",
+      "officialNumber": 6,
+      "title": "#6 Evening Storm 8-max",
+      "date": "2026-10-12",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "d743695f13664908a1fa0bbf43972576",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/d743695f13664908a1fa0bbf43972576",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - BLASTOFF",
+      "date": "2026-10-13",
+      "time": "10:00",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "76727fbb4d744b86ae8c99af0cadaa15",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/76727fbb4d744b86ae8c99af0cadaa15",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/C",
+      "date": "2026-10-13",
+      "time": "10:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "089d12740cec44839f899bf3a6046650",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/089d12740cec44839f899bf3a6046650",
+      "officialNumber": 7,
+      "title": "#7 QPC Circuit - HEATER",
+      "date": "2026-10-13",
+      "time": "11:30",
+      "buyinVnd": 5500000,
+      "guaranteeVnd": 500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "5ba35b0d8b2c413e95b758a375c209c3",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/5ba35b0d8b2c413e95b758a375c209c3",
+      "officialNumber": 8,
+      "title": "#8 [QPC-C High Roller] GOLDEN WINGS Day 1",
+      "date": "2026-10-13",
+      "time": "12:00",
+      "buyinVnd": 22000000,
+      "guaranteeVnd": 1500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:00",
+      "startingStack": 200000,
+      "levelMinutes": [
+        35,
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "88961758903343dda733239f098155dd",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/88961758903343dda733239f098155dd",
+      "officialNumber": 2,
+      "title": "#2 [QPC-C High Roller] Warm-up Final",
+      "date": "2026-10-13",
+      "time": "12:30",
+      "buyinVnd": 16500000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:30",
+      "startingStack": 100000,
+      "levelMinutes": [
+        35,
+        30
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "c5cd13a0216143cdb56691e9d0973b9f",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c5cd13a0216143cdb56691e9d0973b9f",
+      "officialNumber": 9,
+      "title": "#9 Megastack Turbo",
+      "date": "2026-10-13",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "814763f80d2f40dfbe4a9bb0c60b1fb9",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/814763f80d2f40dfbe4a9bb0c60b1fb9",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/D",
+      "date": "2026-10-13",
+      "time": "16:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 22:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "dc459293718e43879ee4239c96f0bb35",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/dc459293718e43879ee4239c96f0bb35",
+      "officialNumber": 10,
+      "title": "#10 NLH Deepstack Turbo",
+      "date": "2026-10-13",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "07bb77283cef4fc293a6f03c0efd2b2d",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/07bb77283cef4fc293a6f03c0efd2b2d",
+      "officialNumber": 11,
+      "title": "#11 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-13",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "5a2be2791fee4a53ae5d70903c64ce1c",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/5a2be2791fee4a53ae5d70903c64ce1c",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - BLASTOFF",
+      "date": "2026-10-13",
+      "time": "19:30",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "47a0944695d3485a8ed3391e1f4349ef",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/47a0944695d3485a8ed3391e1f4349ef",
+      "officialNumber": 12,
+      "title": "#12 Evening Storm 8-max",
+      "date": "2026-10-13",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "c254c201c4f64de0b74b5742d4b79c21",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c254c201c4f64de0b74b5742d4b79c21",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - BLASTOFF",
+      "date": "2026-10-14",
+      "time": "10:00",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "4203e84e965142d3a065e5417b49a427",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/4203e84e965142d3a065e5417b49a427",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/E",
+      "date": "2026-10-14",
+      "time": "10:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "60d00afa7d5e474a89638cff13ffb1f7",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/60d00afa7d5e474a89638cff13ffb1f7",
+      "officialNumber": 13,
+      "title": "#13 QPC Circuit - MONSTER STACK",
+      "date": "2026-10-14",
+      "time": "11:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 600000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "118c43ef74e344269c8fdcd5a93e2835",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/118c43ef74e344269c8fdcd5a93e2835",
+      "officialNumber": 14,
+      "title": "#14 [QPC-C High Roller] LEGACY",
+      "date": "2026-10-14",
+      "time": "12:00",
+      "buyinVnd": 33000000,
+      "guaranteeVnd": 1500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:35",
+      "startingStack": 200000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "63d204c18929478893c179907fbebcaf",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/63d204c18929478893c179907fbebcaf",
+      "officialNumber": 8,
+      "title": "#8 [QPC-C High Roller] GOLDEN WINGS Final",
+      "date": "2026-10-14",
+      "time": "12:30",
+      "buyinVnd": 22000000,
+      "guaranteeVnd": 1500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:30",
+      "startingStack": 200000,
+      "levelMinutes": [
+        35,
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "adca275c47624118b4b28c33b30ee82b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/adca275c47624118b4b28c33b30ee82b",
+      "officialNumber": 15,
+      "title": "#15 Megastack Turbo",
+      "date": "2026-10-14",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "85344c69ffec4bcba87f33c928bda500",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/85344c69ffec4bcba87f33c928bda500",
+      "officialNumber": 1,
+      "title": "#1 QPC Circuit - BLASTOFF Day 1/F",
+      "date": "2026-10-14",
+      "time": "16:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 22:35",
+      "startingStack": 30000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "0f21245728f94073bee0dc60e8861a44",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/0f21245728f94073bee0dc60e8861a44",
+      "officialNumber": 16,
+      "title": "#16 NLH Deepstack Turbo",
+      "date": "2026-10-14",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "6bf79d8d91144833906de4cce33d12b3",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/6bf79d8d91144833906de4cce33d12b3",
+      "officialNumber": 17,
+      "title": "#17 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-14",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "defca5bfe62b4aff9c7344f933608263",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/defca5bfe62b4aff9c7344f933608263",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - SIGNATURE",
+      "date": "2026-10-14",
+      "time": "19:30",
+      "buyinVnd": 800000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "1b54937b58e641be99c304acd0687016",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/1b54937b58e641be99c304acd0687016",
+      "officialNumber": 18,
+      "title": "#18 Evening Storm 8-max",
+      "date": "2026-10-14",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "e9a22e5f2f454351854aaffcbeab2f05",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/e9a22e5f2f454351854aaffcbeab2f05",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - SIGNATURE",
+      "date": "2026-10-15",
+      "time": "10:00",
+      "buyinVnd": 800000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "bed86a6c53ba42d59dbf495d89ab05cc",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/bed86a6c53ba42d59dbf495d89ab05cc",
+      "officialNumber": 19,
+      "title": "#19 QPC Circuit - SIGNATURE Day 1/A",
+      "date": "2026-10-15",
+      "time": "10:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "9edd10dd6f3c4f6eb218a5b5795ef9f3",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/9edd10dd6f3c4f6eb218a5b5795ef9f3",
+      "officialNumber": 1,
+      "title": "#1 Kick Off Event - Final Day",
+      "date": "2026-10-15",
+      "time": "11:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 18:30",
+      "startingStack": 30000,
+      "levelMinutes": [
+        35
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "c8dd41d5faad44f592c9f92090ecee79",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c8dd41d5faad44f592c9f92090ecee79",
+      "officialNumber": 20,
+      "title": "#20 [QPC-C High Roller] GRAND PRIX Day 1",
+      "date": "2026-10-15",
+      "time": "12:00",
+      "buyinVnd": 22000000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:00",
+      "startingStack": 200000,
+      "levelMinutes": [
+        35,
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "5c33cf2c5461484b9f2bc908b5af9aec",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/5c33cf2c5461484b9f2bc908b5af9aec",
+      "officialNumber": 21,
+      "title": "#21 Megastack Turbo",
+      "date": "2026-10-15",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "958eb3781cc4402b9324f283b8a70993",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/958eb3781cc4402b9324f283b8a70993",
+      "officialNumber": 19,
+      "title": "#19 QPC Circuit - SIGNATURE Day 1/B",
+      "date": "2026-10-15",
+      "time": "16:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 22:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "8b3f5bb26ee640458a0eb053c2d88491",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/8b3f5bb26ee640458a0eb053c2d88491",
+      "officialNumber": 22,
+      "title": "#22 NLH Deepstack Turbo",
+      "date": "2026-10-15",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "ed83b1d4503747babcc72fc36def32d4",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/ed83b1d4503747babcc72fc36def32d4",
+      "officialNumber": 23,
+      "title": "#23 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-15",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "6ec0b1da668c4b59b6ad3ac7071aea61",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/6ec0b1da668c4b59b6ad3ac7071aea61",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - SIGNATURE",
+      "date": "2026-10-15",
+      "time": "19:30",
+      "buyinVnd": 800000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "ba7cee6c771a4f48ab760ae4fcb4db26",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/ba7cee6c771a4f48ab760ae4fcb4db26",
+      "officialNumber": 24,
+      "title": "#24 Evening Storm 8-max",
+      "date": "2026-10-15",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "bda034cad0724745a6b58b0e7aa7c701",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/bda034cad0724745a6b58b0e7aa7c701",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - SIGNATURE",
+      "date": "2026-10-16",
+      "time": "10:00",
+      "buyinVnd": 800000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "8ce3cef2c819448db1423e9f3fe56d0c",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/8ce3cef2c819448db1423e9f3fe56d0c",
+      "officialNumber": 19,
+      "title": "#19 QPC Circuit - SIGNATURE Day 1/C",
+      "date": "2026-10-16",
+      "time": "10:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "3a07e6b3ef494e8898b50a8045936f94",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/3a07e6b3ef494e8898b50a8045936f94",
+      "officialNumber": 25,
+      "title": "#25 QPC Circuit - GENESIS",
+      "date": "2026-10-16",
+      "time": "11:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 400000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "aecac0e675914e62a08e7205e68395a5",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/aecac0e675914e62a08e7205e68395a5",
+      "officialNumber": 20,
+      "title": "#20 [QPC-C High Roller] GRAND PRIX Final",
+      "date": "2026-10-16",
+      "time": "12:30",
+      "buyinVnd": 22000000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:30",
+      "startingStack": 200000,
+      "levelMinutes": [
+        35,
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "064d8c716f9f42d69c23e608d3e821fa",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/064d8c716f9f42d69c23e608d3e821fa",
+      "officialNumber": 26,
+      "title": "#26 Megastack Turbo",
+      "date": "2026-10-16",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "92bfac2f0b654a38b4b1a6d71e28f67f",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/92bfac2f0b654a38b4b1a6d71e28f67f",
+      "officialNumber": 19,
+      "title": "#19 QPC Circuit - SIGNATURE Day 1/D",
+      "date": "2026-10-16",
+      "time": "16:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 22:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "e9ba2d5d7b154b1f96e0aa8d8262e373",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/e9ba2d5d7b154b1f96e0aa8d8262e373",
+      "officialNumber": 27,
+      "title": "#27 NLH Deepstack Turbo",
+      "date": "2026-10-16",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "a0d76f4836ff421fb1bad5d906e6b5bb",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a0d76f4836ff421fb1bad5d906e6b5bb",
+      "officialNumber": 28,
+      "title": "#28 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-16",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "7045eaff3dca4d32a9e517791a664392",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/7045eaff3dca4d32a9e517791a664392",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-16",
+      "time": "19:30",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "c9d95ccf938e4652ac6981132a55cbd6",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c9d95ccf938e4652ac6981132a55cbd6",
+      "officialNumber": 29,
+      "title": "#29 Evening Storm 8-max",
+      "date": "2026-10-16",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "85100d68e6c949e8b11851d66221494f",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/85100d68e6c949e8b11851d66221494f",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-17",
+      "time": "10:00",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 10,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "08c3b602bd2740b3a3445baf57a34fce",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/08c3b602bd2740b3a3445baf57a34fce",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 1/A",
+      "date": "2026-10-17",
+      "time": "10:30",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 18:35",
+      "startingStack": 50000,
+      "levelMinutes": [
+        40
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "da22df80f53140abbb3e6af8fa25c775",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/da22df80f53140abbb3e6af8fa25c775",
+      "officialNumber": 19,
+      "title": "#19 QPC Circuit - SIGNATURE Final",
+      "date": "2026-10-17",
+      "time": "11:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 6000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 17:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "b88c130e92c94fd389347f8eb20fdd4b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/b88c130e92c94fd389347f8eb20fdd4b",
+      "officialNumber": 31,
+      "title": "#31 QPC Circuit - Quads Star Challenge Day 1",
+      "date": "2026-10-17",
+      "time": "12:00",
+      "buyinVnd": 55000000,
+      "guaranteeVnd": 2500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 14 · 12:00",
+      "startingStack": 300000,
+      "levelMinutes": [
+        40
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "e454cf4586904e9f8694299310d98201",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/e454cf4586904e9f8694299310d98201",
+      "officialNumber": 32,
+      "title": "#32 Megastack Turbo",
+      "date": "2026-10-17",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "7504247fdf0443e2806581274db510de",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/7504247fdf0443e2806581274db510de",
+      "officialNumber": 33,
+      "title": "#33 NLH Deepstack Turbo",
+      "date": "2026-10-17",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "b18b9d72b4af4aec8060402875fc666a",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/b18b9d72b4af4aec8060402875fc666a",
+      "officialNumber": 34,
+      "title": "#34 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-17",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "82cbe1dcdb4d40fead8fdae0e4b7399d",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/82cbe1dcdb4d40fead8fdae0e4b7399d",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-17",
+      "time": "19:30",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "d6950bf03efc4f1c9a9f7634d402a3e6",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/d6950bf03efc4f1c9a9f7634d402a3e6",
+      "officialNumber": 35,
+      "title": "#35 Evening Storm 8-max",
+      "date": "2026-10-17",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "7f6acf45c4ba482c8a48787292eded04",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/7f6acf45c4ba482c8a48787292eded04",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-18",
+      "time": "10:00",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 10,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "cdb2da93155546079bf8ccfba6210e11",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/cdb2da93155546079bf8ccfba6210e11",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 1/B",
+      "date": "2026-10-18",
+      "time": "10:30",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 17:30",
+      "startingStack": 50000,
+      "levelMinutes": [
+        35,
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "c8022199adf34763be5f081ed8b08d0b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c8022199adf34763be5f081ed8b08d0b",
+      "officialNumber": 36,
+      "title": "#36 QPC Circuit - PRIME",
+      "date": "2026-10-18",
+      "time": "11:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 400000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "dba0aebe9f75490380f3817aff32e6f7",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/dba0aebe9f75490380f3817aff32e6f7",
+      "officialNumber": 31,
+      "title": "#31 QPC Circuit - Quads Star Challenge Final",
+      "date": "2026-10-18",
+      "time": "11:30",
+      "buyinVnd": 55000000,
+      "guaranteeVnd": 2500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 14 · 13:05",
+      "startingStack": 300000,
+      "levelMinutes": [
+        40
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "f708b3e4a804474888877db24ce9d542",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/f708b3e4a804474888877db24ce9d542",
+      "officialNumber": 37,
+      "title": "#37 [QPC-C High Roller] SINGLE DAY",
+      "date": "2026-10-18",
+      "time": "13:30",
+      "buyinVnd": 22000000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 20:05",
+      "startingStack": 200000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "cf2f3f293b4848fb9498e4325ed94cfc",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/cf2f3f293b4848fb9498e4325ed94cfc",
+      "officialNumber": 38,
+      "title": "#38 Megastack Turbo",
+      "date": "2026-10-18",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "35fdd5e3d7304be58256b489477d0211",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/35fdd5e3d7304be58256b489477d0211",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 1/C",
+      "date": "2026-10-18",
+      "time": "17:00",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 23:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "d1ce1320a3ce4846952e38bd29c31ed7",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/d1ce1320a3ce4846952e38bd29c31ed7",
+      "officialNumber": 39,
+      "title": "#39 NLH Deepstack Turbo",
+      "date": "2026-10-18",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "2a1934873fcc4869bb47dd624e03536b",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/2a1934873fcc4869bb47dd624e03536b",
+      "officialNumber": 40,
+      "title": "#40 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-18",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "a7e9a3b12df0486ca40325311aec3253",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a7e9a3b12df0486ca40325311aec3253",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-18",
+      "time": "19:30",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "a33b8d9f07de4e36a79b13016c8fdf09",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a33b8d9f07de4e36a79b13016c8fdf09",
+      "officialNumber": 41,
+      "title": "#41 Evening Storm 8-max",
+      "date": "2026-10-18",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "fb3a281e303c4506b1471d26bebcccf7",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/fb3a281e303c4506b1471d26bebcccf7",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - MAIN EVENT",
+      "date": "2026-10-19",
+      "time": "10:00",
+      "buyinVnd": 1300000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 10,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "275dec0c8bd247909638c713e8528661",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/275dec0c8bd247909638c713e8528661",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 1/D",
+      "date": "2026-10-19",
+      "time": "10:30",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 17:30",
+      "startingStack": 50000,
+      "levelMinutes": [
+        35,
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "acecac6bc51a4b1881720cad61baedd0",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/acecac6bc51a4b1881720cad61baedd0",
+      "officialNumber": 42,
+      "title": "#42 QPC Circuit - PREMIUM",
+      "date": "2026-10-19",
+      "time": "11:30",
+      "buyinVnd": 6600000,
+      "guaranteeVnd": 600000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "12a935b8d8a54700a38aa5edbefb9749",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/12a935b8d8a54700a38aa5edbefb9749",
+      "officialNumber": 43,
+      "title": "#43 Megastack Turbo",
+      "date": "2026-10-19",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "53d1cbeef38c4d8da3b9ae1f77f08daa",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/53d1cbeef38c4d8da3b9ae1f77f08daa",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 1/E",
+      "date": "2026-10-19",
+      "time": "17:00",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 23:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "d581178639f64736b6e123f5d14ef3e3",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/d581178639f64736b6e123f5d14ef3e3",
+      "officialNumber": 44,
+      "title": "#44 NLH Deepstack Turbo",
+      "date": "2026-10-19",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "a25e076b8c4642daa069e899611e9a77",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a25e076b8c4642daa069e899611e9a77",
+      "officialNumber": 45,
+      "title": "#45 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-19",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "ec60af26f9e145e5aee849e2921d317f",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/ec60af26f9e145e5aee849e2921d317f",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - IMPERIAL",
+      "date": "2026-10-19",
+      "time": "19:30",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 12,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "c7b8fe79d3e04ef9bac08e3b79c43a47",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c7b8fe79d3e04ef9bac08e3b79c43a47",
+      "officialNumber": 46,
+      "title": "#46 Evening Storm 8-max",
+      "date": "2026-10-19",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "b1a8345f6a7c417f93f8b6b70738c451",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/b1a8345f6a7c417f93f8b6b70738c451",
+      "officialNumber": null,
+      "title": "Mega Satellite To QPC C - IMPERIAL",
+      "date": "2026-10-20",
+      "time": "10:00",
+      "buyinVnd": 900000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 15,
+      "registration": "Level 7 · 12:00",
+      "startingStack": 8000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "1e6e8a850ca04f69967f6279047195a6",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/1e6e8a850ca04f69967f6279047195a6",
+      "officialNumber": 47,
+      "title": "#47 QPC Circuit - IMPERIAL Day 1/A",
+      "date": "2026-10-20",
+      "time": "10:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 2000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 16:35",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "bea8a5a37b6841d78ad3013c98ab6c5a",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/bea8a5a37b6841d78ad3013c98ab6c5a",
+      "officialNumber": 48,
+      "title": "#48 [QPC-C High Roller] EXPRESS",
+      "date": "2026-10-20",
+      "time": "12:00",
+      "buyinVnd": 16500000,
+      "guaranteeVnd": 1000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 19:00",
+      "startingStack": 100000,
+      "levelMinutes": [
+        35,
+        30
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "2e3bbbfaaf5a4a4cae87406116fb54f3",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/2e3bbbfaaf5a4a4cae87406116fb54f3",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Day 2",
+      "date": "2026-10-20",
+      "time": "12:00",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 20:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        40
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "79e2f52fa57642aeb86b5592a678fda9",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/79e2f52fa57642aeb86b5592a678fda9",
+      "officialNumber": 49,
+      "title": "#49 Megastack Turbo",
+      "date": "2026-10-20",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "886b822add7046ba977fe17bfb015274",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/886b822add7046ba977fe17bfb015274",
+      "officialNumber": 47,
+      "title": "#47 QPC Circuit - IMPERIAL Day 1/B",
+      "date": "2026-10-20",
+      "time": "16:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 2000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 21:40",
+      "startingStack": 40000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "63301011c5164bd3978db1fd413e34dc",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/63301011c5164bd3978db1fd413e34dc",
+      "officialNumber": 50,
+      "title": "#50 NLH Deepstack Turbo",
+      "date": "2026-10-20",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "8a5cf5cd69d041908279c0e1802490ad",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/8a5cf5cd69d041908279c0e1802490ad",
+      "officialNumber": 51,
+      "title": "#51 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-20",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "ecd89e18ceda4999bfb8823e208f034c",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/ecd89e18ceda4999bfb8823e208f034c",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - SUPREME SAVER",
+      "date": "2026-10-20",
+      "time": "19:30",
+      "buyinVnd": 650000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 21:09",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "f82f3b4cf259473ab8c57e7ce9974253",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/f82f3b4cf259473ab8c57e7ce9974253",
+      "officialNumber": 52,
+      "title": "#52 Evening Storm 8-max",
+      "date": "2026-10-20",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "ccabe73deb8a4bd9a8548c17e60c6649",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/ccabe73deb8a4bd9a8548c17e60c6649",
+      "officialNumber": 47,
+      "title": "#47 QPC Circuit - IMPERIAL Day 1/C",
+      "date": "2026-10-20",
+      "time": "21:30",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 2000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 00:40",
+      "startingStack": 40000,
+      "levelMinutes": [
+        15,
+        12
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "c477bf281bf3476a91211af845534c04",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/c477bf281bf3476a91211af845534c04",
+      "officialNumber": null,
+      "title": "Satellite To QPC C - SUPREME SAVER",
+      "date": "2026-10-21",
+      "time": "10:00",
+      "buyinVnd": 650000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": 5,
+      "registration": "Level 7 · 11:39",
+      "startingStack": 8000,
+      "levelMinutes": [
+        12,
+        10
+      ],
+      "satellite": true,
+      "continuation": false
+    },
+    {
+      "sourceId": "0002f8cc782d4f93a869fefb6de05c02",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/0002f8cc782d4f93a869fefb6de05c02",
+      "officialNumber": 53,
+      "title": "#53 QPC Circuit - SUPREME SAVER",
+      "date": "2026-10-21",
+      "time": "11:30",
+      "buyinVnd": 5500000,
+      "guaranteeVnd": 500000000,
+      "guaranteedTickets": null,
+      "registration": "Level 12 · 18:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        25
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "1ab825bef9aa4e1abc6e3c67930447a6",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/1ab825bef9aa4e1abc6e3c67930447a6",
+      "officialNumber": 47,
+      "title": "#47 QPC Circuit - IMPERIAL Final",
+      "date": "2026-10-21",
+      "time": "12:00",
+      "buyinVnd": 4500000,
+      "guaranteeVnd": 2000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 18:05",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "96831969ac89401b9d116bd68f88d861",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/96831969ac89401b9d116bd68f88d861",
+      "officialNumber": 30,
+      "title": "#30 QPC Circuit - MAIN EVENT Final",
+      "date": "2026-10-21",
+      "time": "12:00",
+      "buyinVnd": 11000000,
+      "guaranteeVnd": 10000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 20:05",
+      "startingStack": 50000,
+      "levelMinutes": [
+        40
+      ],
+      "satellite": false,
+      "continuation": true
+    },
+    {
+      "sourceId": "e78d60b54b9349049ea019b12c4cec5d",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/e78d60b54b9349049ea019b12c4cec5d",
+      "officialNumber": 54,
+      "title": "#54 [QPC-C High Roller] THE CLOSER",
+      "date": "2026-10-21",
+      "time": "13:00",
+      "buyinVnd": 44000000,
+      "guaranteeVnd": 2000000000,
+      "guaranteedTickets": null,
+      "registration": "Level 11 · 20:00",
+      "startingStack": 200000,
+      "levelMinutes": [
+        35,
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "75ef31272dd04c30a55bda004c3f6f19",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/75ef31272dd04c30a55bda004c3f6f19",
+      "officialNumber": 55,
+      "title": "#55 Megastack Turbo",
+      "date": "2026-10-21",
+      "time": "15:00",
+      "buyinVnd": 2500000,
+      "guaranteeVnd": 110000000,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 19:25",
+      "startingStack": 40000,
+      "levelMinutes": [
+        30,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "a7b13b181ecd48ce8a08383ad52663d7",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/a7b13b181ecd48ce8a08383ad52663d7",
+      "officialNumber": 56,
+      "title": "#56 NLH Deepstack Turbo",
+      "date": "2026-10-21",
+      "time": "18:00",
+      "buyinVnd": 3400000,
+      "guaranteeVnd": null,
+      "guaranteedTickets": null,
+      "registration": "Level 8 · 21:45",
+      "startingStack": 30000,
+      "levelMinutes": [
+        25,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "344a984c47064d3a82497edd7d91d3c2",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/344a984c47064d3a82497edd7d91d3c2",
+      "officialNumber": 57,
+      "title": "#57 [QPC-C High Roller] ENCORE",
+      "date": "2026-10-21",
+      "time": "19:00",
+      "buyinVnd": 8800000,
+      "guaranteeVnd": 200000000,
+      "guaranteedTickets": null,
+      "registration": "Level 3 · 22:25",
+      "startingStack": 120000,
+      "levelMinutes": [
+        30,
+        60,
+        90,
+        20
+      ],
+      "satellite": false,
+      "continuation": false
+    },
+    {
+      "sourceId": "81f43c3431814834a1808e56ad1bda08",
+      "sourceUrl": "https://quadspoker.vn/series/qpc-circuit-2026/81f43c3431814834a1808e56ad1bda08",
+      "officialNumber": 58,
+      "title": "#58 Evening Storm 8-max",
+      "date": "2026-10-21",
+      "time": "21:30",
+      "buyinVnd": 2300000,
+      "guaranteeVnd": 50000000,
+      "guaranteedTickets": null,
+      "registration": "Level 4 · 23:40",
+      "startingStack": 50000,
+      "levelMinutes": [
+        30,
+        10
+      ],
+      "satellite": false,
+      "continuation": false
+    }
+  ]
+}
