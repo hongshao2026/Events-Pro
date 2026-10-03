@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: 赛事自选 · Poker Planner
-description: A local tournament discovery and shortlist product, starting with the Wynn WPT festival.
+description: A local tournament discovery and shortlist product, covering the Wynn WPT and Triton ONE North Cyprus festivals.
 colors:
   primary: "#542887"
   background: "#f5f6f9"
@@ -34,11 +34,11 @@ components:
 
 ## Overview
 
-Product register: a Chinese-speaking player's personal decision desk for the November 27–December 21, 2026 Wynn WPT series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
+Product register: a Chinese-speaking player's personal decision desk for the 2026 Wynn WPT and Triton ONE North Cyprus series. Actual supplied schedule drives every row. No marketing hero, decorative casino photography, or wagering simulation.
 
 Signature: independent flight labels, a bounded festival calendar, and the persistent shortlist basket. The current user explicitly requested a phone-style product with a dedicated daily agenda. Muted purple recalls the supplied poster, with white working surfaces and tabular money. It must feel like a usable tournament notebook, not a casino advertisement.
 
-Runtime token ownership is Model B: `app/globals.css` owns CSS variables and Tailwind aliases; this file records their values and rationale. No independent theme provider. Light theme only. zh-CN UI, original English tournament names, Las Vegas PST times, fixed planning FX 6.7.
+Runtime token ownership is Model B: `app/globals.css` owns CSS variables and Tailwind aliases; this file records their values and rationale. No independent theme provider. Light theme only. zh-CN UI, original English tournament names, series-local dates and times (WPT PST; Triton North Cyprus EET), fixed planning FX 6.7.
 
 ## Colors
 
@@ -71,9 +71,10 @@ Motion is limited to color changes and canonical overlay transitions; reduced mo
 - Do preserve source date, exact buy-in, restrictions, continuation days and original-versus-supplement provenance.
 - Each starting flight is a separate actionable listing. Continuation days appear once per event/day in the agenda and in event details, inherit the event's selected-flight status and carry no new buy-in.
 - Status filters use OR across checked statuses; filtering never mutates classifications.
-- Only the supplied WPT series is currently in the catalog. Do not fabricate other series, paid memberships, ads or live availability.
+- The catalog contains the supplied WPT and Triton ONE North Cyprus schedules. A shared FilterSelect switches the active series on discovery and agenda; shortlist and budget cover both series. Never fabricate series, guarantees or live availability.
 - Do make participation a personal plan, never a real casino registration.
 - Don't preselect events, imply guaranteed profit, or count continuation days as new entries.
 - Don't communicate saved state before a successful browser-local write.
-- Local-only delivery is authoritative. Bundle all assets in one HTML file; no authentication or remote backend.
+- Offline delivery remains the default: bundle all assets in one HTML file and force authentication off. The user-requested optional online account module follows AUTH.md and remains disabled until deliberately configured.
+- Account UI reuses the existing 480px Radix Sheet, purple primary buttons, system fonts, global scrollbar and neutral bordered controls. No visual token changes. The email and OTP forms share components/auth/account-control.tsx and validation in lib/auth/config.ts; errors reserve space, code input allows paste/autofill and reveal, account email wraps on phones.
 - Export and restore use the same button hierarchy as filters. Restore previews the backup and requires explicit confirmation; failed validation preserves current data.

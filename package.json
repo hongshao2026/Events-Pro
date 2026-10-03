@@ -3,20 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": {"node": ">=22.13.0"},
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "node scripts/build-local.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "start": "vite preview --host 127.0.0.1",
-    "lint": "eslint app components/planner lib local-entry.tsx vite.config.ts",
+    "lint": "eslint app components/planner components/auth lib local-entry.tsx vite.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "node tests/run.mjs",
     "test:state": "node tests/state.test.mjs",
     "test:agenda": "node tests/agenda.test.mjs",
-    "test:ui": "node tests/ui.test.mjs"
+    "test:ui": "node tests/ui.test.mjs",
+    "test:auth": "node tests/auth.test.mjs",
+    "test:auth:ui": "node tests/auth-ui.test.mjs",
+    "build:web": "vite build --outDir web-dist"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "date-fns": "4.4.0",

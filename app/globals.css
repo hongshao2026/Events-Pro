@@ -185,3 +185,6 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .agenda-detail-actions>.primary-button{width:100%;min-height:42px}
 @media(max-width:359px){.workspace{padding-left:12px;padding-right:12px}.agenda-row{grid-template-columns:36px minmax(0,1fr) auto 10px;gap:5px;padding-left:7px;padding-right:7px}.status-badge{padding:3px 4px}.schedule-calendar-top>span{font-size:11px}.status-options{gap:5px}.status-pill{font-size:10px;padding:7px 4px;gap:3px}.status-pill [data-slot=checkbox]{height:12px;width:12px}.mobile-event-top{gap:5px}.class-option{font-size:12px;gap:2px}}
 @media(forced-colors:active){.status-surface{border-left:3px solid CanvasText}.status-badge{border:1px solid CanvasText}.calendar-status-dots i{background:CanvasText}.bottom-nav .active{outline:2px solid Highlight}}
+
+/* Series selection shares the existing authored select and theme tokens. */
+.series-picker{display:flex;align-items:center;gap:10px;margin-bottom:12px}.series-picker>span{font-size:12px;color:var(--muted-foreground);flex-shrink:0}.series-picker .filter-select{flex:1;min-width:0;font-size:12px}.series-picker [data-slot=select-value]{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

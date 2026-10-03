@@ -4,7 +4,8 @@ import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-await build({root,configFile:resolve(root,'vite.config.ts')});
+// This artifact is always offline, even when a developer's .env enables web auth.
+await build({root,configFile:resolve(root,'vite.config.ts'),define:{'import.meta.env.VITE_AUTH_ENABLED':JSON.stringify('false')}});
 const dist=resolve(root,'local-dist');
 let html=await readFile(resolve(dist,'index.html'),'utf8');
 const script=html.match(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/);

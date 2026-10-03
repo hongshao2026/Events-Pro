@@ -1,0 +1,21 @@
+import { useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
+import Planner from '@/app/planner';
+import { AccountControl } from './account-control';
+import type { AuthRuntime } from '@/lib/auth/client';
+import './auth.css';
+
+export default function AuthApp({ runtime }: { runtime: AuthRuntime }) {
+  const [session, setSession] = useState<Session | null>(runtime.session);
+  const [expired, setExpired] = useState(false);
+  useEffect(() => {
+    if (!runtime.client) return;
+    const { data } = runtime.client.auth.onAuthStateChange((event, next) => {
+      setSession(next);
+      if (event === 'SIGNED_OUT') setExpired(true);
+      if (next) setExpired(false);
+    });
+    return () => data.subscription.unsubscribe();
+  }, [runtime.client]);
+  return <Planner account={<AccountControl runtime={runtime} session={session} expired={expired} onSignedOut={() => setExpired(false)} />} />;
+}

@@ -16,4 +16,12 @@ for(const source of [old({W01:{status:'attend',flight:'invalid',version:1}}),old
 const collision={...emptyState(),selections:{[id('R0')]:{status:'attend',version:1}},pending:{W01:{status:'attend',version:1}}};assert.throws(()=>parseBackup(JSON.stringify({app:'wpt-planner',schemaVersion:2,savedAt:'2026-10-02T10:00:00Z',state:collision})));pass('inconsistent pending and attending same event rejected');
 const records=new Map([[LEGACY_KEY,old({W01:{status:'attend',flight:'',version:1}})]]);const legacy=records.get(LEGACY_KEY);globalThis.localStorage={getItem:key=>records.get(key)??null,setItem:(key,v)=>records.set(key,v)};const pending=readState();assert.equal(Object.keys(pending.pending).length,1);assert.equal(records.has(STORAGE_KEY),false);writeState(pending);assert.equal(records.get(LEGACY_KEY),legacy);assert.equal(readState().pending.W01.status,'attend');pass('v1 migration does not erase legacy raw record');
 globalThis.localStorage.setItem=()=>{throw new Error('Full');};assert.throws(()=>writeState(emptyState()),/未能保存/);assert.equal(readState().pending.W01.status,'attend');pass('failed write preserves disk state');
+const crossSeries=emptyState(),tritonId='triton-one-cyprus-2026/T12/T12-D1A';
+crossSeries.selections[id('R0')]={status:'attend',version:1};
+crossSeries.selections[tritonId]={status:'attend',version:1};
+crossSeries.selections['triton-one-cyprus-2026/T12/T12-D1B']={status:'attend',version:1};
+assert.equal(budget(crossSeries).total,16600);crossSeries.budgetMode='events';assert.equal(budget(crossSeries).total,8600);
+assert.deepEqual(parseBackup(JSON.stringify({app:'wpt-planner',schemaVersion:2,savedAt:'2026-10-02T10:00:00Z',state:crossSeries})).state,crossSeries);
+pass('WPT and Triton share a lossless v2 backup and budget, with per-event deduplication confined to the same event');
+
 console.log(`${checks.length} state checks passed`);
