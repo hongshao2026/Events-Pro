@@ -52,7 +52,7 @@ try {
   const close = async () => { await page.keyboard.press('Escape'); await page.getByRole('dialog').waitFor({ state: 'hidden' }); };
   const count = path => requests.filter(r => r.path === path).length;
   const fillEmail = () => page.getByLabel('邮箱地址', { exact: true }).fill('player@example.com');
-  await page.goto(base); await open();
+  await page.goto(base + '/#view=discover&series=wpt-wynn-2026&region=north-america'); await open();
   assert.equal(requests.length, 0); await page.getByRole('button', { name: '获取验证码', exact: true }).click();
   assert.equal(await page.locator('#auth-email').getAttribute('aria-invalid'), 'true');
   assert.equal(await page.locator('#auth-email').evaluate(e => e === document.activeElement), true);
@@ -129,7 +129,7 @@ try {
   await page.getByText('已登录', { exact: true }).waitFor();
   assert.equal(googleQuery.get('provider'), 'google'); assert.equal(googleQuery.get('code_challenge_method').toLowerCase(), 's256');
   assert.ok(googleQuery.get('code_challenge')); assert.equal(googleQuery.get('redirect_to'), `${base}/?auth=callback`);
-  assert.ok(page.url().includes('view=schedule')); assert.equal(page.url().includes('code='), false);
+  assert.ok(page.url().includes('view=schedule'));assert.ok(page.url().includes('region=north-america')); assert.equal(page.url().includes('code='), false);
   const pkce = requests.find(r => r.path.endsWith('/token'));
   assert.equal(pkce.body.auth_code, 'test-pkce-code'); assert.ok(pkce.body.code_verifier);
   assert.equal(await page.evaluate(() => localStorage.getItem('poker-planner-local-v2')), saved);
@@ -165,7 +165,7 @@ try {
   await failurePage.getByRole('button', { name: '获取验证码', exact: true }).click();
   await failurePage.getByText('暂时无法连接登录服务', { exact: false }).waitFor();
   assert.equal(await failurePage.getByLabel('邮箱地址', { exact: true }).inputValue(), 'player@example.com');
-  await failurePage.keyboard.press('Escape'); await failurePage.locator('.mobile-event').first().waitFor();
+  await failurePage.keyboard.press('Escape'); await failurePage.locator('.festival-card').first().waitFor();
   pass('network failure retains email and leaves the planner usable');
   await failureContext.close();
 
@@ -181,7 +181,7 @@ try {
   await blockedPage.goto(base); await blockedPage.getByRole('button', { name: '登录', exact: true }).click();
   await blockedPage.getByText('浏览器禁止了登录所需的存储', { exact: false }).waitFor();
   assert.equal(await blockedPage.getByLabel('邮箱地址', { exact: true }).count(), 0);
-  await blockedPage.keyboard.press('Escape'); await blockedPage.locator('.mobile-event').first().waitFor();
+  await blockedPage.keyboard.press('Escape'); await blockedPage.locator('.festival-card').first().waitFor();
   await blockedContext.close(); pass('blocked auth storage explains recovery and keeps the local planner available');
 
   for (const enabled of [false, true]) {

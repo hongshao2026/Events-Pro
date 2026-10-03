@@ -1,12 +1,16 @@
 import {entries,series,getSeries,validDate,type Entry} from './catalog';
 import {shortlistStatuses,type Status,type Slot,type Event} from './schedule';
 import type {PlannerState} from './local-store';
-export type AgendaRoute={seriesId:string;view:'discover'|'schedule';day:string;statuses:Status[];continuations:boolean;month:string};
+import {regions,type RegionFilter} from './series';
+export type AgendaRoute={seriesId:string;view:'home'|'discover'|'schedule';region:RegionFilter;day:string;statuses:Status[];continuations:boolean;month:string};
 export function agendaFromUrl():AgendaRoute{
  const p=new URLSearchParams(window.location.hash.slice(1)),day=p.get('day')||'',raw=p.get('agendaStatuses');
  const festival=getSeries(p.get('series')),month=p.get('month')||'',start=festival.start.slice(0,7),end=festival.end.slice(0,7);
  const selected=shortlistStatuses.filter(s=>raw?.split(',').includes(s));
- return {seriesId:festival.id,view:p.get('view')==='schedule'?'schedule':'discover',day:validDate(day,festival)?day:'',statuses:raw==='none'||raw===''?[]:selected.length?selected:[...shortlistStatuses],continuations:p.get('continuations')!=='no',month:/^\d{4}-(0[1-9]|1[0-2])$/.test(month)&&month>=start&&month<=end?month:validDate(day,festival)?day.slice(0,7):start};
+ const requestedView=p.get('view'),region=regions.find(item=>item.id===p.get('region'))?.id||'all';
+ const legacyDiscovery=['q','statuses','status','from','to','date','buyin','gtd','game','sort','supp','page'].some(key=>p.has(key));
+ const view=requestedView==='schedule'?'schedule':requestedView==='discover'||(!requestedView&&(p.has('series')||legacyDiscovery))?'discover':'home';
+ return {seriesId:p.get('series')||festival.id,view,region,day:validDate(day,festival)?day:'',statuses:raw==='none'||raw===''?[]:selected.length?selected:[...shortlistStatuses],continuations:p.get('continuations')!=='no',month:/^\d{4}-(0[1-9]|1[0-2])$/.test(month)&&month>=start&&month<=end?month:validDate(day,festival)?day.slice(0,7):start};
 }
 export type AgendaActivity={id:string;date:string;hour:number;status:Status;kind:'start'|'continuation';event:Event;slot:Slot;entry:Entry;buyin:number};
 export function agendaActivities(state:PlannerState,supplement=false,seriesId=series.id):AgendaActivity[]{

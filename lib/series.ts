@@ -1,8 +1,40 @@
-export type Series={id:string;title:string;shortTitle:string;mark:string;venue:string;city:string;start:string;end:string;timeZone:string;timeLabel:string;currency:'USD';sourceLabel:string;sourceUpdated?:string;sourceUrl?:string};
-export const seriesList:Series[]=[
- {id:'wpt-wynn-2026',title:'WPT World Championship 2026',shortTitle:'WPT · Wynn 2026',mark:'WPT',venue:'Wynn Las Vegas',city:'拉斯维加斯',start:'2026-11-27',end:'2026-12-21',timeZone:'America/Los_Angeles',timeLabel:'PST',currency:'USD',sourceLabel:'官方赛程',sourceUrl:'https://cdn.wynnresorts.com/image/upload/v1757097329/visitwynn_pdfs_files/Poker/WPT/WPT_World_Championship_Schedule.pdf'},
- {id:'triton-one-cyprus-2026',title:'Triton ONE North Cyprus 2026',shortTitle:'Triton ONE · 北塞浦路斯 2026',mark:'ONE',venue:'Merit Royal Diamond',city:'北塞浦路斯',start:'2026-11-05',end:'2026-11-15',timeZone:'Asia/Famagusta',timeLabel:'EET',currency:'USD',sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09'},
+import wptLogo from '../assets/wpt-logo.png?inline';
+
+export const regions = [
+  {id:'all',label:'全部地区'}, {id:'apac',label:'亚太'},
+  {id:'north-america',label:'北美'}, {id:'south-america',label:'南美'},
+  {id:'europe',label:'欧洲'},
+] as const;
+export type RegionFilter = typeof regions[number]['id'];
+export type Region = Exclude<RegionFilter,'all'>;
+export type Series = {
+  id:string; title:string; shortTitle:string; mark:string; brand:string;
+  country:string; countryCode?:string; region:Region; venue:string; city:string;
+  start:string; end:string; timeZone:string; timeLabel:string; currency:'USD';
+  eventCount:number; entryCount:number; logo?:{src:string;alt:string};
+  sourceLabel:string; sourceUpdated?:string; sourceUrl?:string;
+};
+export const seriesList:Series[] = [
+  {
+    id:'wpt-wynn-2026',title:'WPT World Championship 2026',shortTitle:'WPT · Wynn 2026',mark:'WPT',brand:'WPT',
+    country:'美国',countryCode:'US',region:'north-america',venue:'Wynn Las Vegas',city:'拉斯维加斯',
+    start:'2026-11-27',end:'2026-12-21',timeZone:'America/Los_Angeles',timeLabel:'PST',currency:'USD',
+    eventCount:75,entryCount:102,logo:{src:wptLogo,alt:'WPT · World Poker Tour'},sourceLabel:'官方赛程',
+    sourceUrl:'https://cdn.wynnresorts.com/image/upload/v1757097329/visitwynn_pdfs_files/Poker/WPT/WPT_World_Championship_Schedule.pdf',
+  },
+  {
+    id:'triton-one-cyprus-2026',title:'Triton ONE North Cyprus 2026',shortTitle:'Triton ONE · 北塞浦路斯 2026',mark:'ONE',brand:'Triton ONE',
+    country:'塞浦路斯',region:'europe',venue:'Merit Royal Diamond',city:'北塞浦路斯',
+    start:'2026-11-05',end:'2026-11-15',timeZone:'Asia/Famagusta',timeLabel:'EET',currency:'USD',
+    eventCount:22,entryCount:29,sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09',
+  },
 ];
-// Keep the original default and identifiers so saved WPT links and backups still work.
-export const series=seriesList[0];
-export const getSeries=(id?:string|null)=>seriesList.find(item=>item.id===id)||series;
+// Compatibility exports point to the same catalog; never maintain two lists.
+export const seriesCatalog = seriesList;
+export const series = seriesList[0];
+export const getSeries = (id?:string|null) => seriesList.find(item=>item.id===id)||series;
+export const regionLabel = (region:RegionFilter) => regions.find(item=>item.id===region)!.label;
+export function filterSeries(region:RegionFilter,catalog:readonly Series[]=seriesList){
+  return catalog.filter(item=>region==='all'||item.region===region)
+    .sort((a,b)=>a.start.localeCompare(b.start)||a.id.localeCompare(b.id));
+}

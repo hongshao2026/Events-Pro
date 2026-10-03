@@ -1,6 +1,6 @@
 # Events Pro · 线下扑克赛事自选平台
 
-用手机风格的界面发现比赛、选择起始组、整理自选和每日参赛日程。当前包含 Wynn WPT 2026 和 Triton ONE North Cyprus 2026，完整运行在本地浏览器。页面顶部的“赛事系列”可切换两站。
+用手机风格的界面发现比赛、选择起始组、整理自选和每日参赛日程。当前包含 Wynn WPT 2026 和 Triton ONE North Cyprus 2026，完整运行在本地浏览器。首页按地区和开赛时间展示两站；进入完整赛程或我的日程后，也可通过“赛事系列”切换。
 
 仓库：<https://github.com/hongshao2026/Events-Pro>
 
@@ -10,7 +10,7 @@
 
 底部三个入口：
 
-- **赛事发现**：按报名费、保底、类型、日期和分类筛选；Day 1A、1B 等起始组各有独立条目。
+- **赛事**：首页按开赛时间展示系列卡片，可筛选全部地区、亚太、北美、南美、欧洲。Triton 北塞浦路斯归入欧洲，Wynn WPT 归入北美；点击卡片进入完整赛程，按报名费、保底、类型、日期和分类筛选。Day 1A、1B 等起始组各有独立条目。
 - **我的日程**：月历选日期，只显示参加和关注的比赛，按时间逐行排列；待定和不考虑不显示，日期色点与场次数同步过滤。
 - **我的自选**：参加和关注的场次按日期整理，显示美元和人民币预算。
 
@@ -56,9 +56,10 @@ npm run build
 ## 测试
 
 - `npm test`：本地状态、跨系列预算与备份、日程模型及导入资料检查，覆盖旧记录迁移、预算、无效备份、失败写入和续赛去重。
-- `npm run test:ui`：离线浏览器检查（WPT 回归与 Triton 跨系列检查），覆盖手机布局、日历、颜色同步、备份恢复、页面历史与浏览器重启保存。
+- `npm run test:ui`：离线浏览器检查（WPT、Triton 与地区首页），覆盖手机布局、日历、颜色同步、跨系列预算、备份恢复、页面历史与浏览器重启保存。
 - `npm run test:auth`：登录开关、公共配置、字段校验和回调边界检查，也包含在 `npm test` 中。
 - `npm run test:auth:ui`：隔离的 Google/邮箱登录浏览器测试，覆盖失败、限流、会话、退出、键盘和手机布局；只使用模拟服务，不启用项目登录或发送真实邮件。
+- `npm run verify`：串行执行 lint、typecheck、全部单元测试、离线构建及以上两组浏览器测试；集成进主分支前执行。
 
 首次运行浏览器测试前：
 
@@ -82,10 +83,12 @@ Events-Pro/
 ├── components/
 │   ├── planner/            # 赛事日历、我的日程、分类、详情等业务组件
 │   └── ui/                 # 共用基础控件：Calendar、Sheet、Select 等
+├── assets/                 # 本地赛事 Logo 与来源说明
 ├── lib/
+│   ├── series.ts           # 地区、系列元数据、Logo 与时间排序
 │   ├── schedule.json       # 原始赛事目录与起始组/续赛数据
 │   ├── schedule.ts         # 数据类型、分类、金额和显示工具
-│   ├── catalog.ts          # 系列元数据、场次 ID 与展平目录
+│   ├── catalog.ts          # 当前系列、场次 ID 与展平目录
 │   ├── agenda.ts           # 日程模型和 URL 状态
 │   └── local-store.ts      # 本地存储、迁移、JSON 备份、预算
 ├── scripts/build-local.mjs # 构建并打包为本地单文件
@@ -106,21 +109,22 @@ Events-Pro/
 
 ## 开始并行开发
 
-每个功能使用独立分支、独立 worktree，避免多人改同一工作目录：
+每个功能使用独立分支、独立 worktree，从最新已验收的本地 `main` 开始；一个集成对话统一维护主分支：
 
 ```bash
-git fetch origin
-git worktree add ../events-calendar -b codex/calendar-export origin/main
-git worktree add ../events-catalog -b codex/multi-series origin/main
+git worktree add ../Events-Pro-calendar -b codex/calendar-export main
+git worktree add ../Events-Pro-reminders -b codex/reminders main
 ```
 
 在每个 worktree 内分别运行 `npm ci`。同时启动时指定不同端口，例如 `npm run dev -- --port 5174`。
 
-先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。共享数据类型和本地存储变更应先对齐接口；页面功能尽量放到 `components/planner/`，通过 props 连接已有状态。每个 PR 写清行为变化和验证结果，保持 `main` 可构建、可运行。
+先阅读 [AGENTS.md](AGENTS.md) 和 [CONTRIBUTING.md](CONTRIBUTING.md)，其中包含任务模板、文件分工、验收和合并步骤。每个功能验收并提交后交给集成对话，合并后再执行 `npm run verify`；通过后推进 `main`。共享接口先对齐，生成的 HTML 由完整源码重新构建，避免旧文件覆盖新功能。本次整合范围见 [INTEGRATION.md](INTEGRATION.md)。
 
 ## 当前边界
 
 当前包含两个真实赛事系列。账户模块已实现但默认关闭；会员支付、广告、跨设备同步和提醒尚未实现，路线见 [PRODUCT.md](PRODUCT.md)。选择“参加”是个人参赛计划，不会向赌场实际报名。
+
+系列卡片与系列选择器共用 `lib/series.ts`，Logo 及来源见 `assets/`。日程按所选系列展示，自选与预算汇总两站。添加下一站时仍须接入真实场次、日期边界、币种和时区，不能只添加卡片元数据。
 
 赛程保留 [Wynn 官方来源](https://cdn.wynnresorts.com/image/upload/v1757097329/visitwynn_pdfs_files/Poker/WPT/WPT_World_Championship_Schedule.pdf)；本项目不代表主办方，临行前请核对最新官方赛程。第三方样式许可见 `vendor/`。
 

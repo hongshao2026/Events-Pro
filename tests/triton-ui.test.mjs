@@ -13,12 +13,12 @@ const pass=name=>{checks.push(name);console.log('PASS',name);};
 const file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href,series='triton-one-cyprus-2026';
 const selector=()=>page.getByRole('combobox',{name:'赛事系列',exact:true});
 const switchTo=async name=>{await selector().click();await page.getByRole('option',{name,exact:true}).click();};
-const nav=name=>page.locator('.bottom-nav').getByRole('button',{name:new RegExp(name)}).click();
+const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name==='赛事发现'?'赛事':name,exact:true}).click();if(name==='赛事发现')await page.getByRole('link',{name:'查看 WPT World Championship 2026 完整赛程',exact:true}).click();};
 const row=id=>page.locator(`.mobile-event[data-entry-id="${id}"]`);
 const select=async(id,status)=>{await row(id).locator('.class-option').filter({hasText:new RegExp('^'+status+'$')}).click();};
 const first=`${series}/T01/T01-D1A`,wpt='wpt-wynn-2026/W01/R0';
 try{
- await page.goto(file);await row(wpt).waitFor();await select(wpt,'参加');
+ await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row(wpt).waitFor();await select(wpt,'参加');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('W01');
  await selector().focus();await page.keyboard.press('Enter');await page.getByRole('listbox').waitFor();await page.getByRole('option',{name:'WPT · Wynn 2026',exact:true}).focus();await page.keyboard.press('End');await page.waitForFunction(()=>document.activeElement?.textContent?.includes('北塞浦路斯'));await page.keyboard.press('Enter');
  await row(first).waitFor();assert.ok(page.url().includes(`series=${series}`));

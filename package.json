@@ -19,7 +19,8 @@
     "test:ui": "node tests/ui.test.mjs",
     "test:auth": "node tests/auth.test.mjs",
     "test:auth:ui": "node tests/auth-ui.test.mjs",
-    "build:web": "vite build --outDir web-dist"
+    "build:web": "vite build --outDir web-dist",
+    "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

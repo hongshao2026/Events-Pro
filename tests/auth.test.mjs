@@ -33,6 +33,7 @@ assert.match(authError(new TypeError('private secret')), /网络/);
 assert.equal(authError({ message: 'token=secret user@example.com' }).includes('secret'), false);
 pass('safe actionable errors never echo backend secrets');
 assert.equal(safeReturnHash('https://evil.test'), '');
+assert.equal(safeReturnHash('#view=home&region=europe'), '#view=home&region=europe');
 assert.equal(safeReturnHash('#series=triton-one-cyprus-2026&view=schedule'), '#series=triton-one-cyprus-2026&view=schedule');
 assert.equal(safeReturnHash('#view=schedule&day=2026-12-01&access_token=secret&next=https://evil.test'), '#view=schedule&day=2026-12-01');
 pass('return navigation accepts planner hash keys only');

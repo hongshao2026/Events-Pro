@@ -1,60 +1,118 @@
-# 并行开发约定
+# 多功能同时开发与合并
 
-## 工作方式
+每个功能验收通过后即可逐个合并，合并后的组合还必须验收。Git 没有文本冲突，只说明文件能够拼接；导航、数据或旧功能仍可能被改坏。一个集成对话负责主分支，其他对话各自使用独立目录和分支。
 
-1. 从 `origin/main` 为一个具体功能建立 `codex/<功能名>` 分支。
-2. 每个功能使用独立 worktree，分别安装依赖。不要共用 `node_modules`、构建目录和浏览器测试配置。
-3. 开始前列出计划修改的文件；如果两个功能依赖同一接口，先合并最小接口变更，再继续各自实现。
-4. 通过 PR 合并。同步主分支时使用普通 merge 或在自己的分支上 rebase；不强推共享 `main`。
+## 1. 开工：一个对话、一个功能、一个 worktree
 
-```bash
-git fetch origin
-git worktree add ../events-reminders -b codex/reminders origin/main
-cd ../events-reminders
+主目录 Events-Pro 的 main 用作已验收版本，由集成对话维护。功能目录如 Events-Pro-reminders、Events-Pro-calendar-export 各自绑定 codex/<功能名>。不要让多个对话在同一工作目录切换分支或修改文件。
+
+从最新已验收的本地 main 创建功能目录；本地尚未推送时，origin/main 可能落后，不能直接以它为起点。
+
+```powershell
+# 在主目录运行，先核对分支和未提交改动
+git status --short
+git worktree list
+git worktree add ../Events-Pro-reminders -b codex/reminders main
+cd ../Events-Pro-reminders
 npm ci
-npm run dev -- --port 5175
+npm run dev -- --port 5177 --strictPort
 ```
 
-## 模块边界
+目录、依赖、构建输出和开发端口各自独立。不要复制整个项目覆盖其他目录，不共用 node_modules。远端协作先 fetch 核对差异，由集成对话更新本地 main 后再开工，不在功能进行中盲目 pull。
+
+可复制给功能对话：
+
+> 请先读 AGENTS.md 和 CONTRIBUTING.md。从最新已验收 main 建立独立 worktree 与 codex/<功能名> 分支，只实现【功能】。先报告目录、分支、基础提交和预计修改文件。保留现有首页、双赛事、自选预算、日历规则和默认关闭的登录；遇到共享接口先说明依赖。完成后验收并提交，交付提交 ID、修改范围和测试结果，由集成对话统一合并。不部署、不启用登录。
+
+## 2. 开发：划分范围，先对齐共享接口
 
 | 模块 | 主要文件 | 协作约定 |
 | --- | --- | --- |
-| 页面导航与状态协调 | `app/planner.tsx` | 作为集成入口；新功能尽量先放独立组件，减少多人同时修改 |
-| 赛事与起始组目录 | `lib/catalog.ts`、`lib/schedule.ts`、`lib/schedule.json` | ID 必须稳定；新增系列前先明确系列、赛事、起始组、时区和币种接口 |
-| 每日行程与日历功能 | `lib/agenda.ts`、`components/planner/my-schedule.tsx` | 续赛按实际日期显示，只生成一次，不新增买入 |
-| 自选保存、备份、预算 | `lib/local-store.ts` | 改存储结构必须提供旧版迁移、有效性校验和失败保护 |
-| 分类与详情 | `components/planner/controls.tsx`、`status.tsx`、`entry-details.tsx` | 继续复用共同控件，不为新页面另造分类逻辑 |
-| 主题和基础控件 | `app/globals.css`、`components/ui/` | 全局颜色、布局变更先更新 `DESIGN.md`；保持四种分类颜色一致 |
-| 构建与发布文件 | `scripts/build-local.mjs`、`release/` | 所有输出位于项目内；发布网页由源码生成，不能手改内嵌代码 |
+| 导航与共享状态 | app/planner.tsx、lib/agenda.ts | 高冲突区；新功能先放独立组件，集成时检查 URL、历史、日历和搜索一起工作 |
+| 系列目录与首页 | lib/series.ts、components/planner/series-home.tsx、assets/ | seriesList 与 seriesCatalog 指向同一目录；真实赛事、日期排序、本地 Logo 或文字回退 |
+| 赛事数据 | lib/catalog.ts、lib/schedule.ts、赛程 JSON、sources/ | ID 稳定；新站必须有真实场次、日期范围、时区、币种和来源 |
+| 我的日程 | lib/agenda.ts、components/planner/my-schedule.tsx | 只显示参加/关注；续赛去重、不新增买入；日期色点和统计同步过滤 |
+| 本地记录与预算 | lib/local-store.ts | 结构变化必须兼容旧记录；验证迁移、失败写入和备份恢复 |
+| 分类与详情 | components/planner/controls.tsx、status.tsx、entry-details.tsx | 复用共同控件和分类逻辑 |
+| 登录 | components/auth/、lib/auth/、local-entry.tsx | Google + 邮箱验证码；默认关闭，不能因集成而开启 |
+| 主题与基础控件 | app/globals.css、components/ui/ | 共享颜色与控件；同步 DESIGN.md，不整体覆盖样式文件 |
+| 依赖与交付物 | package.json、锁文件、scripts/、release/ | 依赖一起提交锁文件；集成后重新生成 HTML |
 
-可独立规划的后续功能包括日历导出、资料导入、多系列目录和提醒。这些是开发方向，当前仓库尚未提供这些能力。
+若几个功能必须修改同一核心接口，先集中完成最小接口变更并验收，各功能同步后继续。不要各自重写一份目录、存储或导航模型。
 
-## 必须保留的行为
+## 3. 功能验收：通过后提交，再交接
 
-- 起始组独立选择；分类互斥，分类筛选采用并集，筛选不改变个人选择。
-- `attend` 和 `watch` 加入自选，只有 `attend` 计预算。保底属于整项赛事，不能累加。
-- `localStorage` 写入成功后才显示成功；无效备份、取消恢复和写入失败均保留现有数据。
-- 旧版未指定起始组的参加记录保留为待安排，不能猜选首组或扩展成全部起始组。
-- Day 2 和决赛桌以晋级为前提，不是可再次报名的独立条目。
-- 日期采用赛事所在地的日历日期；WPT 为 Las Vegas PST，Triton 北塞浦路斯为 EET，人民币预算换算当前固定为 6.7。
-- 在引入远端服务前保持本地单文件可运行，不自动上传个人自选。
-- 维护中文界面、键盘焦点、空状态和错误恢复；用 320px、390px 手机宽度检查。
+源码修改至少运行 lint、typecheck、单元测试和构建；UI、导航、日历变化再运行 test:ui，登录相关变化运行 test:auth:ui。纯文档更正检查链接与 diff 即可。完整验收可以统一运行：
 
-## 提交前检查
-
-```bash
-npm run lint
-npm run typecheck
-npm test
-npm run build
+```powershell
+# 首次安装测试浏览器；也可通过 CHROMIUM_EXECUTABLE 指定现有 Chrome
+npx playwright install chromium
+npm run verify
+git diff --check
+git status --short
 ```
 
-界面、路由或交互有变化时，再运行 `npm run test:ui` 并查看 `.sites-runtime/qa/` 的截图。浏览器测试首次运行需要 `npx playwright install chromium`。
+verify 依次执行 lint、typecheck、全部单元测试、离线构建、WPT/Triton/首页浏览器回归、模拟登录浏览器检查。截图在忽略目录 .sites-runtime/qa/。登录测试使用隔离服务和临时浏览器数据，不发真实邮件，不启用项目登录。CI 使用同一命令，不部署。
 
-`release/WPT赛事自选表.html` 是仓库保留的可直接使用版本。功能分支通常只改源码；发布或集成时集中重新构建并提交它，避免多个功能同时修改大段构建代码。
+核对清单后，只暂存本功能文件并提交，不把别的对话的未完成修改一起交付。每个功能交接必须包含：
 
-`release/` 已从 Tailwind 源码扫描中排除，避免旧打包内容影响下一次构建；保留 `app/globals.css` 中对应的 `@source not` 规则。
+- worktree 路径、分支名、基础提交、交付提交 ID。
+- 新增行为和不能丢失的已有行为。
+- 共享接口、数据结构、依赖变化与兼容策略。
+- 实际验证命令、结果、截图位置、尚未验证的外部服务。
 
-不要提交 `node_modules`、个人 JSON 备份、浏览器配置、环境密钥或临时报告。`package-lock.json` 必须与依赖变更一起提交。
+功能分支交付源码与必要测试、文档。构建生成的 release/WPT赛事自选表.html 可留待集成对话集中更新。不要把“尚未提交”当作已交付。
 
-PR 描述应包含：用户触发场景、实际行为变化、受影响模块、验证命令，以及任何存储或数据兼容影响。
+## 4. 集成验收：一个对话串行合并
+
+每次接收一个验收完成的功能，保留分支历史。在独立集成 worktree 合并，组合验收通过后再推进 main；已完成的功能不必等所有功能都做好。
+
+```powershell
+# 在主目录创建集成目录，目录和分支名称应唯一
+git worktree add ../Events-Pro-integrate-next -b codex/integrate-next main
+cd ../Events-Pro-integrate-next
+npm ci
+git merge --no-ff --no-commit codex/reminders
+# 逐处处理冲突，核对双方功能，补充必要的组合测试
+# 若合入依赖变化，重新 npm ci
+npm run verify
+git diff --check
+# 检查并暂存本次集成文件，包括重新构建的 HTML，然后提交 merge
+git add -A
+git commit -m "Integrate reminders with the accepted planner"
+cd ../Events-Pro
+git status --short
+git merge --ff-only codex/integrate-next
+```
+
+最后一步要求主目录当前在 main 且无未保存改动；否则先保护现有工作。若 main 在验收期间前进，先在集成分支合入新的 main 并重新验证，再快进。
+
+冲突处理与验收规则：
+
+- 先列双方功能清单，逐块合并重叠代码，不整文件采用 ours/theirs，不按修改时间挑“最新文件”。
+- 没有文本冲突也检查组合行为。例如首页进入 Triton 后，日历须使用 Triton 日期，自选预算须保留 WPT。
+- 保留双方有效回归检查；旧测试只在产品明确改变时调整预期，不能删除失败测试掩盖回归。
+- 生成文件冲突时，用整合后的源码重新构建，不接受任意一边的旧 HTML 覆盖新版本。
+- 依赖冲突先合并实际依赖，再生成一致锁文件，不用旧锁文件覆盖新增依赖。
+- 不强推共享主分支、不重置其他对话、不删除未交付分支。验收和合并不代表授权启用功能或部署。
+
+需要 GitHub 同步时，由集成对话统一推送或开 PR，并核对远端状态和 CI。本流程允许先在本地完成合并。合并后暂时保留功能分支和 worktree，确认所有成果已接收后再清理。
+
+## 5. 继续开发：先同步新基线
+
+尚未完成的功能在自己的目录先提交当前成果，再执行 git merge main。解决冲突、重新验证受影响功能后继续，不在共享目录切换分支。新功能都从最新已验收 main 开始。
+
+## 必须保留的产品行为
+
+- 起始组独立选择；分类互斥，分类筛选采用并集，筛选不改变个人选择。
+- attend 和 watch 加入自选，只有 attend 计预算；保底属于整项赛事，不能累加。
+- 我的日程列表、日期色点和场次数始终只含参加/关注，默认同时显示两类。
+- 存储写入成功才显示成功；无效备份、取消恢复和写入失败保留现有数据。
+- 旧版未指定起始组的参加记录保留待安排，不猜选首组或扩展成全部组。
+- Day 2 和决赛桌以晋级为前提，不是可再次报名的独立条目。
+- 日期使用赛事所在地日期：WPT 为 PST，Triton 北塞浦路斯为 EET；人民币预算按固定 6.7 换算。
+- 地区筛选独立于系列内场次筛选；切换系列清除不兼容筛选，跨系列自选和预算保留。
+- Google 与邮箱验证码代码保留，VITE_AUTH_ENABLED=false；离线构建强制关闭登录，个人自选不自动上传。
+- 保持中文界面、键盘焦点、空状态、错误恢复和 320/390px 手机布局。
+
+不要提交 node_modules、个人 JSON 备份、浏览器配置、环境密钥或临时报告。保留 app/globals.css 排除 release/ 扫描的规则，防止旧构建污染新样式。

@@ -21,9 +21,9 @@ assert.equal(agendaActivities(state).find(x=>x.event.id==='W01'&&x.kind==='conti
 state.pending.W01={status:'attend',version:1};
 assert.equal(agendaActivities(state).find(x=>x.event.id==='W01'&&x.kind==='continuation').status,'attend');pass('legacy unassigned attendance remains represented in the agenda');
 globalThis.window={location:{hash:'#view=schedule&day=2026-12-21&agendaStatuses=attend,watch&continuations=no'}};
-assert.deepEqual(agendaFromUrl(),{seriesId:'wpt-wynn-2026',view:'schedule',day:'2026-12-21',statuses:['attend','watch'],continuations:false,month:'2026-12'});
+assert.deepEqual(agendaFromUrl(),{seriesId:'wpt-wynn-2026',region:'all',view:'schedule',day:'2026-12-21',statuses:['attend','watch'],continuations:false,month:'2026-12'});
 window.location.hash='#view=invalid&day=2026-12-22&agendaStatuses=invalid&month=2030-01';
-assert.deepEqual(agendaFromUrl(),{seriesId:'wpt-wynn-2026',view:'discover',day:'',statuses:['attend','watch'],continuations:true,month:'2026-11'});pass('route restores valid day and month; rejects out-of-festival dates and invalid categories');
+assert.deepEqual(agendaFromUrl(),{seriesId:'wpt-wynn-2026',region:'all',view:'home',day:'',statuses:['attend','watch'],continuations:true,month:'2026-11'});pass('route restores valid day and month; rejects out-of-festival dates and invalid categories');
 const triton='triton-one-cyprus-2026',tritonId=slot=>`${triton}/T12/T12-${slot}`;
 state.selections[tritonId('D1A')]={status:'attend',version:1};
 state.selections[tritonId('D1B')]={status:'attend',version:1};
@@ -37,8 +37,8 @@ pass('Triton agenda has 29 starts and nine continuations; multiple main flights 
 window.location.hash=`#series=${triton}&view=schedule&day=2026-11-05&month=2026-12`;
 assert.equal(agendaFromUrl().day,'2026-11-05');assert.equal(agendaFromUrl().month,'2026-11');
 window.location.hash=`#series=${triton}&day=2026-11-27`;assert.equal(agendaFromUrl().day,'');
-window.location.hash='#series=unknown&day=2026-11-27';assert.equal(agendaFromUrl().seriesId,'wpt-wynn-2026');
-pass('Triton links use their own date boundaries and reject WPT dates; unknown series retains the original default');
+window.location.hash='#series=unknown&day=2026-11-27';assert.equal(agendaFromUrl().seriesId,'unknown');
+pass('Triton links use their own date boundaries and reject WPT dates; unknown series retains its identity for the recovery page');
 
 for(const hash of ['', '#view=schedule', '#agendaStatuses=undecided,attend,watch,skip', '#agendaStatuses=skip,undecided']){
  window.location.hash=hash;assert.deepEqual(agendaFromUrl().statuses,['attend','watch']);
@@ -47,3 +47,10 @@ for(const [raw,expected] of [['skip,watch',['watch']],['attend',['attend']],['no
  window.location.hash='#agendaStatuses='+raw;assert.deepEqual(agendaFromUrl().statuses,expected);
 }
 pass('calendar defaults and legacy links allow only attend/watch; individual and explicit empty filters survive');
+
+window.location.hash='';assert.equal(agendaFromUrl().view,'home');
+window.location.hash='#view=discover&series=triton-one-cyprus-2026&region=europe';assert.equal(agendaFromUrl().region,'europe');assert.equal(agendaFromUrl().seriesId,triton);
+window.location.hash='#series=not-found&region=invalid';assert.equal(agendaFromUrl().view,'discover');assert.equal(agendaFromUrl().seriesId,'not-found');assert.equal(agendaFromUrl().region,'all');
+window.location.hash='#q=W01&date=2026-11-27';assert.equal(agendaFromUrl().view,'discover');
+window.location.hash='#view=home&q=W01';assert.equal(agendaFromUrl().view,'home');
+pass('homepage and region routes coexist with legacy detailed-schedule links and unknown-series recovery');
