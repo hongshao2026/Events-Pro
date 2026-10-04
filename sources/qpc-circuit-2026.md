@@ -33,3 +33,9 @@
 功能工作目录为 `Events-Pro-qpc`，分支 `codex/qpc-circuit-2026`，基线 `7a30ef9`。源码、测试和文档交付给集成对话；本目录的 `release/WPT赛事自选表.html` 仅供预览，集成时用合并后的源码重新构建。无新依赖、认证配置、实际报名、远端发布或自动刷新。
 
 本次验收：`npm run verify` 全部通过（lint、TypeScript、所有单元测试、离线构建、四组赛事/首页浏览器回归、模拟登录回归）；`git diff --check` 通过。严格 UI 审计零问题；DESIGN.md lint 零错误，保留既有 7 条 token 引用警告。离线单文件含原有 Triton PDF，构建仍有单包体积提示。手机截图位于忽略目录 `.sites-runtime/qa/qpc/`。实际外部认证、真实报名资格、官网后续更新未验证；默认关闭的认证未启用。
+
+## 2026-10-04 品牌图片补齐
+
+在同一功能目录/分支继续用户的 Logo 追加要求，接续提交 `34d6cff`（原 main 基线仍为 `7a30ef9`）。Triton ONE 和 QPC 首页、详情使用本地官方图片；QPC 采用主办方 Quads 的矢量标识，Triton 另保存 6412×3444 高清原件。来源和文件校验值见 `assets/README.md`。共享 SeriesLogo 保留比例、文字回退和固定展示区域，单个品牌加载失败不会影响切换到其他品牌。
+
+本次运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`、`npm run test:ui` 均通过；三个品牌在断网状态正常显示，320/390px 布局与切换、失败回退已验证。严格 UI 审计零问题，DESIGN.md lint 仍仅有既有 7 条警告。实际截图在 `.sites-runtime/qa/home/` 与 `.sites-runtime/logos/`。未重跑真实外部服务或认证；内置浏览器连接失败，无法自动刷新用户当前标签，独立 Chrome 离线回归与截图检查已完成。源码和品牌原件提交，生成 HTML 留作本地预览，未合入 main、未推送，登录保持关闭。

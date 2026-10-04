@@ -21,7 +21,7 @@ Current user requirements and PRODUCT.md override the earlier event-grouped list
 | Account/Session | lib/auth/client.ts, components/auth/auth-app.tsx | AUTH.md | opt-in online only; disabled offline | PKCE, session restore, logout, disabled build |
 | Series catalog | lib/series.ts, components/planner/series-home.tsx | PRODUCT.md | chronological month groups, single-choice region chips using shared RadioGroup | region empty state, ordering, keyboard, mobile |
 | Money | lib/money.ts, components/planner/budget-amounts.tsx | PRODUCT.md | native USD/VND formatting, currency-specific filters, separate totals | mixed-series flight/event budgets, watch exclusion, 320px amounts |
-| Series logo | components/planner/series-home.tsx SeriesLogo, assets/ | local catalog metadata | reserved image dimensions, brand-text fallback | bundled offline image and failed-image recovery |
+| Series logo | components/planner/series-home.tsx SeriesLogo, assets/ | local catalog metadata | reserved image dimensions, official WPT/Triton ONE/Quads local assets, source-specific brand-text fallback | bundled offline image and failed-image recovery |
 
 ## Optional account workflow (disabled by default)
 

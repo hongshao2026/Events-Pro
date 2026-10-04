@@ -209,8 +209,8 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .festival-card:hover{border-color:var(--primary)}
 .festival-card:active{border-color:var(--primary);filter:brightness(.98)}
 .festival-brand{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:111px;padding:25px 20px;background:var(--primary);color:var(--primary-foreground)}
-.series-logo{width:156px;height:45px;display:flex;align-items:center;justify-content:flex-start;flex-shrink:0}
-.series-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.series-logo{width:156px;height:60px;display:flex;align-items:center;justify-content:flex-start;flex-shrink:0}
+.series-logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:left center}
 .series-logo>span{font:700 28px/1 var(--font-display);color:var(--primary-foreground);white-space:nowrap}
 .festival-brand>span{font-size:12px;border:1px solid currentColor;border-radius:5px;padding:3px 9px;white-space:nowrap}
 .festival-card-body{padding:19px 20px 18px}

@@ -4,9 +4,9 @@ import {RadioGroup,RadioGroupItem} from '@/components/ui/radio-group';
 import {filterSeries,regions,regionLabel,type RegionFilter,type Series} from '@/lib/series';
 
 export function SeriesLogo({series,compact=false}:{series:Series;compact?:boolean}){
-  const [failed,setFailed]=useState(false);
-  return <div className="series-logo">{series.logo&&!failed
-    ?<img src={series.logo.src} alt={series.logo.alt} width={156} height={45} onError={()=>setFailed(true)}/>
+  const [failedSrc,setFailedSrc]=useState<string|null>(null);
+  return <div className="series-logo">{series.logo&&series.logo.src!==failedSrc
+    ?<img src={series.logo.src} alt={series.logo.alt} width={156} height={60} onError={()=>setFailedSrc(series.logo!.src)}/>
     :<span>{compact?series.mark:series.brand}</span>}</div>;
 }
 export function SeriesHome({region,onRegionChange,hrefForSeries,onOpen}:{

@@ -1,4 +1,6 @@
 import wptLogo from '../assets/wpt-logo.png?inline';
+import tritonOneLogo from '../assets/triton-one-logo.png?inline';
+import quadsLogo from '../assets/quads-logo.svg?inline';
 import type {Currency} from './money';
 
 export const regions = [
@@ -27,13 +29,13 @@ export const seriesList:Series[] = [
     id:'triton-one-cyprus-2026',title:'Triton ONE North Cyprus 2026',shortTitle:'Triton ONE · 北塞浦路斯 2026',mark:'ONE',brand:'Triton ONE',
     country:'塞浦路斯',region:'europe',venue:'Merit Royal Diamond',city:'北塞浦路斯',
     start:'2026-11-05',end:'2026-11-15',timeZone:'Asia/Famagusta',timeLabel:'EET',currency:'USD',
-    eventCount:22,entryCount:29,sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09',
+    eventCount:22,entryCount:29,logo:{src:tritonOneLogo,alt:'Triton ONE'},sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09',
   },
   {
     id:'qpc-circuit-2026',title:'QPC Circuit 2026',shortTitle:'QPC Circuit · 河内 2026',mark:'QPC',brand:'QPC',
     country:'越南',countryCode:'VN',region:'apac',venue:'Quads Hanoi Poker Club',city:'河内',
     start:'2026-10-12',end:'2026-10-21',timeZone:'Asia/Ho_Chi_Minh',timeLabel:'ICT',currency:'VND',
-    eventCount:77,entryCount:91,sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
+    eventCount:77,entryCount:91,logo:{src:quadsLogo,alt:'Quads · Hanoi Poker Club'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
     sourceUrl:'https://quadspoker.vn/series/qpc-circuit-2026',
   },
 ];

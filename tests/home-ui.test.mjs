@@ -19,9 +19,9 @@ try{
  await page.goto(file);await card(wpt).waitFor();assert.equal(await page.title(),'赛事 · Events Pro');
  assert.deepEqual(await page.locator('.festival-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.seriesId)),['qpc-circuit-2026',triton,wpt]);
  assert.equal(await page.locator('.mobile-event').count(),0);assert.equal(await page.getByRole('button',{name:'登录',exact:true}).count(),0);
- assert.equal(await card(wpt).locator('img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
+ for(const id of ['qpc-circuit-2026',triton,wpt])assert.equal(await card(id).locator('img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
  assert.match(await card(triton).innerText(),/22 项赛事.*29 个起始场次/s);
- pass('homepage includes QPC and retains both existing festivals in date order, bundled WPT logo, counts and disabled authentication');
+ pass('homepage includes all three festivals in date order with locally bundled official logos, counts and disabled authentication');
  for(const width of [320,390,1440]){
   await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   const rect=await page.locator('.app-shell').boundingBox();assert.ok(rect.width<=480.1);
@@ -55,6 +55,13 @@ try{
  await page.goForward();await card(wpt).waitFor();assert.equal(await page.getByRole('radio',{name:'北美',exact:true}).getAttribute('aria-checked'),'true');
  await card(wpt).locator('img').evaluate(img=>img.dispatchEvent(new Event('error')));assert.equal(await card(wpt).locator('img').count(),0);assert.equal(await card(wpt).locator('.series-logo').innerText(),'WPT');
  pass('browser history and image-failure text fallback survive integration');
+ await card(wpt).click();await page.locator('.series-header img').evaluate(img=>img.dispatchEvent(new Event('error')));
+ assert.equal(await page.locator('.series-header .series-logo').innerText(),'WPT');
+ for(const name of ['Triton ONE · 北塞浦路斯 2026','QPC Circuit · 河内 2026']){
+  await page.getByRole('combobox',{name:'赛事系列',exact:true}).click();await page.getByRole('option',{name,exact:true}).click();
+  assert.equal(await page.locator('.series-header img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
+ }
+ pass('compact headers render both official logos; one brand image failure cannot suppress the next series logo');
  await page.goto(file+'#view=discover&series=missing');await page.getByRole('heading',{name:'没有找到这项赛事',exact:true}).waitFor();assert.equal(await page.locator('.mobile-event').count(),0);
  await page.getByRole('button',{name:'返回赛事首页',exact:true}).last().click();await page.getByRole('radio',{name:'全部地区',exact:true}).waitFor();
  await page.goto(file+'#q=W01&from=2026-11-27&to=2026-11-27');await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();assert.equal(await page.locator('.mobile-event').count(),2);
