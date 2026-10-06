@@ -53,14 +53,14 @@ export function downloadBackup(state:PlannerState):void {
  const backup=makeBackup(state),url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}));
  const a=document.createElement('a');a.href=url;a.download=`赛事自选备份-${backup.savedAt.replace(/[:.]/g,'-')}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-export function budget(state:PlannerState){
- const selected=entries.filter(entry=>state.selections[entry.id]?.status==='attend');
+export function budget(state:PlannerState,source=entries,sourceEvents=eventMap){
+ const selected=source.filter(entry=>state.selections[entry.id]?.status==='attend');
  const grouped=new Map<string,{buyin:number;currency:Currency}>();
  for(const entry of selected)if(!grouped.has(entry.eventId)||grouped.get(entry.eventId)!.buyin<entry.buyin)grouped.set(entry.eventId,{buyin:entry.buyin,currency:entry.currency});
  const totals:Partial<Record<Currency,number>>={};
  const add=(value:number,currency:Currency)=>{totals[currency]=(totals[currency]||0)+value;};
  for(const item of state.budgetMode==='flights'?selected:grouped.values())add(item.buyin,item.currency);
- for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=eventMap.get(id);if(event)add(event.buyin||0,event.currency||'USD');}
+ for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=sourceEvents.get(id);if(event)add(event.buyin||0,event.currency||'USD');}
  // Preserve the old USD-only numeric field for callers; totals is the full budget.
  return {total:totals.USD||0,totalCurrency:'USD' as const,totals,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
 }

@@ -72,10 +72,10 @@ try{
  pass('main event creates three conditional days; cross-series shortlist and both budget modes retain original WPT selections');
  await nav('赛事发现');await row(wpt).waitFor();assert.equal(await row(wpt).getAttribute('data-status'),'attend');
  await switchTo('Triton ONE · 北塞浦路斯 2026');await row(first).waitFor();assert.equal(await row(first).getAttribute('data-status'),'attend');
- const backupDownload=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
+ await nav('我的');const backupDownload=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
  const backup=await backupDownload,backupPath=resolve(output,'cross-series.json');await backup.saveAs(backupPath);
  const saved=JSON.parse(await fs.readFile(backupPath,'utf8'));assert.equal(Object.keys(saved.state.selections).length,4);
- await select(first,'不考虑');await page.getByLabel('选择备份文件').setInputFiles(backupPath);
+ await nav('赛事发现');await switchTo('Triton ONE · 北塞浦路斯 2026');await select(first,'不考虑');await page.getByLabel('选择备份文件').setInputFiles(backupPath);
  await page.getByRole('button',{name:'确认恢复',exact:true}).click();
  await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status==='attend',first);
  pass('v2 export and restore round-trip selections from both festivals without a schema migration');

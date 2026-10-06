@@ -4,7 +4,7 @@ import qpc from './qpc-circuit-2026.json';
 import {money,type Currency} from './money';
 export type Status = 'undecided' | 'attend' | 'watch' | 'skip';
 export type Slot = {id?:string;date:string;hour:number;name:string;buyin:number|null;guarantee:number|null;count:number|null;unit:string;group:string;notes:string;chips:number|null;levels:string;supplement:boolean;registrationCloses?:string;registrationLevel?:number;sourceUrl?:string};
-export type Event = Slot & {id:string;title:string;starts:Slot[];continuations:Slot[];restricted:string;priority:boolean;kind:'regular'|'satellite';seriesId?:string;currency?:Currency;officialNumber?:number;displayNumber?:string;sourcePage?:number};
+export type Event = Slot & {id:string;title:string;starts:Slot[];continuations:Slot[];restricted:string;priority:boolean;kind:'regular'|'satellite';seriesId?:string;currency?:Currency;officialNumber?:number;displayNumber?:string;sourcePage?:number;adminNotes?:string;hidden?:boolean};
 export type Selection = {status:Status;flight:string;version:number};
 export type Selections = Record<string,Selection>;
 export const events = [...raw,...triton,...qpc] as Event[];

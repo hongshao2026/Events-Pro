@@ -9,11 +9,11 @@ export function SeriesLogo({series,compact=false}:{series:Series;compact?:boolea
     ?<img src={series.logo.src} alt={series.logo.alt} width={156} height={60} onError={()=>setFailedSrc(series.logo!.src)}/>
     :<span>{compact?series.mark:series.brand}</span>}</div>;
 }
-export function SeriesHome({region,onRegionChange,hrefForSeries,onOpen}:{
-  region:RegionFilter;onRegionChange:(value:RegionFilter)=>void;
+export function SeriesHome({catalog,region,onRegionChange,hrefForSeries,onOpen}:{
+  catalog?:Series[];region:RegionFilter;onRegionChange:(value:RegionFilter)=>void;
   hrefForSeries:(id:string)=>string;onOpen:(id:string)=>void;
 }){
-  const filtered=filterSeries(region);
+  const filtered=filterSeries(region,catalog);
   const months=[...new Set(filtered.map(item=>item.start.slice(0,7)))];
   const open=(event:MouseEvent<HTMLAnchorElement>,id:string)=>{
     if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;

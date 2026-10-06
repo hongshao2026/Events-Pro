@@ -106,6 +106,11 @@ try {
   await page.screenshot({ path: '.sites-runtime/qa/auth/account.png' });
   await close(); await page.reload(); await page.getByRole('button', { name: '我的账户', exact: true }).waitFor();
   pass('verified email creates an authenticated account and restores on reload');
+  await page.locator('.bottom-nav').getByRole('button',{name:'我的',exact:true}).click();
+  assert.match(await page.locator('.profile-identity').innerText(),/player@example.com/);
+  assert.match(await page.locator('.settings-facts').innerText(),/已登录.*邮箱/s);
+  await page.goBack();await page.locator('.mobile-event').first().waitFor();
+  pass('profile projects the authenticated email and account state');
   // Seed a real planner selection through its UI before testing account boundaries.
   await page.locator('.mobile-event').first().locator('label.class-option').filter({ hasText: /^参加$/ }).click();
   const saved = await page.evaluate(() => localStorage.getItem('poker-planner-local-v2'));

@@ -1,6 +1,20 @@
 export type Currency='USD'|'VND';
+export type DisplayCurrency=Currency|'CNY'|'HKD';
+export type CurrencyPreference=DisplayCurrency|'original';
+export const displayCurrencies:DisplayCurrency[]=['CNY','USD','VND','HKD'];
+export const currencyNames:Record<DisplayCurrency,string>={CNY:'人民币',USD:'美元',VND:'越南盾',HKD:'港币'};
 export const currencies:Currency[]=['USD','VND'];
-export const money=(value:number,currency:Currency='USD')=>(currency==='VND'?'₫':'$')+value.toLocaleString('en-US');
+const symbols:Record<DisplayCurrency,string>={USD:'$',VND:'₫',CNY:'¥',HKD:'HK$'};
+export const money=(value:number,currency:DisplayCurrency='USD')=>symbols[currency]+value.toLocaleString('en-US',{maximumFractionDigits:currency==='VND'?0:2});
+export type ExchangeRates=Record<DisplayCurrency,number|null>;
+export function convertedAmount(value:number,from:DisplayCurrency,to:CurrencyPreference,rates:ExchangeRates):number|null{
+ if(to==='original'||from===to)return null;
+ const source=rates[from],target=rates[to];
+ if(source===null||target===null||!Number.isFinite(source)||!Number.isFinite(target)||source<=0||target<=0)return null;
+ const amount=value*source/target;
+ return Number.isFinite(amount)?amount:null;
+}
+export const convertedMoney=(value:number,currency:DisplayCurrency)=>symbols[currency]+value.toLocaleString('en-US',{minimumFractionDigits:currency==='VND'?0:2,maximumFractionDigits:currency==='VND'?0:2});
 
 // Thresholds are in the selected series' native currency; no implicit FX conversion.
 export function moneyFilters(currency:Currency):{buyin:[string,string][];gtd:[string,string][];quick:{buyin:string;gtd:string}}{
