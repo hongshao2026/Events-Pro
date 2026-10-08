@@ -1,16 +1,18 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {writeFileSync} from 'node:fs';
 import {access,copyFile,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {relative,resolve} from 'node:path';
 import {setTimeout} from 'node:timers/promises';
 import {projectRoot,readReleaseConfig} from './release-config.mjs';
 
 // Run against a fresh simulator only. This checks native startup, not device QA.
-function run(command,args,timeout=60000){
+function run(command,args,timeout=60000,log){
  const result=spawnSync(command,args,{cwd:projectRoot,encoding:'utf8',timeout,maxBuffer:16*1024*1024});
+ if(log)writeFileSync(log,`${result.stdout||''}\n${result.stderr||''}`);
  if(result.error)throw result.error;
- if(result.status!==0)throw new Error(`${command} ${args.join(' ')} failed (${result.status}):\n${result.stdout}\n${result.stderr}`);
+ if(result.status!==0)throw new Error(`${command} ${args.join(' ')} failed (${result.status}):\n${result.stdout?.slice(-12000)}\n${result.stderr}`);
  return result.stdout.trim();
 }
 const sim=(...args)=>run('xcrun',['simctl',...args],300000);
@@ -67,11 +69,10 @@ try{
   run('xcodebuild',['-project','ios/App/App.xcodeproj','-scheme','App','-configuration','Debug',
    '-destination',`platform=iOS Simulator,id=${device}`,'-derivedDataPath','ios/DerivedData',
    '-resultBundlePath',resultBundle,'-parallel-testing-enabled','NO',
-   'CODE_SIGNING_ALLOWED=NO','test'],600000);
+   'CODE_SIGNING_ALLOWED=NO','test'],600000,resolve(output,'xcodebuild-test.log'));
   report.uiSummary=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
   assert.ok(report.uiSummary.passedTests>=1,'The result bundle must contain executed passing UI tests');
   assert.equal(report.uiSummary.failedTests,0);
-  run('xcrun',['xcresulttool','export','attachments','--path',resultBundle,'--output-path',resolve(output,'attachments')]);
   report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview and same-installation relaunch persistence');
   report.uiTests=true;
  }
@@ -83,6 +84,14 @@ try{
  throw error;
 }
 finally{
+ if(process.env.EVENTS_PRO_UI_TESTS==='true'){
+  try{
+   const resultBundle=resolve(output,'PlannerUI.xcresult');
+   await access(resultBundle);
+   report.uiSummary??=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
+   run('xcrun',['xcresulttool','export','attachments','--path',resultBundle,'--output-path',resolve(output,'attachments')]);
+  }catch(error){report.evidenceError=error.message;}
+ }
  report.completedAt=new Date().toISOString();
  await writeFile(resolve(output,'results.json'),JSON.stringify(report,null,2)+'\n');
  console.log(`Native evidence: ${relative(projectRoot,output)}`);

@@ -18,13 +18,13 @@ final class PlannerUITests: XCTestCase {
             tap(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "已结束")).firstMatch, app)
         }
         tap(kpc, app)
-        let first = app.buttons["查看 #1 KPC BANKROLL BUILDER · Day 1A 详情"]
-        XCTAssertTrue(first.waitForExistence(timeout: 20))
         capture("02-schedule", app)
+        let first = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "查看 #1 KPC BANKROLL BUILDER · Day 1A 详情")).firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 20))
         tap(first, app)
         tap(app.staticTexts["参加"].firstMatch, app)
         tap(app.buttons["返回赛程"], app)
-        tap(app.buttons["查看 #1 KPC BANKROLL BUILDER · Day 1B 详情"], app)
+        tap(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "查看 #1 KPC BANKROLL BUILDER · Day 1B 详情")).firstMatch, app)
         tap(app.staticTexts["参加"].firstMatch, app)
         tap(app.buttons["返回赛程"], app)
         tap(app.buttons["关注 KPC BANKROLL BUILDER · Day 1C"], app)
@@ -80,6 +80,10 @@ final class PlannerUITests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+        let accessibility = XCTAttachment(string: app.debugDescription)
+        accessibility.name = name + "-accessibility"
+        accessibility.lifetime = .keepAlways
+        add(accessibility)
         guard let jpeg = UIImage(data: app.screenshot().pngRepresentation)?.jpegData(compressionQuality: 0.95) else {
             XCTFail("Could not encode native screenshot as JPEG")
             return
