@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 // Interact with the real WKWebView through iOS accessibility. No injected JS,
 // seeded storage, mocked plugins, or product-only test hooks.
@@ -12,7 +13,11 @@ final class PlannerUITests: XCTestCase {
         XCTAssertTrue(app.buttons["返回赛事首页"].waitForExistence(timeout: 30))
         capture("01-events", app)
 
-        tap(app.links.matching(NSPredicate(format: "label CONTAINS %@", "KPC Poker Series Jeju 2026")).firstMatch, app)
+        let kpc = app.links.matching(NSPredicate(format: "label CONTAINS %@", "KPC Poker Series Jeju 2026")).firstMatch
+        if !kpc.exists {
+            tap(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "已结束")).firstMatch, app)
+        }
+        tap(kpc, app)
         let first = app.buttons["查看 #1 KPC BANKROLL BUILDER · Day 1A 详情"]
         XCTAssertTrue(first.waitForExistence(timeout: 20))
         capture("02-schedule", app)
@@ -58,7 +63,7 @@ final class PlannerUITests: XCTestCase {
 
     @MainActor
     private func tap(_ element: XCUIElement, _ app: XCUIApplication) {
-        XCTAssertTrue(element.waitForExistence(timeout: 20), "Missing native accessibility element: \(element)")
+        XCTAssertTrue(element.waitForExistence(timeout: 20), "Missing native accessibility element: \(element)\n\(app.debugDescription)")
         for _ in 0..<6 {
             if element.isHittable { element.tap(); return }
             app.swipeUp()
@@ -72,5 +77,13 @@ final class PlannerUITests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+        guard let jpeg = UIImage(data: app.screenshot().pngRepresentation)?.jpegData(compressionQuality: 0.95) else {
+            XCTFail("Could not encode native screenshot as JPEG")
+            return
+        }
+        let opaque = XCTAttachment(data: jpeg, uniformTypeIdentifier: "public.jpeg")
+        opaque.name = name + "-jpeg"
+        opaque.lifetime = .keepAlways
+        add(opaque)
     }
 }

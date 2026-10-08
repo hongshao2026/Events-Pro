@@ -29,8 +29,11 @@ const runtime=runtimes.filter(item=>item.isAvailable&&item.identifier.includes('
  .sort((a,b)=>b.version.localeCompare(a.version,'en',{numeric:true}))[0];
 assert.ok(runtime,'An available iOS simulator runtime is required');
 const types=JSON.parse(sim('list','devicetypes','--json')).devicetypes;
-const type=types.find(item=>item.identifier==='com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro');
-assert.ok(type,'Install the iPhone 16 Pro simulator device type');
+const model=process.env.EVENTS_PRO_SIMULATOR_MODEL||'iPhone-16-Pro';
+const sizes={'iPhone-16-Pro':[1206,2622],'iPhone-16-Pro-Max':[1320,2868]};
+assert.ok(sizes[model],'Choose a supported iPhone simulator model');
+const type=types.find(item=>item.identifier===`com.apple.CoreSimulator.SimDeviceType.${model}`);
+assert.ok(type,`Install the ${model} simulator device type`);
 const report={sourceCommit:run('git',['rev-parse','HEAD']),environment:process.env.GITHUB_ACTIONS==='true'?'GitHub Actions':'local Mac',xcode:run('xcodebuild',['-version']),
  bundleId:config.bundleId,version:config.version,buildNumber:config.buildNumber,
  sdk:plist('DTSDKName'),device:type.name,runtime:runtime.name,checkedAt:new Date().toISOString(),
@@ -55,15 +58,20 @@ try{
  report.screenshot={file:'01-events.jpg',format:'JPEG',width:Number(pixels.match(/pixelWidth:\s+(\d+)/)?.[1]),
   height:Number(pixels.match(/pixelHeight:\s+(\d+)/)?.[1]),hasAlpha:pixels.match(/hasAlpha:\s+(\w+)/)?.[1],
   sha256:createHash('sha256').update(await readFile(screenshot)).digest('hex')};
- assert.equal(report.screenshot.width,1206);assert.equal(report.screenshot.height,2622);
+ assert.equal(report.screenshot.width,sizes[model][0]);assert.equal(report.screenshot.height,sizes[model][1]);
  assert.equal(report.screenshot.hasAlpha,'no','Store screenshot evidence must not contain an alpha channel');
  await copyFile(resolve(projectRoot,'ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'),resolve(output,'Package.resolved'));
- report.checks.push('Real simulator PNG and opaque 1206x2622 JPEG captured with actual Swift Package.resolved');
+ report.checks.push('Real simulator PNG and opaque JPEG captured with actual Swift Package.resolved');
  if(process.env.EVENTS_PRO_UI_TESTS==='true'){
+  const resultBundle=resolve(output,'PlannerUI.xcresult');
   run('xcodebuild',['-project','ios/App/App.xcodeproj','-scheme','App','-configuration','Debug',
    '-destination',`platform=iOS Simulator,id=${device}`,'-derivedDataPath','ios/DerivedData',
-   '-resultBundlePath',resolve(output,'PlannerUI.xcresult'),'-parallel-testing-enabled','NO',
+   '-resultBundlePath',resultBundle,'-parallel-testing-enabled','NO',
    'CODE_SIGNING_ALLOWED=NO','test'],600000);
+  report.uiSummary=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
+  assert.ok(report.uiSummary.passedTests>=1,'The result bundle must contain executed passing UI tests');
+  assert.equal(report.uiSummary.failedTests,0);
+  run('xcrun',['xcresulttool','export','attachments','--path',resultBundle,'--output-path',resolve(output,'attachments')]);
   report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview and same-installation relaunch persistence');
   report.uiTests=true;
  }
