@@ -16,7 +16,7 @@ export function safeReturnHash(value: string | null) {
   if (!value || value.length > 4096 || !value.startsWith('#') || /[\r\n]/.test(value)) return '';
   const input = new URLSearchParams(value.slice(1));
   const output = new URLSearchParams();
-  for (const key of ['series', 'view', 'region', 'day', 'month', 'agendaStatuses', 'continuations', 'q', 'statuses', 'status', 'from', 'to', 'date', 'buyin', 'gtd', 'game', 'sort', 'supp', 'page']) {
+  for (const key of ['series', 'view', 'region', 'day', 'month', 'agendaStatuses', 'continuations', 'q', 'statuses', 'status', 'from', 'to', 'date', 'buyin', 'buyinMin', 'buyinMax', 'buyinCurrency', 'gtd', 'game', 'sort', 'supp', 'page']) {
     const entry = input.get(key);
     if (entry !== null) output.set(key, entry);
   }

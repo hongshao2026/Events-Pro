@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,readDiscoveryOption,resetDiscoveryFilters} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,setDiscoveryBuyinRange,readDiscoveryBuyinRange,resetDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -28,9 +28,9 @@ try{
  assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),data.find(e=>e.id==='QPC01').starts[0].sourceUrl);await closeDiscoveryDetails(page);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  pass('APAC card opens all QPC flights with VND amounts, half-hour starts, ICT deadlines and the exact source link');
- await select('报名费筛选','450万₫及以下');assert.ok(page.url().includes('buyin=4500000'));await page.reload();
- assert.match(await readDiscoveryOption(page,'报名费筛选'),/450万₫/);
- await select('保底筛选','10亿₫及以上');assert.match(await page.locator('.results-bar').innerText(),/9.*场次.*2.*赛事/s);
+ await setDiscoveryBuyinRange(page,'','1200');await page.reload();assert.deepEqual(await readDiscoveryBuyinRange(page),{min:'',max:'1200'});
+ const affordable=data.flatMap(event=>event.starts.filter(slot=>(slot.buyin??event.buyin)*0.000258<=1200).map(slot=>entry(event.id,event.starts.indexOf(slot))));
+ assert.match(await page.locator('.results-bar').innerText(),new RegExp(`找到\\s*${affordable.length}\\s*个场次`));assert.ok((await page.locator('.mobile-event').evaluateAll(nodes=>nodes.map(node=>node.dataset.entryId))).every(id=>affordable.includes(id)));
  await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');
  assert.match(await page.locator('.results-bar').innerText(),/19.*场次.*19.*赛事/s);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
  assert.doesNotMatch(await page.locator('.mobile-event').first().innerText(),/QPCS-/);
@@ -39,7 +39,7 @@ try{
  await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/未标日期/);
  await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'ambiguous-deadline-320.png')});await closeDiscoveryDetails(page);
  await search().fill('QPC47');await row(entry('QPC47',2)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/21 00:40 · ICT/);await closeDiscoveryDetails(page);
- pass('native VND filters persist on reload; satellites retain ticket guarantees and deadline anomalies remain visible');
+ pass('preferred-currency ranges persist on reload; satellites retain ticket guarantees and deadline anomalies remain visible');
  await search().fill('QPC30');assert.equal(await page.locator('.mobile-event').count(),5);
  await choose(entry('QPC30'),'参加');await choose(entry('QPC30',1),'参加');await nav('我的日程');
  const finals=page.locator(`.agenda-row[data-activity-id^="${series}/QPC30/continuation/"]`);

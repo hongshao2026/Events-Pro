@@ -70,3 +70,4 @@ await import('./shortlist-image-ui.test.mjs');
 await import('./compact-events-ui.test.mjs');
 await import('./event-tags-ui.test.mjs');
 await import('./discovery-filters-ui.test.mjs');
+await import('./buyin-range-ui.test.mjs');

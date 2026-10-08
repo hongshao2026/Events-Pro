@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,readDiscoveryOption,resetDiscoveryFilters} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,setDiscoveryBuyinRange,readDiscoveryBuyinRange,resetDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -31,8 +31,7 @@ const choose=async(id,status)=>{await chooseDiscoveryStatus(page,row(id),status)
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();};
 const select=(label,name)=>selectPlannerOption(page,label,name);
 const fits=async locator=>{assert.equal(await locator.evaluate(element=>element.scrollWidth>element.clientWidth+1),false);};
-const hashValue=key=>new URLSearchParams(new URL(page.url()).hash.slice(1)).get(key);
-const matchingStarts=(currency,predicate)=>data.filter(event=>event.currency===currency).flatMap(event=>event.starts.filter(slot=>predicate(slot,event)).map(slot=>`${series}/${event.id}/${slot.id}`));
+const matchingStarts=predicate=>data.flatMap(event=>event.starts.filter(slot=>predicate(slot,event)).map(slot=>`${series}/${event.id}/${slot.id}`));
 const checkFilter=async expected=>{
  assert.ok(expected.length>0);assert.match(await page.locator('.results-bar').innerText(),new RegExp(`找到\\s*${expected.length}\\s*个场次`));
  const shown=await page.locator('.mobile-event').evaluateAll(nodes=>nodes.map(node=>node.dataset.entryId));
@@ -50,20 +49,18 @@ try{
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  pass('KPC opens the verified 86 starts and 73 events with official numbers, exact minute times, Korean amounts and local deadlines');
 
- await resetDiscoveryFilters(page);await select('报名费筛选','₩500,000 及以下 · KRW');
- assert.equal(hashValue('buyin'),'KRW:500000');await checkFilter(matchingStarts('KRW',(slot,event)=>(slot.buyin??event.buyin)<=500000));
- await page.reload();assert.match(await readDiscoveryOption(page,'报名费筛选'),/₩500,000.*KRW/);
- await select('报名费筛选','$5,000 及以下 · USD');assert.equal(hashValue('buyin'),'USD:5000');
- await checkFilter(matchingStarts('USD',(slot,event)=>(slot.buyin??event.buyin)<=5000));
- await select('报名费筛选','全部报名费');await select('保底筛选','₩300,000,000 及以上 · KRW');
- assert.equal(hashValue('gtd'),'KRW:300000000');await checkFilter(matchingStarts('KRW',(_slot,event)=>(event.guarantee||0)>=300000000));
+ await resetDiscoveryFilters(page);await setDiscoveryBuyinRange(page,'3000','40000');
+ const cny=(slot,event)=>(slot.buyin??event.buyin)*({KRW:0.004958,USD:6.7351}[event.currency]);
+ await checkFilter(matchingStarts((slot,event)=>cny(slot,event)>=3000&&cny(slot,event)<=40000));assert.equal(await row(entry(opening)).count(),1);assert.equal(await row(entry(usdEvent)).count(),1);
+ await page.reload();assert.deepEqual(await readDiscoveryBuyinRange(page),{min:'3000',max:'40000'});
+ await setDiscoveryBuyinRange(page,'','2480');await checkFilter(matchingStarts((slot,event)=>(slot.buyin??event.buyin)!==null&&cny(slot,event)<=2480));
  await page.setViewportSize({width:320,height:900});await fits(page.locator('html'));await fits(page.locator('.mobile-event').first());
  await page.screenshot({path:resolve(output,'native-filter-320.png')});
- pass('mixed-series native buy-in and guarantee filters isolate KRW and USD, retain explicit currency on reload and fit 320px');
+ pass('CNY buy-in ranges compare KRW and USD entries together, retain both bounds on reload and fit 320px');
 
  await resetDiscoveryFilters(page);await search().fill(official(63).id);
  await select('赛事类型','德州扑克正赛');assert.equal(await page.locator('.mobile-event').count(),0);
- await select('赛事类型','PLO / 混合游戏');assert.equal(await page.locator('.mobile-event').count(),1);assert.match(await page.locator('.mobile-event').innerText(),/NLH \/ PLO MIXED/);
+ await select('赛事类型','混合游戏');assert.equal(await page.locator('.mobile-event').count(),1);assert.match(await page.locator('.mobile-event').innerText(),/NLH \/ PLO MIXED/);
  await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');
  assert.match(await page.locator('.results-bar').innerText(),/8.*场次.*8.*赛事/s);
  assert.deepEqual((await page.locator('.mobile-event .event-flight').allInnerTexts()).map(label=>label.replace(/^\s*·\s*/,'')),Array(8).fill('首轮'));

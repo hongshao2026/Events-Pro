@@ -31,5 +31,5 @@ for(const id of ['W03','KPC63','JPF-21','T05']){
 }
 assert.deepEqual(catalogs.map(events=>events.filter(event=>matchesEventGame(event,'mixed')).flatMap(event=>event.starts).length),[30,3,0,36,56]);
 for(const catalog of catalogs){assert.ok(catalog.every(event=>matchesEventGame(event,'all')));assert.ok(catalog.every(event=>!matchesEventGame(event,'missing-game')));}
-for(const tag of ['nlh','satellite','omaha','mixed-games','draw','stud','other-games'])assert.equal(eventGameOptions.filter(([value])=>value===tag).length,1);
-console.log('PASS managed titles retain official categories, legacy mixed URLs keep all original starts and every detail tag has an explicit filter option');
+assert.deepEqual(eventGameOptions.map(([value])=>value),['all','nlh','satellite','omaha','mixed-games']);
+console.log('PASS managed titles retain accurate official tags; discovery exposes only the four requested categories plus all');

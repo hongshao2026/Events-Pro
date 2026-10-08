@@ -9,7 +9,7 @@ const labels:Record<EventTagId,string>={
 
 export const eventGameOptions:[string,string][]=[
  ['all','全部类型'],['nlh','德州扑克正赛'],['satellite','卫星赛'],['omaha','奥马哈'],
- ['mixed-games','混合游戏'],['draw','抽牌'],['stud','Stud'],['other-games','其他玩法'],['mixed','PLO / 混合游戏'],
+ ['mixed-games','混合游戏'],
 ];
 
 // Display-title edits are not changes to the official game. Standalone/new source events use their own data.

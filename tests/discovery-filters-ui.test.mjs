@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-import {chooseDiscoveryStatus,openDiscoveryFilters,finishDiscoveryFilters,selectPlannerOption,setDiscoveryFilterChecked,readDiscoveryOption,resetDiscoveryFilters,switchDiscoverySeries} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,openDiscoveryFilters,finishDiscoveryFilters,selectPlannerOption,setDiscoveryBuyinRange,readDiscoveryBuyinRange,setDiscoveryFilterChecked,readDiscoveryOption,resetDiscoveryFilters,switchDiscoverySeries} from './discovery-actions.mjs';
 
 const output=resolve('.sites-runtime/qa/discovery-filters');await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
@@ -22,7 +22,7 @@ try{
   await page.setViewportSize({width,height:844});await page.evaluate(()=>window.scrollTo(0,0));
   const box=await first().boundingBox();assert.ok(box.y<=330,`The first event is visible near the top at ${width}px: y=${box.y}`);metrics.push({width,firstRow:box});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  assert.equal(await page.getByRole('combobox',{name:'赛事系列',exact:true}).count(),0);assert.equal(await page.getByRole('combobox',{name:'报名费筛选',exact:true}).count(),0);assert.equal(await page.getByRole('checkbox',{name:'全部赛事',exact:true}).count(),0);
+  assert.equal(await page.getByRole('combobox',{name:'赛事系列',exact:true}).count(),0);assert.equal(await page.getByRole('textbox',{name:'最低报名费',exact:true}).count(),0);assert.equal(await page.getByRole('checkbox',{name:'全部赛事',exact:true}).count(),0);
   assert.equal(await page.getByRole('button',{name:'返回赛事列表',exact:true}).count(),1);assert.equal(await page.locator('.series-header img').evaluate(image=>image.complete&&image.naturalWidth>0),true);
   assert.match(await page.locator('.series-header').innerText(),/KST/);assert.match(await date().innerText(),/全部日期/);assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).count(),1);
   await page.screenshot({path:resolve(output,`first-screen-${width}.png`)});
@@ -59,18 +59,19 @@ try{
  await setDiscoveryFilterChecked(page,'全部赛事',true);await first().waitFor();
  pass('keyboard-opened filters apply classifications immediately, show zero-result counts, restore focus and persist on reload without changing selections');
 
- await openDiscoveryFilters(page);await selectPlannerOption(page,'报名费筛选','₩500,000 及以下 · KRW',{keepOpen:true});
- assert.equal(await popover().isVisible(),true);await selectPlannerOption(page,'赛事类型','卫星赛',{keepOpen:true});await selectPlannerOption(page,'排序','按币种 · 报名费升序',{keepOpen:true});
- const expected=data.filter(event=>event.kind==='satellite'&&event.currency==='KRW').flatMap(event=>event.starts.filter(slot=>(slot.buyin??event.buyin)!==null&&(slot.buyin??event.buyin)<=500000).map(slot=>({id:`${series}/${event.id}/${slot.id}`,buyin:slot.buyin??event.buyin})));
+ await openDiscoveryFilters(page);await setDiscoveryBuyinRange(page,'','2480',{keepOpen:true});
+ assert.equal(await popover().isVisible(),true);await selectPlannerOption(page,'赛事类型','卫星赛',{keepOpen:true});
+ const expected=data.filter(event=>event.kind==='satellite').flatMap(event=>event.starts.filter(slot=>(slot.buyin??event.buyin)!==null&&(slot.buyin??event.buyin)*({KRW:0.004958,USD:6.7351}[event.currency])<=2480).map(slot=>({id:`${series}/${event.id}/${slot.id}`,date:slot.date,hour:slot.hour})));
  assert.ok(expected.length>0);assert.match(await popover().getByRole('button',{name:/^完成筛选，显示 \d+ 个场次$/}).innerText(),new RegExp(`${expected.length} 个场次`));
  assert.equal(await popover().getByRole('checkbox',{name:'显示官方补充卫星',exact:true}).count(),0);
- await popover().getByRole('combobox',{name:'保底筛选',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);
+ assert.equal(await popover().getByRole('combobox',{name:'保底筛选',exact:true}).count(),0);assert.equal(await popover().getByRole('combobox',{name:'排序',exact:true}).count(),0);
+ await popover().getByRole('combobox',{name:'赛事类型',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);assert.deepEqual(await page.getByRole('option').allTextContents(),['全部类型','德州扑克正赛','卫星赛','奥马哈','混合游戏']);
  await page.screenshot({path:resolve(output,'select-popup-320.png')});await page.keyboard.press('Escape');assert.equal(await popover().isVisible(),true);await page.keyboard.press('Escape');await popover().waitFor({state:'hidden'});await focusReturned();
  const shown=await page.locator('.mobile-event').evaluateAll(nodes=>nodes.map(node=>node.dataset.entryId));assert.equal(shown.length,expected.length);assert.ok(shown.every(id=>expected.some(entry=>entry.id===id)));
- const amounts=shown.map(id=>expected.find(entry=>entry.id===id).buyin);assert.deepEqual(amounts,[...amounts].sort((a,b)=>a-b));
- await page.reload();await page.locator('.mobile-event').first().waitFor();assert.match(await readDiscoveryOption(page,'报名费筛选'),/₩500,000.*KRW/);assert.equal(await readDiscoveryOption(page,'赛事类型'),'卫星赛');assert.equal(await saved(),baseline);
+ const times=shown.map(id=>{const entry=expected.find(entry=>entry.id===id);return Date.parse(entry.date+'T00:00:00Z')+entry.hour*3600000;});assert.deepEqual(times,[...times].sort((a,b)=>a-b));
+ await page.reload();await page.locator('.mobile-event').first().waitFor();assert.deepEqual(await readDiscoveryBuyinRange(page),{min:'',max:'2480'});assert.equal(await readDiscoveryOption(page,'赛事类型'),'卫星赛');assert.equal(await saved(),baseline);
  await resetDiscoveryFilters(page);await first().waitFor();
- pass('multiple native-currency/game/sort controls stay in one dropdown, nested select Escape is contained, and completed/reloaded results match the real schedule');
+ pass('converted range and four game types stay in one dropdown, retired controls are absent, nested Escape is contained, and reload keeps the matching chronological schedule');
 
  await date().click();await page.locator('.festival-calendar').getByRole('button',{name:'2026年10月10日 星期六',exact:true}).click();await page.getByRole('button',{name:'应用日期',exact:true}).click();
  assert.equal(params().get('from'),'2026-10-10');assert.ok((await page.locator('.mobile-event .event-time-block').evaluateAll(nodes=>nodes.map(node=>node.dateTime))).every(value=>value.startsWith('2026-10-10T')));

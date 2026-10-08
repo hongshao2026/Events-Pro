@@ -27,11 +27,11 @@ try{
  await page.goto(file+`#view=discover&series=${series}&q=QPC01`);await row(id).waitFor();await chooseDiscoveryStatus(page,row(id),'参加');
  const saved=await readSaved();
  // A constrained deep link must not prevent a detail tag from finding the whole category.
- await page.goto(file+`#view=discover&series=${series}&q=QPC01&from=2026-10-12&to=2026-10-12&buyin=4500000&gtd=1000000000&statuses=attend&page=2`);await row(id).waitFor();
+ await page.goto(file+`#view=discover&series=${series}&q=QPC01&from=2026-10-12&to=2026-10-12&buyinMin=1000&buyinMax=1200&buyinCurrency=CNY&statuses=attend&page=2`);await row(id).waitFor();
  await row(id).locator('.event-row-open').scrollIntoViewIfNeeded();const priorUrl=page.url(),priorScroll=await page.evaluate(()=>scrollY);
  await openDiscoveryDetails(page,row(id));const tag=sheet().getByRole('button',{name:'筛选：德州扑克',exact:true});assert.equal(await tag.innerText(),'#德州扑克');
  await tag.focus();await page.keyboard.press('Enter');await settledTag('nlh',series);
- for(const filter of ['q','from','to','buyin','gtd','statuses','page'])assert.equal(params().has(filter),false,filter);
+ for(const filter of ['q','from','to','buyinMin','buyinMax','buyinCurrency','statuses','page'])assert.equal(params().has(filter),false,filter);
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'');assert.equal(await readDiscoveryFilterChecked(page,'全部赛事'),'true');
  assert.match(await page.locator('.results-bar').innerText(),/找到\s*72\s*个场次/);assert.equal(await readSaved(),saved);
  await page.reload();await row(id).waitFor();assert.equal(params().get('game'),'nlh');assert.match(await readDiscoveryOption(page,'赛事类型'),/德州扑克/);
@@ -60,5 +60,9 @@ try{
   await page.reload();assert.equal(params().get('game'),item.game);await page.locator('.mobile-event').first().waitFor();
  }
  pass('real events across all five series expose working tags; satellites, pure Omaha and NLH/PLO mixed stay distinct and category URLs survive reload');
+ const drawEvent=data['kpc-jeju-2026'].find(event=>event.title.includes('SINGLE DRAW')),drawId=entryId('kpc-jeju-2026',drawEvent.id);
+ await page.goto(file+`#view=discover&series=kpc-jeju-2026&q=${drawEvent.id}`);await row(drawId).waitFor();await openDiscoveryDetails(page,row(drawId));
+ assert.match(await sheet().locator('.event-detail-tags').innerText(),/#抽牌/);assert.equal(await sheet().getByRole('button',{name:'筛选：抽牌',exact:true}).count(),0);
+ pass('specific draw-game detail metadata remains accurate without adding a fifth game-filter category');
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('tag discovery remains fully offline and never modifies saved participation or budget state');
 }finally{await fs.writeFile(resolve(output,'results.json'),JSON.stringify({checks,errors,requests},null,2));await browser.close();}

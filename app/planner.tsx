@@ -11,7 +11,8 @@ import {MySchedule} from '@/components/planner/my-schedule';
 import {MyShortlist} from '@/components/planner/my-shortlist';
 import {SeriesHome,SeriesLogo} from '@/components/planner/series-home';
 import {seriesCatalog} from '@/lib/series';
-import {moneyFilters,matchesMoneyFilter} from '@/lib/money';
+import {currencyNames,displayCurrencies,money,type CurrencyPreference,type DisplayCurrency,type ExchangeRates} from '@/lib/money';
+import {buyinFilterCurrency,buyinInCurrency,legacyBuyinMaximum,matchesBuyinRange,parseBuyinRange} from '@/lib/buyin-range';
 import {SettingsProvider,useAppSettings} from '@/components/planner/settings-context';
 import {ProfilePage,type AccountInfo} from '@/components/planner/profile-page';
 import {AdminPage} from '@/components/planner/admin-page';
@@ -24,15 +25,29 @@ import {eventGameOptions,matchesEventGame,type EventTagId} from '@/lib/event-tag
 import {seriesList,getSeries,entryName,validDate,type Entry} from '@/lib/catalog';
 import {STORAGE_KEY,LEGACY_KEY,readState,writeState,emptyState,downloadBackup,parseBackup,budget,type Backup,type PlannerState} from '@/lib/local-store';
 
-type Filters={q:string;statuses:Status[];from:string;to:string;buyin:string;gtd:string;game:string;sort:string;supp:boolean;page:number};
-const defaults:Filters={q:'',statuses:[...statuses],from:'',to:'',buyin:'all',gtd:'all',game:'all',sort:'date',supp:false,page:1};
+type Filters={q:string;statuses:Status[];from:string;to:string;buyinMin:string;buyinMax:string;buyinCurrency:DisplayCurrency|'';rangeNotice:string;game:string;supp:boolean;page:number};
+const defaults:Filters={q:'',statuses:[...statuses],from:'',to:'',buyinMin:'',buyinMax:'',buyinCurrency:'',rangeNotice:'',game:'all',supp:false,page:1};
 const size=15;
-function fromUrl():Filters{
+function fromUrl(preference:CurrencyPreference,rates:ExchangeRates):Filters{
  const p=new URLSearchParams(window.location.hash.slice(1));const f={...defaults},festival=getSeries(p.get('series'));
+ const currency=buyinFilterCurrency(preference,festival.currency);
  f.q=p.get('q')||'';f.supp=p.get('supp')==='yes';f.page=Math.max(1,Math.floor(Number(p.get('page'))||1));
  const status=p.get('statuses')??p.get('status');if(status&&status!=='all')f.statuses=status==='none'?[]:statuses.filter(s=>status.split(',').includes(s));
- for(const [key,options]of Object.entries({buyin:moneyFilters(festival.currency,festival.currencies).buyin.map(([value])=>value),gtd:moneyFilters(festival.currency,festival.currencies).gtd.map(([value])=>value),game:eventGameOptions.map(([value])=>value),sort:['date','buyin','gtd']})){
-  const value=p.get(key);if(value&&options.includes(value))f[key as 'buyin'|'gtd'|'game'|'sort']=value;
+ const game=p.get('game');if(eventGameOptions.some(([value])=>value===game))f.game=game!;
+ if(p.has('buyinMin')||p.has('buyinMax')){
+  const unit=p.get('buyinCurrency')||currency;
+  if(!displayCurrencies.includes(unit as DisplayCurrency))f.rangeNotice='链接中的报名费币种无效，请重新设置区间。';
+  else{
+   const range=parseBuyinRange(p.get('buyinMin')||'',p.get('buyinMax')||'',unit as DisplayCurrency);
+   const min=range.min===null?null:buyinInCurrency(range.min,unit as DisplayCurrency,currency,rates),max=range.max===null?null:buyinInCurrency(range.max,unit as DisplayCurrency,currency,rates);
+   if(range.error)f.rangeNotice='链接中的报名费区间无效，请重新设置。';
+   else if((range.min!==null&&min===null)||(range.max!==null&&max===null))f.rangeNotice='缺少汇率，无法换算链接中的报名费区间，请重新设置。';
+   else{f.buyinMin=min===null?'':String(min);f.buyinMax=max===null?'':String(max);f.buyinCurrency=currency;}
+  }
+ }else{
+  const legacy=legacyBuyinMaximum(p.get('buyin')||'',festival.currency,currency,rates);
+  if(legacy?.error)f.rangeNotice=legacy.error+'请重新设置区间。';
+  else if(legacy){f.buyinMax=legacy.max;f.buyinCurrency=currency;}
  }
  const from=p.get('from')||p.get('date')||'',to=p.get('to')||from;
  if(validDate(from,festival)&&validDate(to,festival)){f.from=from<to?from:to;f.to=from<to?to:from;}return f;
@@ -43,7 +58,9 @@ function plannerHash(filters:Filters,route:AgendaRoute){
  if(route.region!=='all')p.set('region',route.region);
  if(filters.q)p.set('q',filters.q);if(filters.statuses.length!==4)p.set('statuses',filters.statuses.join(',')||'none');
  if(filters.from){p.set('from',filters.from);p.set('to',filters.to);}
- for(const key of ['buyin','gtd','game','sort']as const)if(filters[key]!==defaults[key])p.set(key,filters[key]);
+ if(filters.buyinMin)p.set('buyinMin',filters.buyinMin);if(filters.buyinMax)p.set('buyinMax',filters.buyinMax);
+ if(filters.buyinMin||filters.buyinMax)p.set('buyinCurrency',filters.buyinCurrency);
+ if(filters.game!=='all')p.set('game',filters.game);
  if(filters.supp)p.set('supp','yes');if(filters.page!==1)p.set('page',String(filters.page));
  if(route.day)p.set('day',route.day);if(route.statuses.join(',')!=='attend,watch')p.set('agendaStatuses',route.statuses.join(',')||'none');
  if(!route.continuations)p.set('continuations','no');if(route.month!==getSeries(route.seriesId).start.slice(0,7))p.set('month',route.month);
@@ -57,15 +74,17 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const {settings,settingsError,reloadSettings,catalog,navigateSafely}=useAppSettings();
  const {entries,eventMap}=catalog;
  const [route,setRoute]=useState<AgendaRoute>(agendaFromUrl);
- const series=getSeries(route.seriesId),amountFilters=moneyFilters(series.currency,series.currencies);
+ const series=getSeries(route.seriesId),filterCurrency=buyinFilterCurrency(settings.profile.currency,series.currency);
+ const rangeRates=useMemo<ExchangeRates>(()=>settingsError?{CNY:null,USD:null,VND:null,HKD:null,KRW:null}:settings.fx.rates,[settingsError,settings.fx.rates]);
  const seriesEntries=useMemo(()=>entries.filter(entry=>entry.seriesId===route.seriesId),[route.seriesId,entries]);
  const supplementCount=seriesEntries.filter(entry=>entry.event.supplement).length;
  const scrolls=useRef({home:0,discover:0,schedule:0,shortlist:0,profile:0,admin:0});
  const selectedSeries=seriesCatalog.find(item=>item.id===route.seriesId);
- const [filters,setFilters]=useState<Filters>(fromUrl),[draft,setDraft]=useState(()=>fromUrl().q);
+ const [filters,setFilters]=useState<Filters>(()=>fromUrl(settings.profile.currency,rangeRates)),[draft,setDraft]=useState(()=>filters.q);
  const [snapshot,setSnapshot]=useState(initialData),[saveError,setSaveError]=useState('');
  const [openEntryId,setOpenEntryId]=useState<string|null>(null);
  const [filterOpen,setFilterOpen]=useState(false);
+ const [filterResetVersion,setFilterResetVersion]=useState(0);
  const detailTriggerRef=useRef<HTMLElement|null>(null),resultsRef=useRef<HTMLSpanElement>(null);
  const openEntry=route.view==='discover'?entries.find(entry=>entry.id===openEntryId&&!entry.event.hidden)??null:null;
  const openDetail=(entry:Entry,trigger:HTMLButtonElement)=>{detailTriggerRef.current=trigger;setOpenEntryId(entry.id);};
@@ -90,6 +109,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   if(ok&&(status==='attend'||status==='watch'))toast.success(`${status==='attend'?'已加入计划参加':'已加入关注'} · ${entryName(entry)}`,{id:'selection-feedback'});return ok;
  },[commit]);
  const update=useCallback((patch:Partial<Filters>)=>setFilters(f=>({...f,...patch,page:patch.page??1})),[]);
+ useEffect(()=>{setFilters(current=>current.buyinCurrency&&current.buyinCurrency!==filterCurrency?{...current,buyinMin:'',buyinMax:'',buyinCurrency:filterCurrency,rangeNotice:current.buyinMin||current.buyinMax?'显示货币已变更，报名费区间已重置。':current.rangeNotice,page:1}:current);},[filterCurrency]);
  const nextRoute=(view:AgendaRoute['view'],seriesId:string):AgendaRoute=>({...route,view,seriesId,...(seriesId!==route.seriesId?{day:'',month:getSeries(seriesId).start.slice(0,7)}:{})});
  const hrefFor=(view:AgendaRoute['view'],seriesId=route.seriesId)=>plannerHash(seriesId===route.seriesId?filters:defaults,nextRoute(view,seriesId));
  const navigate=(view:AgendaRoute['view'],seriesId=route.seriesId)=>navigateSafely(()=>{
@@ -99,46 +119,48 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   window.history.pushState(null,'',plannerHash(changed?defaults:{...filters,page},next));
   setOpenEntryId(null);
   setFilterOpen(false);
-  if(changed){setFilters(defaults);setDraft('');scrolls.current.discover=0;scrolls.current.schedule=0;}
+  if(changed){setFilters(defaults);setDraft('');setFilterResetVersion(value=>value+1);scrolls.current.discover=0;scrolls.current.schedule=0;}
   setRoute(next);
   requestAnimationFrame(()=>{window.scrollTo(0,scrolls.current[view]);document.querySelector<HTMLHeadingElement>('main h1')?.focus({preventScroll:true});});
  });
  useEffect(()=>{document.title=route.view==='profile'?'我的 · Events Pro':route.view==='admin'?'管理后台 · Events Pro':route.view==='home'?'赛事 · Events Pro':route.view==='shortlist'?'我的自选 · 赛事自选':route.view==='schedule'?'我的日程表 · 赛事自选':selectedSeries?`${selectedSeries.title} · 完整赛程`:'赛事未找到 · Events Pro';},[route.view,selectedSeries]);
- const reset=()=>{setFilters(defaults);setDraft('');searchRef.current?.focus();};
+ const resetFilters=()=>{setFilters(defaults);setDraft('');setFilterResetVersion(value=>value+1);};
+ const reset=()=>{resetFilters();searchRef.current?.focus();};
  const universe=useMemo(()=>seriesEntries.filter(e=>!e.event.hidden&&(filters.supp||!e.event.supplement)),[seriesEntries,filters.supp]);
  const counts=useMemo(()=>Object.fromEntries(statuses.map(s=>[s,universe.filter(e=>(state.selections[e.id]?.status||'undecided')===s).length])) as Record<Status,number>,[universe,state.selections]);
+ const buyinRange=useMemo(()=>parseBuyinRange(filters.buyinMin,filters.buyinMax,filterCurrency),[filters.buyinMin,filters.buyinMax,filterCurrency]);
+ const unavailableBuyins=buyinRange.active?universe.filter(entry=>buyinInCurrency(entry.buyin,entry.currency,filterCurrency,rangeRates)===null).length:0;
  const filtered=useMemo(()=>universe.filter(e=>{
   const status=state.selections[e.id]?.status||'undecided',q=filters.q.trim().toLowerCase();
   if(!filters.statuses.includes(status))return false;
   if(q&&!`${e.eventId} ${e.event.officialNumber?'#'+e.event.officialNumber:''} ${entryName(e)} ${e.event.group} ${e.buyin} ${e.event.notes}`.toLowerCase().includes(q))return false;
   if(filters.from&&(e.date<filters.from||e.date>filters.to))return false;
-  if(!matchesMoneyFilter(e.buyin,e.currency,filters.buyin,'lte',series.currency))return false;
-  if(filters.gtd!=='all'&&(e.event.kind==='satellite'||!matchesMoneyFilter(e.event.guarantee,e.currency,filters.gtd,'gte',series.currency)))return false;
+  if(!matchesBuyinRange(e.buyin,e.currency,buyinRange,filterCurrency,rangeRates))return false;
   if(!matchesEventGame(e.event,filters.game))return false;
   return true;
- }).sort((a,b)=>filters.sort==='buyin'?a.currency.localeCompare(b.currency)||(a.buyin??Infinity)-(b.buyin??Infinity):filters.sort==='gtd'?a.currency.localeCompare(b.currency)||(b.event.guarantee||0)-(a.event.guarantee||0):a.date.localeCompare(b.date)||a.hour-b.hour),[universe,state.selections,filters,series.currency]);
+ }).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour),[universe,state.selections,filters,buyinRange,filterCurrency,rangeRates]);
  const pages=Math.max(1,Math.ceil(filtered.length/size)),page=Math.min(filters.page,pages),shown=filtered.slice((page-1)*size,page*size);
  useEffect(()=>{
   const currentHash=plannerHash({...filters,page},route);
   const pop=()=>{
    if(window.location.hash===currentHash)return;
-   const nextFilters=fromUrl(),nextRoute=agendaFromUrl();let deferred=false;
-   const applied=navigateSafely(()=>{if(deferred){window.history.back();return;}setOpenEntryId(null);setFilterOpen(false);setFilters(nextFilters);setDraft(nextFilters.q);setRoute(nextRoute);const scroll=window.history.state?.eventTagScroll;if(nextRoute.view==='discover'&&typeof scroll==='number')requestAnimationFrame(()=>{window.scrollTo(0,scroll);resultsRef.current?.focus({preventScroll:true});});});
+   const nextFilters=fromUrl(settings.profile.currency,rangeRates),nextRoute=agendaFromUrl();let deferred=false;
+   const applied=navigateSafely(()=>{if(deferred){window.history.back();return;}setOpenEntryId(null);setFilterOpen(false);setFilters(nextFilters);setDraft(nextFilters.q);setFilterResetVersion(value=>value+1);setRoute(nextRoute);const scroll=window.history.state?.eventTagScroll;if(nextRoute.view==='discover'&&typeof scroll==='number')requestAnimationFrame(()=>{window.scrollTo(0,scroll);resultsRef.current?.focus({preventScroll:true});});});
    if(!applied){deferred=true;window.history.pushState(null,'',currentHash);}
   };
   window.addEventListener('popstate',pop);window.addEventListener('hashchange',pop);
   return()=>{window.removeEventListener('popstate',pop);window.removeEventListener('hashchange',pop);};
- },[filters,page,route,navigateSafely]);
+ },[filters,page,route,navigateSafely,settings.profile.currency,rangeRates]);
  useEffect(()=>{window.history.replaceState(window.history.state,'',plannerHash({...filters,page},route));},[filters,page,route]);
  const cost=budget(state,entries,eventMap),attending=entries.filter(e=>state.selections[e.id]?.status==='attend'),watching=entries.filter(e=>state.selections[e.id]?.status==='watch');
  const shortlistCount=attending.length+watching.length+cost.pendingCount;
  const switchSeries=(id:string)=>navigate(route.view,id);
- const lookAtEvent=(eventId:string)=>{const next=getSeries(eventMap.get(eventId)?.seriesId);scrolls.current.discover=0;navigate('discover',next.id);setFilters({...defaults,q:eventId,supp:true});setDraft(eventId);requestAnimationFrame(()=>searchRef.current?.focus());};
+ const lookAtEvent=(eventId:string)=>{const next=getSeries(eventMap.get(eventId)?.seriesId);scrolls.current.discover=0;navigate('discover',next.id);setFilters({...defaults,q:eventId,supp:true});setDraft(eventId);setFilterResetVersion(value=>value+1);requestAnimationFrame(()=>searchRef.current?.focus());};
  const filterByTag=(tag:EventTagId)=>{
   window.history.replaceState({...window.history.state,eventTagScroll:window.scrollY},'',plannerHash({...filters,page},route));
   const next={...defaults,game:tag,supp:true};
   window.history.pushState({eventTagScroll:0},'',plannerHash(next,route));
-  setOpenEntryId(null);setFilters(next);setDraft('');
+  setOpenEntryId(null);setFilters(next);setDraft('');setFilterResetVersion(value=>value+1);
   requestAnimationFrame(()=>{resultsRef.current?.scrollIntoView({block:'start'});resultsRef.current?.focus({preventScroll:true});window.history.replaceState({...window.history.state,eventTagScroll:window.scrollY},'',window.location.hash);});
  };
  const importFile=async(file:File)=>{setImportError('');try{if(file.size>500000)throw new Error('文件过大，请选择本工具导出的 JSON 备份。');setPendingBackup(parseBackup(await file.text()));}catch(e){const message=e instanceof Error?e.message:'无法读取备份，当前自选未更改。';setImportError(message);toast.error(message);}};
@@ -155,12 +177,11 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const seriesView=route.view==='discover'||route.view==='schedule';
  const activeFilterLabels=[
   filters.statuses.length!==statuses.length?(filters.statuses.length?filters.statuses.map(status=>longLabels[status]).join('、'):'未选分类'):'',
-  filters.buyin!=='all'?amountFilters.buyin.find(([value])=>value===filters.buyin)?.[1]:'',
-  filters.gtd!=='all'?amountFilters.gtd.find(([value])=>value===filters.gtd)?.[1]:'',
+  buyinRange.active?`${currencyNames[filterCurrency]} ${buyinRange.min===null?'不限':money(buyinRange.min,filterCurrency)} — ${buyinRange.max===null?'不限':money(buyinRange.max,filterCurrency)}`:'',
   filters.game!=='all'?eventGameOptions.find(([value])=>value===filters.game)?.[1]:'',
-  filters.sort!=='date'?(filters.sort==='buyin'?'报名费升序':'保底降序'):'',
   filters.supp&&supplementCount>0?'含官方补充':'',
  ].filter(Boolean);
+ const filterSummary=[...activeFilterLabels,filters.rangeNotice].filter(Boolean).join(' · ');
  const homeCatalog=seriesCatalog.map(item=>{const visible=entries.filter(entry=>entry.seriesId===item.id&&!entry.event.supplement&&!entry.event.hidden);return {...item,eventCount:new Set(visible.map(entry=>entry.eventId)).size,entryCount:visible.length};});
  return <div className="app-shell">
   <header className="app-bar"><button className="brand" aria-label="返回赛事首页" onClick={()=>navigate('home')}><span className="brand-mark"><Spade size={19} fill="currentColor"/></span><span>赛事自选<small>EVENTS PRO</small></span></button>{account??<span className="app-local"><HardDrive size={13}/>本地版</span>}</header>
@@ -174,12 +195,12 @@ function PlannerContent({account,accountInfo}:PlannerProps){
    {route.view==='profile'?<ProfilePage key={settings.profile.username} accountInfo={accountInfo} account={account} selectionsBackup={localTools} onManage={()=>navigate('admin')}/>:route.view==='admin'?<AdminPage initialSeriesId={series.id} onBack={()=>navigate('profile')}/>:route.view==='home'?<SeriesHome catalog={homeCatalog} region={route.region} onRegionChange={region=>setRoute(r=>({...r,region}))} hrefForSeries={id=>hrefFor('discover',id)} onOpen={id=>navigate('discover',id)}/>:route.view==='shortlist'?<MyShortlist state={state} blocked={blocked} error={error} onChoose={choose} onBudgetModeChange={mode=>{commit(next=>{next.budgetMode=mode;});}} onShowFlights={lookAtEvent} onRemovePending={id=>{commit(next=>{delete next.pending[id];});}} onDiscover={()=>navigate('home')}/>:!selectedSeries?<div className="empty-state"><Compass size={28}/><h3>没有找到这项赛事</h3><p>该赛事尚未收录，或链接已失效。</p><button onClick={()=>navigate('home')}>返回赛事首页</button></div>:route.view==='schedule'?<MySchedule key={series.id} state={state} route={route} onRouteChange={patch=>setRoute(r=>({...r,...patch}))} supplement={filters.supp} onSupplementChange={v=>update({supp:v})} blocked={blocked} error={error} onChoose={choose} onShowFlights={lookAtEvent}/>:<section className="schedule-panel" aria-label="赛事自选表">
     <div className="discovery-filter-bar" role="region" aria-label="赛程筛选">
      <div className="search"><Search size={17}/><input ref={searchRef} aria-label="搜索赛事" placeholder="搜索赛事、编号或起始组" value={draft} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={e=>{composing.current=false;update({q:e.currentTarget.value});}} onChange={e=>{setDraft(e.target.value);if(!composing.current)update({q:e.target.value});}}/>{draft&&<button aria-label="清空搜索" onClick={()=>{setDraft('');update({q:''});searchRef.current?.focus();}}><X size={16}/></button>}</div>
-     <DiscoveryFilterPopover value={filters} counts={counts} amountFilters={amountFilters} mixedCurrency={(series.currencies?.length??0)>1} supplementCount={supplementCount} resultCount={filtered.length} open={filterOpen} onOpenChange={setFilterOpen} onChange={update} onReset={()=>{setFilters(defaults);setDraft('');}}><div className="discovery-quick-controls">
+     <DiscoveryFilterPopover value={filters} counts={counts} currency={filterCurrency} originalCurrency={settings.profile.currency==='original'} rangeNotice={filters.rangeNotice} unavailableBuyins={unavailableBuyins} resetVersion={filterResetVersion} supplementCount={supplementCount} resultCount={filtered.length} open={filterOpen} onOpenChange={setFilterOpen} onChange={update} onRangeChange={(buyinMin,buyinMax)=>update({buyinMin,buyinMax,buyinCurrency:filterCurrency,rangeNotice:''})} onReset={resetFilters}><div className="discovery-quick-controls">
       <FestivalCalendar singleTrigger compact key={series.id} series={series} from={filters.from} to={filters.to} onChange={(from,to)=>update({from,to})} plannedDates={attending.filter(entry=>entry.seriesId===series.id).map(e=>e.date)}/>
-      <PopoverTrigger asChild><button type="button" className={`discovery-filter-trigger${activeFilterLabels.length||filterOpen?' active':''}`} aria-label="赛程筛选" aria-describedby={activeFilterLabels.length?'discovery-active-summary':undefined}><SlidersHorizontal size={15} aria-hidden="true"/>筛选{activeFilterLabels.length>0&&<b>{activeFilterLabels.length}</b>}</button></PopoverTrigger>
+      <PopoverTrigger asChild><button type="button" className={`discovery-filter-trigger${activeFilterLabels.length||filterOpen?' active':''}`} aria-label="赛程筛选" aria-describedby={filterSummary?'discovery-active-summary':undefined}><SlidersHorizontal size={15} aria-hidden="true"/>筛选{activeFilterLabels.length>0&&<b>{activeFilterLabels.length}</b>}</button></PopoverTrigger>
       <div className="results-bar"><span ref={resultsRef} tabIndex={-1} aria-live="polite"><span className="sr-only">找到 </span><b>{filtered.length}</b> 个场次 <small className="sr-only">· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span></div>
      </div></DiscoveryFilterPopover>
-     {activeFilterLabels.length>0&&<div className="discovery-active-filters"><span id="discovery-active-summary" title={activeFilterLabels.join(' · ')}>{activeFilterLabels.join(' · ')}</span><button className="clear-filters" aria-label="重置筛选" title="重置筛选" onClick={reset}><RotateCcw size={14}/></button></div>}
+     {filterSummary&&<div className="discovery-active-filters"><span id="discovery-active-summary" title={filterSummary}>{filterSummary}</span><button className="clear-filters" aria-label="重置筛选" title="重置筛选" onClick={reset}><RotateCcw size={14}/></button></div>}
     </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} onOpen={trigger=>openDetail(entry,trigger)} onChoose={status=>{const trigger=document.activeElement;if(choose(entry,status))requestAnimationFrame(()=>{if(trigger&&!trigger.isConnected)resultsRef.current?.focus({preventScroll:true});});}}/>)}</div>
     {!shown.length&&<div className="empty-state"><Search size={26}/><h3>没有符合条件的场次</h3><p>{filters.statuses.length?'调整日期、分类或报名费，再找一场想打的。':'当前没有勾选任何分类，请选择至少一种。'}</p><button onClick={reset}>查看全部赛事</button></div>}
     <div className="pagination"><span>{filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)}`:'0'} / {filtered.length} 场次</span><div><button disabled={page===1} onClick={()=>update({page:page-1})}>上一页</button><span>{page} / {pages}</span><button disabled={page===pages} onClick={()=>update({page:page+1})}>下一页</button></div></div>

@@ -4,7 +4,7 @@ import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription,SheetClose} f
 import {getSeries,type Entry} from '@/lib/catalog';
 import {clock,eventNumber,guarantee,shortDate,type Status} from '@/lib/schedule';
 import {registrationDeadline} from '@/lib/registration';
-import {eventTags,type EventTagId} from '@/lib/event-tags';
+import {eventTags,eventGameOptions,type EventTagId} from '@/lib/event-tags';
 import {EntryActions} from './controls';
 import {EntryDetails} from './entry-details';
 import {PriceAmount} from './price-amount';
@@ -38,7 +38,7 @@ export function EventDetailSheet({entry,status,blocked,error,onClose,onChoose,on
      <SheetDescription>{series.shortTitle} · {series.city} · {series.venue}</SheetDescription>
     </SheetHeader>
     <div className="event-detail-scroll cart-scroll">
-     <div className="event-detail-tags" role="group" aria-label="按赛事词条筛选">{eventTags(entry.event).map(tag=><button key={tag.id} type="button" aria-label={`筛选：${tag.label}`} onClick={()=>filterTag(tag.id)}>#{tag.label}</button>)}</div>
+     <div className="event-detail-tags" role="group" aria-label="赛事词条">{eventTags(entry.event).map(tag=>eventGameOptions.some(([value])=>value===tag.id)?<button key={tag.id} type="button" aria-label={`筛选：${tag.label}`} onClick={()=>filterTag(tag.id)}>#{tag.label}</button>:<span key={tag.id}>#{tag.label}</span>)}</div>
      <section className="event-detail-summary" aria-label="本场赛事概览">
       <dl>
        <div><dt>开赛</dt><dd><time dateTime={`${entry.date}T${clock(entry.hour)}`}>{shortDate(entry.date)} {clock(entry.hour)}</time> · {series.timeLabel}</dd></div>

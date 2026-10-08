@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,resetDiscoveryFilters,openDiscoveryFilters,finishDiscoveryFilters} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,setDiscoveryBuyinRange,readDiscoveryBuyinRange,resetDiscoveryFilters,openDiscoveryFilters,finishDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -24,12 +24,12 @@ try{
  await choose(1);await nav('我的自选');assert.match(await page.locator('.cart-budget').innerText(),/1 个买入报名费未公布/);assert.equal(await page.locator('.cart-budget [data-currency]').count(),0);const unknown=page.locator(`.shortlist-table tr[data-entry-id="${id(1)}"]`);assert.match(await unknown.locator('[data-column="buyin"]').innerText(),/未公布/);assert.match(await unknown.locator('[data-column="budget"]').innerText(),/未公布|待公布/);assert.doesNotMatch(await unknown.innerText(),/₩0/);await discover();
  await search('KPC MAIN EVENT');await choose(3);await choose(3,1);await search('JPF-79');await choose(79);await row(79).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/Day 2 第 14 级/);assert.match(await page.locator('.event-detail-sheet').innerText(),/\$8,000/);await closeDiscoveryDetails(page);
  pass('Jeju APAC card opens 160 starts, original KRW/USD prices, real local branding and honest unknown buy-in without a zero budget');
- await search('');await select('报名费筛选','$8,000 及以下 · USD');assert.equal(await page.locator('.mobile-event').count(),1);assert.ok(page.url().includes('USD%3A8000'));await page.reload();await row(79).waitFor();
- await select('报名费筛选','₩500,000 及以下 · KRW');assert.equal(await row(79).count(),0);assert.equal(await row(1).count(),0);await resetDiscoveryFilters(page);
- await select('保底筛选','₩1,800,000,000 及以上 · KRW');assert.equal(await page.locator('.mobile-event').count(),4);await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');assert.match(await page.locator('.results-bar').innerText(),/17.*17/s);
+ await search('');await setDiscoveryBuyinRange(page,'53000','55000');assert.equal(await page.locator('.mobile-event').count(),1);await page.reload();await row(79).waitFor();assert.deepEqual(await readDiscoveryBuyinRange(page),{min:'53000',max:'55000'});
+ await setDiscoveryBuyinRange(page,'','2480');assert.equal(await row(79).count(),0);assert.equal(await row(1).count(),0);await resetDiscoveryFilters(page);
+ await select('赛事类型','卫星赛');assert.match(await page.locator('.results-bar').innerText(),/17.*17/s);
  await resetDiscoveryFilters(page);await search('JPF-32');assert.match(await row(32).innerText(),/11\/01\s+00:00/);await row(32).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/2026-10-31 24:00/);await closeDiscoveryDetails(page);
  await search('JPF-104');await row(104).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/₩4,500,000/);assert.match(await page.locator('.event-detail-sheet').innerText(),/2,000,000 KRW.*包含/s);await closeDiscoveryDetails(page);
- pass('currency-scoped filters survive reload, guarantees and satellites match source, midnight rows cross to the correct day and bounty is not charged twice');
+ pass('converted ranges survive reload and exclude unknown fees; satellites match source, midnight rows cross to the correct day and bounty is not charged twice');
  await nav('我的日程');assert.equal(await page.locator('.agenda-row').count(),7);assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/28.*11\/11.*KST/);
  await page.getByRole('button',{name:'下个月',exact:true}).click();await page.getByRole('button',{name:/2026年11月1日 星期日/}).click();assert.equal(await page.locator('.agenda-row').count(),1);assert.match(await page.locator('.agenda-row').innerText(),/晋级/);await page.reload();assert.ok(page.url().includes('day=2026-11-01'));
  await page.screenshot({path:resolve(out,'agenda-390.png')});
@@ -49,6 +49,6 @@ try{
  pass('a final-day blind duration absent from the PDF is not inferred from Day 1');
  await search('');await resetDiscoveryFilters(page);
  for(const width of [320,390,1440]){await page.setViewportSize({width,height:950});await page.evaluate(()=>window.scrollTo(0,0));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:resolve(out,`discovery-${width}.png`)});}
- await page.setViewportSize({width:320,height:950});await openDiscoveryFilters(page);await page.getByRole('combobox',{name:'报名费筛选',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);assert.ok((await page.getByRole('option',{name:'₩1,000,000 及以下 · KRW',exact:true}).boundingBox()).height<=44);await page.screenshot({path:resolve(out,'filter-320.png')});await page.keyboard.press('Escape');await finishDiscoveryFilters(page);
+ await page.setViewportSize({width:320,height:950});await openDiscoveryFilters(page);await page.getByRole('combobox',{name:'赛事类型',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);assert.ok((await page.getByRole('option',{name:'卫星赛',exact:true}).boundingBox()).height<=44);await page.screenshot({path:resolve(out,'filter-320.png')});await page.keyboard.press('Escape');await finishDiscoveryFilters(page);
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('phone/desktop layouts and all Jeju flows remain entirely offline without browser errors');
 }finally{await page.screenshot({path:resolve(out,'last-state.png')});await fs.writeFile(resolve(out,'results.json'),JSON.stringify({checks,errors,requests},null,2));await browser.close();}

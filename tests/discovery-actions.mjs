@@ -15,7 +15,7 @@ export async function chooseDiscoveryStatus(page,row,label){
  await closeDiscoveryDetails(page);
 }
 
-const discoveryOptionNames=new Set(['报名费筛选','保底筛选','赛事类型','排序']);
+const discoveryOptionNames=new Set(['赛事类型']);
 const seriesIds={'WPT · Wynn 2026':'wpt-wynn-2026','Triton ONE · 北塞浦路斯 2026':'triton-one-cyprus-2026','QPC Circuit · 河内 2026':'qpc-circuit-2026','KPC · 济州岛 2026':'kpc-jeju-2026','JPF · 济州岛 2026':'jeju-poker-festival-2026'};
 
 export async function openDiscoveryFilters(page){
@@ -45,6 +45,17 @@ export async function selectPlannerOption(page,label,value,{keepOpen=false}={}){
 }
 export async function readDiscoveryOption(page,label){
  await openDiscoveryFilters(page);const text=await page.getByRole('combobox',{name:label,exact:true}).innerText();await finishDiscoveryFilters(page);return text;
+}
+export async function setDiscoveryBuyinRange(page,min,max,{keepOpen=false}={}){
+ const popover=await openDiscoveryFilters(page);
+ await popover.getByRole('textbox',{name:'最低报名费',exact:true}).fill(min);
+ await popover.getByRole('textbox',{name:'最高报名费',exact:true}).fill(max);
+ if(!keepOpen)await finishDiscoveryFilters(page);
+}
+export async function readDiscoveryBuyinRange(page){
+ const popover=await openDiscoveryFilters(page);
+ const range={min:await popover.getByRole('textbox',{name:'最低报名费',exact:true}).inputValue(),max:await popover.getByRole('textbox',{name:'最高报名费',exact:true}).inputValue()};
+ await finishDiscoveryFilters(page);return range;
 }
 export async function setDiscoveryFilterChecked(page,label,checked,{keepOpen=false}={}){
  const popover=await openDiscoveryFilters(page);await popover.getByRole('checkbox',{name:label,exact:true}).setChecked(checked);
