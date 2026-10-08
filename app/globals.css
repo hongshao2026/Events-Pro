@@ -490,7 +490,7 @@ html{scroll-padding-bottom:110px}
 .detail .detail-section p:last-child{margin-bottom:0}
 .detail .price-amount>span,.detail .converted-price{white-space:normal;overflow-wrap:anywhere}
 .detail .detail-deadline dd{font-weight:500}
-.detail .detail-source p{font-size:11px}
+.target-event-time{display:block;color:var(--muted-foreground);font-variant-numeric:tabular-nums}
 .detail .text-button{min-height:44px;max-width:100%;white-space:normal;text-align:left}
 
 /* Discovery details use the shared Sheet and source-backed key/value sections. */
@@ -524,8 +524,6 @@ html{scroll-padding-bottom:110px}
 .event-detail-sheet .detail dl>div:last-child{border-bottom:0}
 .event-detail-sheet .detail dt{padding:11px 10px;background:var(--muted);border-right:1px solid var(--border)}
 .event-detail-sheet .detail dd{padding:11px 12px}
-.event-detail-sheet .detail .detail-notes p,.event-detail-sheet .detail .detail-source p{padding:12px;background:var(--muted);border:1px solid var(--border);border-radius:7px}
-.event-detail-source-updated{font-size:10px;color:var(--muted-foreground);margin-top:18px}
 .event-detail-actions{flex-shrink:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
 .event-detail-action-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px;font-size:12px}
 .event-detail-action-heading>span{font-size:10px;color:var(--muted-foreground)}

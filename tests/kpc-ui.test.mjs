@@ -43,7 +43,7 @@ try{
  assert.match(await page.locator('.series-header').innerText(),/KST/);assert.match(await row(entry(opening)).locator('.event-title-banner').innerText(),/#1\b/);
  assert.match(await row(entry(opening)).innerText(),/₩800,000\s*（≈¥3,966.40）/);await choose(entry(opening),'关注');
  await row(entry(opening)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/10 15:25 · KST/);
- assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),opening.starts[0].sourceUrl);await closeDiscoveryDetails(page);
+ assert.equal(await page.locator('.detail').getByRole('heading',{name:'资料来源',exact:true}).count(),0);await closeDiscoveryDetails(page);
  await search().fill(opening.id);await row(entry(opening,2)).waitFor();assert.match(await row(entry(opening,2)).innerText(),/20:15/);
  await row(entry(opening,2)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/10 22:30 · KST/);await closeDiscoveryDetails(page);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
@@ -78,7 +78,7 @@ try{
  assert.equal(await calendar.getByRole('button',{name:/^2026年10月22日/}).isDisabled(),true);
  await calendar.getByRole('button',{name:/^2026年10月16日/}).click();assert.equal(await page.locator('.agenda-row').count(),1);
  await page.reload();await finals.waitFor();assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/10.*10\/21.*KST/);
- await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/以晋级为前提/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级续赛不增加买入/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/10\/16 13:00 · KST/);
+ await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/报名费\s+晋级续赛，不新增买入/);assert.equal(await page.locator('.agenda-detail-sheet').getByRole('heading',{name:'目标赛事',exact:true}).count(),0);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/10\/16 13:00 · KST/);
  assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);await fits(page.locator('.agenda-detail-sheet'));
  await page.screenshot({path:resolve(output,'main-final-320.png')});await page.keyboard.press('Escape');await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  pass('two main-event flights produce only two conditional continuations, with KST calendar bounds and persistent final-day details');

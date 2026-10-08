@@ -48,3 +48,29 @@ for(const registrationCloses of ['2026-02-29T15:25','2026-13-01T15:25','2026-10-
 const leapDay=registrationDeadline({...opening.starts[0],date:'2028-02-29',registrationCloses:'2028-02-29T00:00'},'KST');
 assert.deepEqual(leapDay.exact,{date:'2028-02-29',time:'00:00',dateTime:'2028-02-29T00:00'});
 console.log('PASS structured cutoffs require a real local calendar date and valid minutes, without inferring or normalizing a deadline');
+
+const t10=event(triton,'T10'),t16=event(triton,'T16');
+for(const [fixture,first,alternative]of [[t10,'11/10 01:10','12:10 PM'],[t16,'11/11 01:00','00:30']]){
+ const result=registrationDeadline(fixture.starts[0],'EET',fixture.notes);
+ assert.equal(result.exact,undefined);assert.equal(result.compact,'见详情');
+ assert.ok(result.full.includes(first));assert.ok(result.full.includes(alternative));
+ assert.match(result.full,/原件存在冲突，请向主办方确认/);
+ assert.doesNotMatch(result.full,/每 6 个报名名额/,'Ticket-award mechanics do not become a registration deadline');
+}
+const t10WithRules=registrationDeadline(t10.starts[0],'EET',t10.notes);
+assert.match(t10WithRules.full,/报名期内最多 2 次重进；第 8 级结束停止报名/);
+assert.deepEqual(registrationDeadline(opening.starts[0],'KST',opening.notes),sameDay,'Generic currency and location notes do not qualify an otherwise exact cutoff');
+const t21=event(triton,'T21');
+const t21Rules=registrationDeadline(t21.starts[0],'EET',t21.notes);
+assert.doesNotMatch(t21Rules.full,/费用明细|\$1,352|行政费|服务费/);assert.match(t21Rules.full,/第 9 级结束停止报名/);
+assert.deepEqual(t21Rules.exact,tritonOvernight.exact);assert.equal(t21Rules.compact,tritonOvernight.compact);
+const t05=event(triton,'T05'),t05Rules=registrationDeadline(t05.starts[0],'EET',t05.notes);
+assert.match(t05Rules.full,/最多 2 次重进；第 8 级结束停止报名/);
+assert.deepEqual(t05Rules.exact,registrationDeadline(t05.starts[0],'EET').exact,'Normal re-entry and level rules do not invalidate a published clock');
+assert.equal(t05Rules.compact,registrationDeadline(t05.starts[0],'EET').compact);
+assert.equal(registrationDeadline(event(triton,'T12').continuations.at(-1),'EET'),null,'Continuation callers keep the two-argument contract and never inherit event-level starting rules');
+const repeated=registrationDeadline({...opening.starts[0],notes:'报名截止待主办方确认。'},'KST','报名截止待主办方确认。报名截止待主办方确认。');
+assert.equal(repeated.full.match(/报名截止待主办方确认/g).length,1);
+const repeatedParent=registrationDeadline(opening.starts[0],'KST','报名期内最多 2 次重进。报名期内最多 2 次重进。');
+assert.equal(repeatedParent.full.match(/报名期内最多 2 次重进/g).length,1);
+console.log('PASS event-level cutoff conflicts and entry limits survive without unrelated notes, duplication or continuation inheritance');

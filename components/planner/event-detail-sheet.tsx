@@ -24,7 +24,7 @@ type EventDetailSheetProps={
 export function EventDetailSheet({entry,status,blocked,error,onClose,onChoose,onShowFlights,onFilterTag,onReturnFocus}:EventDetailSheetProps){
  const skipReturnFocus=useRef(false);
  const series=entry?getSeries(entry.seriesId):null;
- const deadline=entry&&series?registrationDeadline(entry.slot,series.timeLabel):null;
+ const deadline=entry&&series?registrationDeadline(entry.slot,series.timeLabel,entry.event.notes):null;
  const showFlights=(id:string)=>{skipReturnFocus.current=true;onClose();onShowFlights(id);};
  const filterTag=(tag:EventTagId)=>{skipReturnFocus.current=true;onClose();onFilterTag(tag);};
  return <Sheet open={entry!==null} onOpenChange={open=>{if(!open)onClose();}}>
@@ -48,7 +48,6 @@ export function EventDetailSheet({entry,status,blocked,error,onClose,onChoose,on
       <div className="event-detail-prize"><span>{entry.event.kind==='satellite'?'席位保底':'整赛保底'}</span><strong>{guarantee(entry.event,'无保底')}</strong></div>
      </section>
      <EntryDetails entry={entry} scope="discovery" onShowFlights={showFlights}/>
-     {series.sourceUpdated&&<p className="event-detail-source-updated">资料更新：{series.sourceUpdated}</p>}
     </div>
     <div className="event-detail-actions agenda-detail-actions" data-status={status}>
      <div className="event-detail-action-heading"><strong>个人计划</strong><span>参加不等于实际报名</span></div>

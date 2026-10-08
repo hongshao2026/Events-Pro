@@ -13,7 +13,7 @@ type EventCardProps={
 };
 
 export function EventCard({entry,status,blocked,onOpen,onChoose}:EventCardProps){
- const event=entry.event,series=getSeries(entry.seriesId),deadline=registrationDeadline(entry.slot,series.timeLabel);
+ const event=entry.event,series=getSeries(entry.seriesId),deadline=registrationDeadline(entry.slot,series.timeLabel,event.notes);
  const highlights=[event.restricted?'资格限制':'',event.supplement?'官方补充':''].filter(Boolean);
  const hasGuarantee=event.kind==='satellite'?Boolean(event.count):Boolean(event.guarantee);
  const guaranteeLabel=guarantee(event,'无保底');

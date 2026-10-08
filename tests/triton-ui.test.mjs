@@ -40,12 +40,17 @@ try{
  await page.setViewportSize({width:390,height:950});await page.locator('.bottom-nav').getByRole('button',{name:'赛事',exact:true}).click();await page.getByRole('link',{name:'查看 Triton ONE North Cyprus 2026 完整赛程',exact:true}).click();pass('calendar series popup retains keyboard selection and fits a 320px phone; discovery changes series through the home cards');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('T06');
  await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/仅限女性参赛/);await closeDiscoveryDetails(page);
+ for(const [event,listed,alternative]of [['T10','01:10','12:10 PM'],['T16','01:00','00:30']]){
+  await page.getByRole('textbox',{name:'搜索赛事'}).fill(event);assert.match(await page.locator('.event-cutoff-block').innerText(),/见详情/);assert.equal(await page.locator('.event-cutoff-block time').count(),0);
+  await page.locator('.mobile-event .event-title').click();const deadline=await page.locator('.detail-deadline').innerText();assert.ok(deadline.includes(listed)&&deadline.includes(alternative));assert.match(deadline,/冲突.*主办方确认/s);assert.equal(await page.locator('.detail').getByRole('heading',{name:'补充说明',exact:true}).count(),0);await closeDiscoveryDetails(page);
+ }
+ pass('conflicting official registration times remain qualified inside the deadline field after general notes are removed');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('T21');
  await page.locator('.mobile-event .event-title').click();
- assert.match(await page.locator('.detail').innerText(),/1,352.*500.*111.*37/s);
+ assert.match(await page.locator('.detail').innerText(),/报名费\s+\$2,000/);assert.equal(await page.locator('.detail').getByRole('heading',{name:'补充说明',exact:true}).count(),0);
  assert.match(await page.locator('.detail').innerText(),/11\/13 00:30/);
  await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'derived-buyin-detail.png')});await closeDiscoveryDetails(page);
- pass('shared details preserve women-only eligibility, derived buy-in evidence, and next-day registration');
+ pass('shared details preserve women-only eligibility, the correct total buy-in and next-day registration');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('#12');
  assert.equal(await page.locator('.mobile-event').count(),3);await select(`${series}/T12/T12-D1A`,'参加');await select(`${series}/T12/T12-D1B`,'参加');
  await nav('我的日程');const finals=page.locator(`.agenda-row[data-activity-id^="${series}/T12/continuation/"]`);

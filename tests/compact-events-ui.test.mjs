@@ -32,11 +32,14 @@ const actionCorner=async(card,selector)=>{
  for(const content of await card.locator('.event-time-block,.event-cutoff-block,.event-title-banner,.event-buyin,.event-guarantee,.mobile-event-meta').all())assert.equal(overlaps(action,await content.boundingBox()),false,`Plan control does not overlap ${await content.getAttribute('class')}`);
 };
 const savedStatus=id=>page.evaluate(id=>JSON.parse(localStorage.getItem('poker-planner-local-v2')).state.selections[id]?.status||'undecided',id);
+const trimmedDetails=async detail=>{
+ for(const name of ['续赛安排','补充说明','资料来源'])assert.equal(await detail.getByRole('heading',{name,exact:true}).count(),0,name+' is no longer a detail section');
+ assert.equal(await detail.getByRole('link',{name:'官网本场赛程 ↗',exact:true}).count(),0);
+};
 const grouped=async detail=>{
- for(const name of ['报名信息','比赛结构','续赛安排','资料来源'])assert.equal(await detail.getByRole('heading',{name,exact:true}).count(),1,name);
+ for(const name of ['报名信息','比赛结构','目标赛事'])assert.equal(await detail.getByRole('heading',{name,exact:true}).count(),1,name);
  assert.match(await detail.innerText(),/开赛时间.*10\/10 11:00.*KST/s);assert.match(await detail.innerText(),/报名截止.*10\/10 15:25.*第 8 级/s);
- assert.match(await detail.innerText(),/起始筹码.*25,000.*级别时长.*30 分钟/s);assert.match(await detail.innerText(),/共享整项赛事保底/);
- assert.equal(await detail.getByRole('link',{name:'官网本场赛程 ↗',exact:true}).getAttribute('href'),opening.starts[0].sourceUrl);
+ assert.match(await detail.innerText(),/起始筹码.*25,000.*级别时长.*30 分钟/s);assert.match(await detail.innerText(),/Final Day.*10\/11 12:00.*KST/s);await trimmedDetails(detail);
 };
 
 try{
@@ -60,7 +63,7 @@ try{
   assert.equal(overlaps(native,converted),false,'Original and converted amounts may wrap without overlapping');await actionCorner(first,'.quick-watch');
   metrics.push({width,card,start,cutoff,info,quick});await first.screenshot({path:resolve(output,`after-card-${width}.png`)});
  }
- await first.locator('.event-row-open').click({position:{x:15,y:20}});await sheet().waitFor();await grouped(sheet().locator('.detail'));
+ await first.locator('.event-row-open').click({position:{x:15,y:20}});await sheet().waitFor();await grouped(sheet().locator('.detail'));assert.equal(await sheet().locator('.event-detail-source-updated').count(),0);assert.doesNotMatch(await sheet().innerText(),/资料更新：/);
  await fits(sheet(),'Event detail fits a 320px phone');await sheet().screenshot({path:resolve(output,'grouped-discovery-320.png')});
  await page.keyboard.press('Escape');await sheet().waitFor({state:'hidden'});await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"] .event-row-open`)===document.activeElement,openingId);assert.equal(await first.locator('.event-row-open').evaluate(element=>element===document.activeElement),true);
  pass('three-column rows show aligned start/cutoff blocks and complete event amounts, with an unobstructed lower-right watch action and accessible whole-row details at 320/390px');
@@ -108,9 +111,9 @@ try{
  await page.keyboard.press('Escape');await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  const continuation=page.locator('.agenda-row[data-activity-id="kpc-jeju-2026/KPC01/continuation/0"]');assert.equal(await continuation.count(),1);await continuation.click();const finalDetail=page.locator('.agenda-detail-sheet .detail');
  assert.match(await finalDetail.innerText(),/沿用晋级筹码/);assert.match(await finalDetail.innerText(),/不增加买入|不新增买入/);assert.doesNotMatch(await finalDetail.innerText(),/10\/10 15:25/);
- assert.equal(await finalDetail.getByRole('link',{name:'官网本场赛程 ↗',exact:true}).getAttribute('href'),opening.continuations[0].sourceUrl);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
+ assert.equal(await finalDetail.getByRole('heading',{name:'目标赛事',exact:true}).count(),0,'A final day cannot be listed as its own target');await trimmedDetails(finalDetail);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
  await page.keyboard.press('Escape');await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});await nav('我的自选');assert.equal(await page.locator('.cart-budget').innerText(),budgetBefore);
- pass('discovery, shortlist and agenda keep shared grouped rules and exact sources; conditional finals stay read-only and add no budget');
+ pass('discovery, shortlist and agenda share concise rules and later-stage targets; final days do not target themselves, stay read-only and add no budget');
 
  await discover('qpc-circuit-2026');await search('QPC47');const imperial=qpc.find(event=>event.id==='QPC47'),overnight=row(`qpc-circuit-2026/QPC47/${imperial.starts[2].id}`);
  assert.match(await overnight.locator('.event-cutoff-block').innerText(),/10\/21.*00:40.*ICT/s);assert.equal(await overnight.locator('.event-cutoff-block time').getAttribute('datetime'),'2026-10-21T00:40');assert.match(await overnight.locator('.event-time-block').innerText(),/10\/20/);await search('QPC31');const ambiguous=page.locator('.mobile-event');

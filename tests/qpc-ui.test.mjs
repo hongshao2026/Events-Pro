@@ -25,9 +25,9 @@ try{
  assert.match(await page.locator('.series-header').innerText(),/ICT/);assert.match(await row(entry('QPC01')).innerText(),/10:30/);
  assert.match(await row(entry('QPC01')).innerText(),/₫4,500,000/);await choose(entry('QPC01'),'关注');
  await row(entry('QPC01')).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/12 16:35 · ICT/);
- assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),data.find(e=>e.id==='QPC01').starts[0].sourceUrl);await closeDiscoveryDetails(page);
+ assert.equal(await page.locator('.detail').getByRole('heading',{name:'资料来源',exact:true}).count(),0);await closeDiscoveryDetails(page);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
- pass('APAC card opens all QPC flights with VND amounts, half-hour starts, ICT deadlines and the exact source link');
+ pass('APAC card opens all QPC flights with VND amounts, half-hour starts and ICT deadlines in concise details');
  await setDiscoveryBuyinRange(page,'','1200');await page.reload();assert.deepEqual(await readDiscoveryBuyinRange(page),{min:'',max:'1200'});
  const affordable=data.flatMap(event=>event.starts.filter(slot=>(slot.buyin??event.buyin)*0.000258<=1200).map(slot=>entry(event.id,event.starts.indexOf(slot))));
  assert.match(await page.locator('.results-bar').innerText(),new RegExp(`找到\\s*${affordable.length}\\s*个场次`));assert.ok((await page.locator('.mobile-event').evaluateAll(nodes=>nodes.map(node=>node.dataset.entryId))).every(id=>affordable.includes(id)));
@@ -49,7 +49,7 @@ try{
  assert.equal(await cal.getByRole('button',{name:/^2026年10月22日/}).isDisabled(),true);
  await cal.getByRole('button',{name:/^2026年10月21日/}).click();assert.equal(await page.locator('.agenda-row').count(),1);
  await page.reload();await finals.waitFor();assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/12.*10\/21.*ICT/);
- await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/以晋级为前提/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级续赛不增加买入/);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
+ await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/报名费\s+晋级续赛，不新增买入/);assert.equal(await page.locator('.agenda-detail-sheet').getByRole('heading',{name:'目标赛事',exact:true}).count(),0);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
  await fits(page.locator('.agenda-detail-sheet'));await page.screenshot({path:resolve(output,'main-final-320.png')});await page.keyboard.press('Escape');
  await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  pass('selected flights create deduplicated conditional finals, bounded QPC calendar and persistent final-day detail');
