@@ -11,7 +11,7 @@
     "build": "node scripts/build-local.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "start": "vite preview --host 127.0.0.1",
-    "lint": "eslint app components/planner components/auth lib local-entry.tsx vite.config.ts",
+    "lint": "eslint app components/planner components/auth lib local-entry.tsx vite.config.ts capacitor.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "node tests/run.mjs",
     "test:state": "node tests/state.test.mjs",
@@ -20,9 +20,25 @@
     "test:auth": "node tests/auth.test.mjs",
     "test:auth:ui": "node tests/auth-ui.test.mjs",
     "build:web": "vite build --outDir web-dist",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "build:ios": "node scripts/build-ios.mjs",
+    "ios:sync": "npm run build:ios && cap sync ios && node scripts/configure-ios.mjs",
+    "ios:open": "cap open ios",
+    "ios:icon": "node scripts/render-app-icon.mjs",
+    "ios:check": "node scripts/check-ios.mjs",
+    "legal:preview": "node scripts/build-legal-site.mjs --draft",
+    "legal:build": "node scripts/build-legal-site.mjs",
+    "release:check": "node scripts/check-release.mjs",
+    "ios:release": "npm run release:check && node scripts/build-ios.mjs --release && cap sync ios && node scripts/configure-ios.mjs",
+    "test:release:ui": "node tests/release-ui.test.mjs",
+    "test:native:ui": "node tests/native-ui.test.mjs"
   },
   "dependencies": {
+    "@capacitor/browser": "8.0.5",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.4",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/share": "8.0.3",
     "@supabase/supabase-js": "2.117.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -37,6 +53,7 @@
     "tailwind-merge": "3.6.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.3",
     "@eslint/js": "9.39.4",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",

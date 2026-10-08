@@ -2,6 +2,9 @@ import {createRoot} from 'react-dom/client';
 import Planner from './app/planner';
 import './app/globals.css';
 import { authEnabled } from './lib/auth/config';
+import {initializeNativeRuntime} from './lib/native-runtime';
+
+initializeNativeRuntime();
 
 const root = createRoot(document.getElementById('root')!);
 // The explicit build flag keeps the auth SDK out of the default/offline bundle.

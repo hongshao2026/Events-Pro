@@ -1,6 +1,7 @@
 import {statuses,type Status} from './schedule';
 import {entries,entryMap,eventMap} from './catalog';
 import type {Currency} from './money';
+import {exportFile} from './file-export';
 
 export const LEGACY_KEY='wpt-2026-local-selections-v1';
 export const STORAGE_KEY='poker-planner-local-v2';
@@ -49,9 +50,9 @@ export function writeState(state:PlannerState):void {
  const text=JSON.stringify(makeBackup(state));
  try{localStorage.setItem(STORAGE_KEY,text);}catch{throw new Error('未能保存到本机，原选择未更改。请检查浏览器存储权限或可用空间。');}
 }
-export function downloadBackup(state:PlannerState):void {
- const backup=makeBackup(state),url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}));
- const a=document.createElement('a');a.href=url;a.download=`赛事自选备份-${backup.savedAt.replace(/[:.]/g,'-')}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+export async function downloadBackup(state:PlannerState):Promise<import('./file-export').FileDelivery> {
+ const backup=makeBackup(state);
+ return exportFile(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}),`赛事自选备份-${backup.savedAt.replace(/[:.]/g,'-')}.json`,'参赛自选备份');
 }
 export function budget(state:PlannerState,source=entries,sourceEvents=eventMap){
  const selected=source.filter(entry=>state.selections[entry.id]?.status==='attend');

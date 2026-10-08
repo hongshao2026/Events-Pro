@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 @source not "../release";
+@source not "../ios";
+@source not "../ios-dist";
+@source not "../legal-site";
+@source not "../web-dist";
 :root{--background:#f5f6f9;--foreground:#222335;--card:#fff;--card-foreground:var(--foreground);--popover:#fff;--popover-foreground:var(--foreground);--primary:#542887;--primary-foreground:#fff;--secondary:#f0ecf6;--secondary-foreground:var(--primary);--muted:#f3f3f7;--muted-foreground:#686979;--accent:#f0ecf6;--accent-foreground:var(--primary);--border:#e3e3ec;--input:#dedee8;--ring:#7953a6;--destructive:#a13042;--radius:.5rem;--attend:#176843;--watch:#8b6012;--scrollbar-thumb:#b8b6c9;--scrollbar-track:#f0eff5;--scrollbar-hover:#89859f;--scrollbar-active:#69647d;--font-body:"Segoe UI","Microsoft YaHei",sans-serif;--font-display:"Bahnschrift","Segoe UI","Microsoft YaHei",sans-serif;--font-data:"Consolas",monospace}
 @theme inline{--color-background:var(--background);--color-foreground:var(--foreground);--color-card:var(--card);--color-card-foreground:var(--card-foreground);--color-popover:var(--popover);--color-popover-foreground:var(--popover-foreground);--color-primary:var(--primary);--color-primary-foreground:var(--primary-foreground);--color-secondary:var(--secondary);--color-secondary-foreground:var(--secondary-foreground);--color-muted:var(--muted);--color-muted-foreground:var(--muted-foreground);--color-accent:var(--accent);--color-accent-foreground:var(--accent-foreground);--color-border:var(--border);--color-input:var(--input);--color-ring:var(--ring);--color-destructive:var(--destructive);--radius-md:var(--radius);--radius-sm:.375rem;--radius-lg:.75rem;--font-sans:var(--font-body)}
 *{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track)}*::-webkit-scrollbar{width:9px;height:9px}*::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border:2px solid var(--scrollbar-track);border-radius:8px}*::-webkit-scrollbar-track{background:var(--scrollbar-track)}*::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-hover)}*::-webkit-scrollbar-thumb:active{background:var(--scrollbar-active)}
@@ -559,3 +563,32 @@ html{scroll-padding-bottom:110px}
 .event-detail-actions .class-option{min-height:44px;font-size:12px;padding:9px 3px;gap:3px}
 .event-detail-actions .class-option.selected{font-weight:600}
 @media(max-height:550px){.event-detail-heading{max-height:30dvh;overflow-y:auto}.event-detail-actions{max-height:35dvh;overflow-y:auto}}
+
+/* iOS owns the status bar; the document still owns vertical scrolling. */
+.native-ios .app-bar{padding-top:calc(14px + env(safe-area-inset-top))}
+.native-ios .cart-heading{padding-top:calc(24px + env(safe-area-inset-top))}
+.native-ios .cart-close{top:calc(20px + env(safe-area-inset-top))}
+.native-ios .event-detail-heading{padding-top:calc(14px + env(safe-area-inset-top))}
+.native-ios input:not([type=checkbox]):not([type=radio]),.native-ios textarea,.native-ios select{font-size:16px}
+.native-ios [data-slot=alert-dialog-content]{max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+.native-ios .shortlist-image-actions{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.support-links{display:grid}
+.support-links>button,.support-links>a{display:flex;align-items:center;gap:9px;min-height:44px;width:100%;padding:8px 0;border:0;border-bottom:1px solid var(--border);background:transparent;text-align:left;color:var(--foreground);font-size:13px;text-decoration:none}
+.support-links>button:hover,.support-links>a:hover{color:var(--primary);background:var(--secondary)}
+.support-links>button>span,.support-links>a>span{flex:1}
+.clear-local-data{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:12px;padding:8px 0;border:0;background:transparent;color:var(--destructive);font-size:12px}
+.clear-local-data:hover{text-decoration:underline}
+.danger-action{background:var(--destructive)!important;color:var(--primary-foreground)!important}
+.legal-sheet{display:flex;flex-direction:column;background:var(--card)}
+.legal-sheet .cart-heading{flex-shrink:0;border-bottom:1px solid var(--border)}
+.legal-sheet .cart-close{width:44px;height:44px;display:grid;place-items:center;top:13px;right:8px}
+.native-ios .legal-sheet .cart-close{top:calc(13px + env(safe-area-inset-top))}
+.legal-language{display:flex;gap:8px;padding:6px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.legal-language button{min-height:44px;padding:7px 10px;border:0;border-radius:6px;background:transparent;color:var(--muted-foreground);font-size:12px}
+.legal-language button[aria-pressed=true],.legal-language button:hover{background:var(--secondary);color:var(--primary)}
+.legal-scroll{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px calc(24px + env(safe-area-inset-bottom));font-size:13px;line-height:1.85;overflow-wrap:anywhere}
+.legal-scroll section+section{margin-top:22px}
+.legal-scroll h3{font-size:15px;margin:0 0 8px}
+.legal-scroll p+p{margin-top:10px}
+.legal-draft-note{padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--secondary);color:var(--primary);margin-bottom:18px}
+.legal-contact{display:inline-block;margin-top:20px;color:var(--primary);min-height:44px}

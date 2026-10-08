@@ -73,7 +73,7 @@ try {
   pass('login sheet fits 320/390px phones and centered desktop canvas');
   await page.setViewportSize({ width: 390, height: 844 });
   for (let i = 0; i < 10; i++) { await page.keyboard.press('Tab'); assert.equal(await page.locator('.auth-sheet').evaluate(e => e.contains(document.activeElement)), true); }
-  await close(); assert.equal(await page.getByRole('button', { name: '登录', exact: true }).evaluate(e => e === document.activeElement), true);
+  await close(); await page.waitForFunction(() => document.activeElement?.textContent === '登录'); assert.equal(await page.getByRole('button', { name: '登录', exact: true }).evaluate(e => e === document.activeElement), true);
   pass('modal traps keyboard focus; Escape restores the trigger');
   await open(); await fillEmail(); slowSend = true;
   await page.getByRole('button', { name: '获取验证码', exact: true }).click();

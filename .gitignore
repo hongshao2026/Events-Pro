@@ -1,6 +1,16 @@
 node_modules/
 local-dist/
 web-dist/
+ios-dist/
+legal-site/
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/CapApp-SPM/.build/
+ios/DerivedData/
+*.ipa
+*.xcarchive/
 .sites-runtime/
 coverage/
 test-results/

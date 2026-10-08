@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {projectRoot,readReleaseConfig} from './release-config.mjs';
+
+const read=path=>readFile(resolve(projectRoot,path),'utf8');
+const config=await readReleaseConfig(),pbx=await read('ios/App/App.xcodeproj/project.pbxproj');
+const info=await read('ios/App/App/Info.plist'),privacy=await read('ios/App/App/PrivacyInfo.xcprivacy'),spm=await read('ios/App/CapApp-SPM/Package.swift');
+const capacitor=JSON.parse(await read('ios/App/App/capacitor.config.json'));
+assert.equal(capacitor.appId,config.bundleId);assert.equal(capacitor.webDir,'ios-dist');assert.equal(capacitor.server?.url,undefined,'Shipping app cannot load a remote web server');
+assert.ok(pbx.includes(`PRODUCT_BUNDLE_IDENTIFIER = ${config.bundleId};`));
+assert.ok(pbx.includes(`MARKETING_VERSION = ${config.version};`));assert.ok(pbx.includes(`CURRENT_PROJECT_VERSION = ${config.buildNumber};`));
+assert.ok(pbx.includes('PrivacyInfo.xcprivacy in Resources'));assert.ok(pbx.includes('E10A00010000000000000001 /* PrivacyInfo.xcprivacy in Resources */,')&&pbx.includes('E10A00010000000000000002 /* PrivacyInfo.xcprivacy */,'));
+assert.match(privacy,/<key>NSPrivacyTracking<\/key>\s*<false\/>/);assert.match(privacy,/NSPrivacyAccessedAPICategoryFileTimestamp/);assert.match(privacy,/C617\.1/);
+assert.doesNotMatch(info,/NSAllowsArbitraryLoads|NSCameraUsageDescription|NSPhotoLibraryUsageDescription|NSLocationWhenInUseUsageDescription/);
+assert.match(info,/NSPhotoLibraryAddUsageDescription/,'Saving a shared PNG to Photos needs the add-only purpose string');
+assert.match(info,/<key>CFBundleLocalizations<\/key>\s*<array><string>zh-Hans<\/string><\/array>/,'The declared app language must match its actual interface');
+for(const name of ['CapacitorShare','CapacitorFilesystem','CapacitorBrowser'])assert.ok(spm.includes(name),`${name} missing from native package`);
+const icon=JSON.parse(await read('ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json')).images[0].filename;
+const bytes=await readFile(resolve(projectRoot,'ios/App/App/Assets.xcassets/AppIcon.appiconset',icon));
+assert.equal(bytes.readUInt32BE(16),1024);assert.equal(bytes.readUInt32BE(20),1024);assert.equal(bytes[25],2,'Icon must be an opaque RGB PNG');
+const html=await read('ios/App/App/public/index.html');assert.ok(html.includes('viewport-fit=cover'));assert.ok(html.includes("connect-src 'self' data: blob:"));
+const asset=html.match(/<script[^>]+src="([^"]+)"/)[1];
+const js=await read('ios/App/App/public/'+asset.replace(/^\.\//,''));
+assert.doesNotMatch(js,/sb_publishable_|createClient\(/,'Native release must not contain a configured auth client');
+console.log('PASS iOS configuration, bundled offline assets, plugins, 1024px icon and privacy manifest registration');
+console.log('This is a source/resource check. It does not compile Swift or validate signing, device behavior or App Review.');

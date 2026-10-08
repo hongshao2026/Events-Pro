@@ -4,6 +4,8 @@
 
 仓库：<https://github.com/hongshao2026/Events-Pro>
 
+台湾地区 App Store 准备已加入独立 iPhone/Capacitor 工程；操作步骤见 [台湾上架指南](docs/app-store/TAIWAN-RELEASE.md)，实际进度见 [上架准备状态](docs/app-store/TASK-STATUS.md)。`npm run ios:sync` 生成离线资源并同步工程，`npm run ios:open` 在 Mac 打开 Xcode。隐私政策、帮助及本机数据清除入口在“我的 → 隐私与支持”。目前仍有主体、域名、账号、素材使用权和真机等待补项，未签名或提交审核。
+
 ## 直接使用
 
 下载仓库 ZIP 并解压，使用 Chrome 或 Edge 双击打开 **`release/WPT赛事自选表.html`**。无需安装、登录、联网或启动后台。

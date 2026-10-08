@@ -14,6 +14,6 @@
     "paths": {"@/*": ["./*"]},
     "types": ["node", "vite/client"]
   },
-  "include": ["app/**/*.tsx", "components/**/*.tsx", "lib/**/*.ts", "local-entry.tsx", "vite.config.ts"],
+  "include": ["app/**/*.tsx", "components/**/*.tsx", "lib/**/*.ts", "local-entry.tsx", "vite.config.ts", "capacitor.config.ts"],
   "exclude": ["node_modules", "local-dist", "release", ".sites-runtime"]
 }
