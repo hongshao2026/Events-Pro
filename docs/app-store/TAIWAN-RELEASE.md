@@ -53,7 +53,7 @@ IONFilesystemLib 也已固定为对应许可核对的 2.0.0。构建自动生成
 3. 通过后保存真实验收记录，并将 readiness.json 的 nativeDeviceQA 指向该记录。记录设备、OS、Xcode、源码提交和结果。
 4. 正式信息、公开页面、权利记录和截图齐备后执行 `npm run ios:release`，再进行正式 Archive；这个命令不会签名或上传。
 
-独立的 `.github/workflows/ios-check.yml` 可在 GitHub 上运行不签名的模拟器编译；当前本地 Windows 无法执行这一检查，也尚未触发远端 CI。CI 编译成功仍需真机验收。
+独立的 `.github/workflows/ios-check.yml` 可在 GitHub 上运行不签名的模拟器编译。本次已在 `f380631` / Xcode 26.3 的远程 Mac CI 完成真实编译并通过；本机 Mac 仍待安装完整 Xcode，模拟器运行与真机尚未执行。实际证据见 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md)。CI 编译成功仍需本机与真机验收。
 
 ## 在 App Store Connect 创建和填写应用
 
@@ -76,4 +76,4 @@ Xcode 选择 Any iOS Device / Generic iOS Device → Product → Archive → Org
 
 ## 当前尚未完成的外部条件
 
-运营所在地台湾已配置；主体名称、邮箱、正式域名、bundleId、开发者账号和 Mac 条件均待定。Logo 按用户说明继续保留，具体使用依据尚未记录；赛程及完整 PDF 仍需单独核对。公开网页尚未托管；Swift 编译、签名、真机/模拟器截图、TestFlight 和提交审核均未执行。此文档与 readiness.json 会随真实进展更新，不将源码检查视为提审完成。
+运营所在地台湾已配置；主体名称、邮箱、正式域名与 bundleId 待用户最终提供，开发者会员尚未注册。本机 Mac 与 Node 已检查，完整 Xcode 待本人安装；远程不签名 Swift 编译通过，本机编译与模拟器运行、签名、真机/模拟器截图、TestFlight 和提交审核未完成。Logo 按用户说明继续保留，具体使用依据尚未记录；赛程及完整 PDF 仍需单独核对。公开网页尚未托管。此文档与 readiness.json 会随真实进展更新，不将源码或远程编译检查视为提审完成。

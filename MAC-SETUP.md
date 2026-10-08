@@ -6,7 +6,7 @@
 
 ## 1. 安装环境
 
-1. 在 Mac App Store 安装正式版 Xcode，启动一次，按提示接受许可并安装 iOS 平台与模拟器。当前 Capacitor 8 要求 Xcode 26+；所需 macOS 版本取决于具体 Xcode，见 [Apple 系统要求](https://developer.apple.com/xcode/system-requirements) 和 [Capacitor iOS 要求](https://capacitorjs.com/docs/ios)。最终上传时还需满足 [Apple 当前提交要求](https://developer.apple.com/news/upcoming-requirements/)。
+1. 安装与本机 macOS 兼容的正式版 Xcode，启动一次，由账号本人接受许可并安装 iOS 平台与模拟器。当前 Capacitor 8 要求 Xcode 26+；所需 macOS 版本取决于具体 Xcode，见 [Apple 系统要求](https://developer.apple.com/xcode/system-requirements) 和 [Capacitor iOS 要求](https://capacitorjs.com/docs/ios)。2026-10-08 本机为 macOS 26.4，而 Mac App Store 的当前 Xcode 要求 macOS 26.6；可由本人登录 [Apple 官方历史下载](https://developer.apple.com/download/all/?q=Xcode)，选择兼容 macOS 26.2–26.x 的正式版 Xcode 26.6。不要因安装入口显示“获取”就认定下载已开始。最终上传时再次核对 [Apple 当前提交要求](https://developer.apple.com/news/upcoming-requirements/)。
 2. 从 [Node.js 官网](https://nodejs.org/en/download) 安装 Node.js 24 的 macOS 安装包，按 Mac 芯片选择 arm64 或 x64。本项目最低 Node.js 22.13，使用 npm 和仓库锁文件。
 3. 准备一台 iPhone 和数据线；签名与 TestFlight 使用你自己的 Apple Developer Program 账号。若选大陆个人账号，按 [大陆个人注册步骤](https://developer.apple.com/cn/help/account/membership/enrolling-in-the-app/) 完成身份及会员注册。
 
@@ -19,6 +19,15 @@ git --version
 node --version
 npm --version
 ```
+
+本次已通过 Homebrew 并存安装 Node.js 24，没有改变全局 Node 或 shell 配置。后续在本项目终端使用：
+
+```sh
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+node --version
+```
+
+当前验证版本是 24.21.0。其他 Mac 按实际安装位置设置，不复制这台机器的依赖目录。
 
 如果 `xcode-select -p` 指向 `/Library/Developer/CommandLineTools`，在“Xcode → Settings → Locations → Command Line Tools”选中完整 Xcode。默认安装路径也可这样设置，再按提示完成首次启动：
 
@@ -40,10 +49,10 @@ git clone --branch main https://github.com/hongshao2026/Events-Pro.git Events-Pr
 cd Events-Pro
 git log -1 --oneline
 git status --short
-git merge-base --is-ancestor 9706c22 HEAD
+git merge-base --is-ancestor f380631 HEAD
 ```
 
-最后一条命令退出码 0 表示包含已验收的 iOS/main 集成提交；最新 main 还包含 GitHub 接手文档修订。根目录应有 `MAC-SETUP.md`、`capacitor.config.ts` 和 `ios/App/App.xcodeproj`。已有同名目录时先检查并保存自己的修改，不直接覆盖；已有该仓库且 main 干净时可 `git switch main` 后 `git pull --ff-only origin main`。
+最后一条命令退出码 0 表示包含用户指定的 GitHub/Mac 接手提交 `f380631`，它也包含 iOS/main 集成提交 `9706c22`。根目录应有 `MAC-SETUP.md`、`capacitor.config.ts` 和 `ios/App/App.xcodeproj`。已有同名目录时先检查并保存自己的修改，不直接覆盖；已有该仓库且 main 干净时可 `git switch main` 后 `git pull --ff-only origin main`。
 
 也保留了离线交接包作为备用：`Events-Pro-Mac-handoff` 文件夹包含 `Events-Pro-main.bundle`、文档副本和 `handoff.json`。它是制作时 main 的快照；后续新提交以 GitHub 为准。无需复制 Windows 的 node_modules 或工作目录。Windows worktree 的 `.git` 可能指向 Windows 路径，不能直接作为 Mac 仓库使用。
 
@@ -75,7 +84,18 @@ git remote set-url origin https://github.com/hongshao2026/Events-Pro.git
 
 ## 3. 安装依赖并做第一轮检查
 
-以下命令都在仓库根目录 `Events-Pro` 中执行：
+从主目录接收到的干净 main 创建独立工作区，再安装依赖和检查：
+
+```sh
+git status --short
+git worktree list
+git worktree add ../Events-Pro-mac-ios -b codex/mac-ios-validation main
+cd ../Events-Pro-mac-ios
+```
+
+本次工作区已经创建于 `~/Developer/Events-Pro-mac-ios`，分支 `codex/mac-ios-validation`，基线 `f380631`；不要重复执行创建命令，也不要在主目录切换到这个已被 worktree 使用的分支。以上依赖安装和后续命令均应在独立工作区执行。
+
+在该工作区根目录执行：
 
 ```sh
 npm ci
@@ -86,12 +106,6 @@ npm run verify
 `verify` 串行检查网页、数据兼容、预算、图片、默认关闭的模拟登录、iOS 资源、政策和模拟原生桥。全部通过也不代表真机已经通过。其生成的单文件网页在 `release/`，临时报告在忽略目录 `.sites-runtime/qa/`。
 
 打开网页预览可运行 `npm run dev`，使用终端显示的 localhost 地址。它不自动部署，也不是即将上架的 iPhone 包。
-
-正式改配置或修复 Mac 问题前，从接收到的 main 开一个分支：
-
-```sh
-git switch -c codex/mac-ios-validation
-```
 
 后续功能继续遵循 [开发与集成约定](CONTRIBUTING.md)，每项功能使用独立分支/worktree；验证后再合入 main。
 

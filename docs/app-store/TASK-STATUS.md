@@ -1,8 +1,29 @@
 # 台湾 iPhone 上架准备进度
 
-更新日期：2026-10-08。长目标尚未完成，真实运营信息、Mac/Xcode 验收和内容权利依据仍需补齐。用户已要求把当前准备合入 main，并将在 Mac 继续后续工作。本次 main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 codex/ios-taiwan 的四项提交 6604154、262b45b、6a65d12、2afa32b；集成基线为 33472bc，在独立 worktree Events-Pro-integrate-ios-mac-20261008 完成完整验证，集成提交为 9706c22。用户随后明确要求推送 GitHub，Mac 以 GitHub main 和根目录 MAC-SETUP.md 接手，最终推送结果在交付消息核对。不再以 Windows 功能 worktree 作为唯一源码入口。尚未签名、托管、上传 TestFlight 或提交商店审核。
+更新日期：2026-10-08。已在用户 Mac 建立长目标并接手，尚未达到台湾 App Store 可提审状态。用户确认开发者会员尚未注册，先做本地验证；运营信息以用户最终提供为准，缺项继续待定。首版免费、离线、登录默认关闭，账号身份、付费与协议由本人完成，正式提审由用户决定。
 
-2026-10-08 用户补充：“其他都待定，主体台湾，赛事logo公开的可以使用。”运营所在地已写为台湾；具体承担责任的人或组织名称、邮箱、网站、正式 bundleId、Apple 账号及 Mac 条件继续待定。现有 Logo 保留，用户说明及尚需记录的具体依据见 content-rights.md；未将该说明扩展为完整 PDF 分发授权。四项验收仍为 pending，release:check 当前报告 10 个缺项。当前执行环境为 Windows，未发现 xcodebuild；原生测试结果来自桌面 WebKit 模拟桥接，没有真实编译、签名或真机证据，也没有正在等待的已启动 Mac/Apple 构建任务。长目标仍受外部条件限制。
+## 本次 Mac 实际进展
+
+| 项目 | 当前真实状态 |
+|---|---|
+| 仓库 | 已新克隆至 `~/Developer/Events-Pro`，main 干净且最新，确认包含 `f380631` |
+| 工作区 | `~/Developer/Events-Pro-mac-ios`，独立分支 `codex/mac-ios-validation`，基线 `f380631` |
+| 环境 | Apple Silicon / macOS 26.4；并存 Node 24.21.0、原 Node 25.9.0；Chromium/WebKit 安装完成 |
+| 本机完整检查 | 修复 Mac 修饰键测试后 `npm run verify` 退出码 0；17 份浏览器报告共 153 项检查通过 |
+| 单独 iOS 资源检查 | `ios:sync`、`ios:check` 通过，四份原生 plist 解析 OK；`ios:open` 已派发打开请求，不代表已安装或启动 Xcode |
+| 真实 Swift 编译 | [远程 Mac CI](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340) 在 `f380631` / Xcode 26.3 下通过不签名模拟器目标编译；没有运行模拟器 |
+| 本机 Xcode/模拟器 | 当前只有 CommandLineTools，本机 xcodebuild 前置失败，Swift 未启动；Mac App Store 当前 Xcode 要求 macOS 26.6，已打开兼容版本的官方历史下载，等待本人登录、安装、接受许可 |
+| 真机与 TestFlight | 未执行。可先用本人 Apple 账号的 Personal Team 直装；TestFlight 待付费会员就绪 |
+| 材料 | 简繁政策预览已本地生成，真机矩阵与原生截图执行单已补齐；正式 URL、截图和最终审核联系信息尚未完成 |
+| 正式发行检查 | `release:check -- --online` 正确返回 1，共 10 项缺项；未执行线上 URL 检查，四项 readiness 保持 pending |
+
+详细命令结果、日志摘要、环境修复与接下来由本人完成的操作见 [Mac 实际验收记录](MAC-VALIDATION-2026-10-08.md)。本轮代码修复提交为 `5b81aac`，只修正浏览器测试的 Ctrl/Meta 差异；产品、原生源码、数据和备份格式未变。成果本地提交在独立分支，未合入 main 或推送，未签名、托管、上传或提审。
+
+## 交接基线与历史
+
+main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 codex/ios-taiwan 的四项提交 6604154、262b45b、6a65d12、2afa32b；集成基线为 33472bc，在独立 worktree Events-Pro-integrate-ios-mac-20261008 完成完整验证，集成提交为 9706c22。GitHub 接手文档提交为 f380631，已推送并在本次 Mac 克隆确认。不再以 Windows 功能 worktree 作为唯一源码入口。
+
+2026-10-08 用户补充：“其他都待定，主体台湾，赛事logo公开的可以使用。”运营所在地已写为台湾；具体承担责任的人或组织名称、邮箱、网站、正式 bundleId 与 Apple 会员继续待定。现有 Logo 保留，用户说明及尚需记录的具体依据见 content-rights.md；未将该说明扩展为完整 PDF 分发授权。Windows 交接时仅有桌面 WebKit 模拟桥，没有真实编译、签名或真机证据；本次远程真实编译与 Mac 验收以顶部最新记录为准。长目标仍受本人账号、环境安装和最终发行资料限制。
 
 ## 已完成的本地准备
 
@@ -30,7 +51,7 @@
 - 台湾所在地配置更新后，通过发行配置测试、ios:sync、ios:check、6 组 Chromium/WebKit 政策与清除检查及 git diff --check；确认简繁静态隐私草稿均包含台湾且继续标注开发预览。正式发行检查仍正确阻止剩余 10 项缺项。
 - main 集成阶段重新独立 npm ci，并完整通过 npm run verify，退出码 0：原有五站/首页/紧凑筛选/自选/预算/PNG/备份/模拟登录回归及新增 iOS 资源、66 项依赖声明、政策和模拟原生桥检查全部通过，17 份浏览器报告共 153 组检查无页面错误。单文件 HTML 从本次最终源码重新生成；完整日志位于集成目录 .sites-runtime/qa/integrate-ios-mac/verify.log。Mac 文档的相对链接、npm 命令和代码块检查通过，正式发行检查仍报告 10 项真实缺项。
 
-浏览器与模拟原生桥接的检查不替代 Swift 编译、iOS 模拟器或真机。现有内置 PDF 使离线资源包约 10.2 MB，构建有体积提示；首次打开及完整导出性能仍需实际 iPhone 核对。Mac CI 未触发，未执行真实服务器、登录、邮件发送、Apple 签名、账号注册或审核操作。
+浏览器与模拟原生桥接的检查不替代 Swift 编译、iOS 模拟器或真机。现有内置 PDF 使离线资源包约 10.2 MB，构建有体积提示；首次打开及完整导出性能仍需实际 iPhone 核对。以上为 Windows 历史验收；Mac CI 本次已实际运行并编译通过，仍未执行真实服务器、登录、邮件发送、Apple 签名、账号注册或审核操作。
 
 ## 下一阶段与外部条件
 
@@ -38,11 +59,11 @@
 |---|---|---|
 | 实际运营主体及所在地 | 所在地台湾已配置，主体名称待定 | 确定真实责任人或组织，与账号及政策一致；未推定个人或公司形式 |
 | 支持邮箱、正式域名及 bundleId | 待定 | 填 app-release.config.json；不提供密码、私钥或证书到聊天 |
-| Apple Developer 账号与 Mac | 用户将在 Mac 接手，具体环境与账号尚未验收 | 按 MAC-SETUP.md 安装和核对 Xcode、真实账号、Team 与签名；账号本人完成身份/协议步骤 |
+| Apple Developer 账号与 Mac | 已接手 arm64 Mac，Node/浏览器就绪；完整 Xcode 待本人安装，会员未注册 | 按 MAC-SETUP.md 安装兼容 Xcode、本人登录、选择 Team 与签名；本人完成身份/付费/协议 |
 | 公开政策与支持 URL | 页面源内容已完成，未托管 | 正式信息齐备后构建与托管至用户域名，核对 HTTPS、访问和托管日志告知 |
 | 赛事资料、Logo 和 PDF 使用依据 | Logo 按用户说明保留，具体依据未记录；赛程/PDF 尚未核定 | 逐项记录许可/条款或合法使用依据；完整 PDF 单独核对 |
-| Swift 编译、签名、真机验收与隐私报告 | 未执行 | 在 Mac/Xcode 和真实 iPhone 按 IOS-DEVICE-QA.md 验收；检查所有原生传递依赖 |
-| 真正 iPhone 商店截图 | 未制作 | 从通过验收的真机或模拟器生成，不将浏览器 QA 图片当作真机证据 |
+| Swift 编译、签名、真机验收与隐私报告 | 远程不签名 Swift 编译通过；本机编译、签名、真机与 Archive 待执行 | 在本机 Xcode/模拟器和真实 iPhone 按 IOS-DEVICE-QA.md 验收；保存实际 SPM 锁并检查所有原生依赖 |
+| 真正 iPhone 商店截图 | 执行单已准备，原图未制作 | 按 STORE-SCREENSHOTS.md 从同一验收构建的真机或模拟器生成 |
 | TestFlight 与 App Store Connect | 未上传/创建商店记录 | 配置免费、台湾发行范围，据实填写年龄分级、隐私和出口合规，再上传并测试 |
 | 提交审核与发布 | 未执行 | 以实际最终构建和材料复核；获得用户提交指令后再提交，Apple 审核结果不能预先保证 |
 

@@ -28,4 +28,4 @@
 
 `npm run ios:check` 核对原生资源登记和版本固定。`npm run test:ios:notices` 核对所有记录的原文、摘要、原生复制、图标衍生声明、可复现生成，以及缺失/未核定许可的拒绝行为。plist 的 XML 结构另在本地使用标准 plistlib 解析。
 
-此阶段未运行 iOS 系统设置页面、Swift 编译或 Archive。真机验收检查入口、版本、长文滚动及最终安装包资源，并核对所有解析后的原生框架。contentRights 仍为 pending；本记录不会自动把运营或赛事资料使用权改成已核定。
+Windows 交接阶段未运行 iOS 系统设置页面、Swift 编译或 Archive。本次 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md) 已记录远程真实 Swift 编译通过，实际解析 capacitor-swift-pm 8.5.3 和 IONFilesystemLib 2.0.0；本机 Package.resolved、系统设置显示与最终 Archive 尚待执行。真机验收检查入口、版本、长文滚动及最终安装包资源，并核对所有解析后的原生框架。contentRights 仍为 pending；本记录不会自动把运营或赛事资料使用权改成已核定。
