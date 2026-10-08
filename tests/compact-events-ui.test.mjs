@@ -38,6 +38,11 @@ try{
   await page.setViewportSize({width,height:950});await fits(page.locator('html'),'No horizontal page scroll');await fits(first,'Event row stays inside phone width');
   const open=await first.locator('.event-row-open').boundingBox(),card=await first.boundingBox(),quick=await first.locator('.quick-watch').boundingBox();
   assert.ok(open.width>card.width*.85,'The row opens details across its content');assert.ok(quick.width>=40&&quick.height>=40,'Quick watch remains a usable touch target');
+  assert.ok(card.height<=150,`A normal event stays compact at ${width}px: ${card.height}px`);
+  const title=await first.locator('.event-title').boundingBox(),flight=await first.locator('.event-flight').boundingBox();
+  assert.ok(Math.abs(title.y-flight.y)<=2,'Flight remains on the same title line');assert.equal(await first.locator('.event-title').evaluate(element=>getComputedStyle(element).whiteSpace),'nowrap');
+  const native=await first.locator('.price-amount>span').boundingBox(),converted=await first.locator('.converted-price').boundingBox();
+  assert.ok(Math.abs((native.y+native.height/2)-(converted.y+converted.height/2))<=4,'Normal original and converted amounts share one line');
   metrics.push({width,card});await first.screenshot({path:resolve(output,`after-card-${width}.png`)});
  }
  await first.locator('.event-row-open').click({position:{x:15,y:20}});await sheet().waitFor();await grouped(sheet().locator('.detail'));
@@ -97,20 +102,28 @@ try{
  assert.match(await ambiguous.locator('.registration-summary').innerText(),/见详情/);assert.doesNotMatch(await ambiguous.locator('.registration-summary').innerText(),/12:00|13:05/);
  await openDiscoveryDetails(page,ambiguous);assert.match(await sheet().innerText(),/未标日期/);assert.match(await sheet().innerText(),/13:05/);await closeDiscoveryDetails(page);
  await discover('triton-one-cyprus-2026');await search('T21');assert.match(await page.locator('.registration-summary').innerText(),/11\/13.*00:30/s);
+ assert.equal(await page.locator('.event-guarantee b').innerText(),'无保底');await openDiscoveryDetails(page,page.locator('.mobile-event'));assert.equal(await sheet().locator('.event-detail-prize strong').innerText(),'无保底');await closeDiscoveryDetails(page);
  await search('T06');assert.match(await page.locator('.mobile-event').innerText(),/资格限制/);await page.locator('.event-title').click();assert.match(await sheet().locator('.detail').innerText(),/仅限女性/);await closeDiscoveryDetails(page);
- await discover('kpc-jeju-2026');await search('KPC63');assert.match(await page.locator('.mobile-event-meta').innerText(),/混合|奥马哈|PLO/);
- pass('cross-day deadlines, ambiguous source notes and special-game/eligibility indicators survive the new list/detail separation');
+ await discover('kpc-jeju-2026');await search('KPC63');assert.equal(await page.locator('.mobile-event-meta').count(),0);
+ await openDiscoveryDetails(page,page.locator('.mobile-event'));assert.equal(await sheet().getByRole('button',{name:'筛选：混合游戏',exact:true}).count(),1);assert.match(await sheet().locator('.detail').innerText(),/混合/);await closeDiscoveryDetails(page);
+ pass('cross-day deadlines and source ambiguity remain visible; game labels move into details, eligibility stays in the list, and absent guarantees read 无保底');
 
  await discover('qpc-circuit-2026');await search('QPC01');const longTitle='QPC 国际扑克锦标赛超长赛事名称 INTERNATIONAL HIGH ROLLER CHAMPIONSHIP QUALIFIER';
  await page.evaluate(title=>localStorage.setItem('events-pro-settings-v1',JSON.stringify({version:1,revision:1,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:0.004958},asOf:'2026-10-08',source:'中国银行折算价'},eventOverrides:{QPC01:{title,buyin:999999999999,guarantee:1000000000000}}})),longTitle);
  await page.reload();const longCard=page.locator('.mobile-event').first();assert.match(await longCard.locator('.event-title').innerText(),/CHAMPIONSHIP QUALIFIER/);
  for(const width of [320,390]){
-  await page.setViewportSize({width,height:950});await fits(page.locator('html'),'Long names and large values do not widen the page');await fits(longCard,'Long row content stays contained');await fits(longCard.locator('.event-title'),'Long title wraps without clipping');
-  assert.match(await longCard.innerText(),/₫999,999,999,999/);assert.match(await longCard.innerText(),/₫1,000,000,000,000/);await longCard.screenshot({path:resolve(output,`long-title-values-${width}.png`)});
+  await page.setViewportSize({width,height:950});await fits(page.locator('html'),'Long names and large values do not widen the page');await fits(longCard,'Long row content stays contained');
+  const title=await longCard.locator('.event-title').evaluate(element=>({height:element.getBoundingClientRect().height,lineHeight:parseFloat(getComputedStyle(element).lineHeight),whiteSpace:getComputedStyle(element).whiteSpace,textOverflow:getComputedStyle(element).textOverflow,clipped:element.scrollWidth>element.clientWidth}));
+  assert.equal(title.whiteSpace,'nowrap');assert.equal(title.textOverflow,'ellipsis');assert.ok(title.clipped);assert.ok(title.height<=title.lineHeight+1,'Long title remains one line');
+  const titleBox=await longCard.locator('.event-title').boundingBox(),flightBox=await longCard.locator('.event-flight').boundingBox();assert.ok(Math.abs(titleBox.y-flightBox.y)<=2,'Flight stays visible beside a truncated name');
+  assert.match(await longCard.innerText(),/₫999,999,999,999/);assert.match(await longCard.innerText(),/₫1,000,000,000,000/);
+  const guarantee=await longCard.locator('.event-guarantee b').evaluate(element=>{const range=document.createRange();range.selectNodeContents(element);const lines=Array.from(range.getClientRects()).filter(rect=>rect.width>0&&rect.height>0),box=element.getBoundingClientRect();return {text:element.textContent,lines:lines.length,contained:lines.every(rect=>rect.left>=box.left-1&&rect.right<=box.right+1)};});
+  assert.equal(guarantee.text,'₫1,000,000,000,000');assert.equal(guarantee.lines,1,'A long guarantee stays one complete amount instead of splitting its final digits');assert.equal(guarantee.contained,true,'The complete guarantee fits its visible box');
+  await longCard.screenshot({path:resolve(output,`long-title-values-${width}.png`)});
   await openDiscoveryDetails(page,longCard);await fits(sheet(),'Long detail is contained');assert.match(await sheet().innerText(),/CHAMPIONSHIP QUALIFIER/);await sheet().screenshot({path:resolve(output,`long-detail-${width}.png`)});await closeDiscoveryDetails(page);
  }
  await page.evaluate(()=>{const key='events-pro-settings-v1',settings=JSON.parse(localStorage.getItem(key));settings.profile.currency='HKD';settings.fx.rates.HKD=null;settings.revision++;localStorage.setItem(key,JSON.stringify(settings));});
  await page.reload();await page.setViewportSize({width:320,height:950});await fits(page.locator('html'),'Missing-rate notice fits the row');assert.match(await longCard.innerText(),/₫999,999,999,999/);assert.match(await longCard.locator('.converted-price').innerText(),/汇率未设置/);assert.doesNotMatch(await longCard.innerText(),/HK\$0/);
- pass('long bilingual names, trillion-unit amounts and missing-rate notices remain complete in both list and detail at 320/390px');
+ pass('long names ellipsize on one list line while flights and full amounts remain visible; complete titles and rules are available in the detail at 320/390px');
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('row, sheet, planning and source workflows remain fully offline without browser errors');
 }finally{await fs.writeFile(resolve(output,'results.json'),JSON.stringify({checks,errors,requests,metrics},null,2));await browser.close();}
