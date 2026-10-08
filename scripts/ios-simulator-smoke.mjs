@@ -78,11 +78,11 @@ try{
   const resultBundle=resolve(output,'PlannerUI.xcresult');
   resultBundles.push({path:resultBundle,summary:'uiSummary',attachments:'attachments'});
   run('xcodebuild',[...buildArgs,'-resultBundlePath',resultBundle,
-   '-only-testing:AppUITests/PlannerUITests/testPlannerSelectionAndImagePreview','test'],600000,resolve(output,'xcodebuild-test.log'));
+   '-only-testing:AppUITests/PlannerUITests/testPlannerSelectionAndImagePreview','test'],900000,resolve(output,'xcodebuild-test.log'));
   report.uiSummary=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
   assert.ok(report.uiSummary.passedTests>=1,'The result bundle must contain executed passing UI tests');
   assert.equal(report.uiSummary.failedTests,0);
-  report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview and same-installation relaunch persistence');
+  report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview, native image share cancellation/retry, two backup activity controllers and same-installation relaunch persistence');
   report.uiTests=true;
  }
  if(upgradeTests){

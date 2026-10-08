@@ -42,7 +42,27 @@ final class PlannerUITests: XCTestCase {
         XCTAssertTrue(app.images["完整自选表格"].exists)
         XCTAssertTrue(app.buttons["分享或存储图片"].isEnabled)
         capture("05-image", app)
+        for attempt in 1...2 {
+            tap(app.buttons["分享或存储图片"], app)
+            dismissNativeShareSheet("09-image-share-\(attempt)", app)
+            XCTAssertTrue(app.buttons["关闭图片预览"].exists)
+            XCTAssertTrue(app.images["完整自选表格"].exists)
+            XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "未能打开系统分享")).firstMatch.exists)
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: app.buttons["分享或存储图片"])
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
+        }
         tap(app.buttons["关闭图片预览"], app)
+
+        tap(app.buttons["我的"], app)
+        tap(app.buttons["导出备份"], app)
+        dismissNativeShareSheet("10-plan-backup-share", app)
+        XCTAssertFalse(app.staticTexts["未能导出参赛自选备份，请重试。"].exists)
+        tap(app.buttons["导出设置备份"], app)
+        dismissNativeShareSheet("11-settings-backup-share", app)
+        XCTAssertFalse(app.staticTexts["未能导出设置备份，请重试。"].exists)
+        openShortlist(app)
+        assertShortlist(app)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
 
         // Relaunch this same installation; this is persistence, not upgrade QA.
         app.terminate()
@@ -52,6 +72,20 @@ final class PlannerUITests: XCTestCase {
         assertShortlist(app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("06-relaunch-retains-plan", app)
+    }
+
+    @MainActor
+    private func dismissNativeShareSheet(_ name: String, _ app: XCUIApplication) {
+        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "关闭")).firstMatch
+        if !close.waitForExistence(timeout: 30) {
+            capture("failure-" + name, app)
+            XCTFail("Native activity controller did not open\n\(app.debugDescription)")
+            return
+        }
+        capture(name, app)
+        // Only dismiss the native controller. No recipient or external app is
+        // selected; cancellation does not claim a file was delivered or saved.
+        tap(close, app)
     }
 
     // The harness invokes this separately after a real same-ID installation of
