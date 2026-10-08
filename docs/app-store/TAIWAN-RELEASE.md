@@ -6,7 +6,7 @@
 
 ## 你需要准备的东西
 
-1. **Apple Developer Program 账号**。个人可用真实姓名注册，个人法定姓名会显示为卖家名称。若由境外公司运营，使用相符的组织账号；组织需具备法律实体资格、申请人的签约权限、D-U-N-S 编号、组织域名邮箱和正常运作的公开网站。不能使用假地址、借来的公司或名称代替真实运营主体。标准会员费为每年 99 美元或当地价格；免费应用也通常需要付会员费。[Apple 注册要求](https://developer.apple.com/programs/enroll/)
+1. **Apple Developer Program 账号**。个人可用真实姓名注册，个人法定姓名会显示为卖家名称。若由台湾公司运营，使用相符的组织账号；组织需具备法律实体资格、申请人的签约权限、D-U-N-S 编号、组织域名邮箱和正常运作的公开网站。用户目前仅确认所在地台湾，具体主体及个人/组织形式待定。标准会员费为每年 99 美元或当地价格；免费应用也通常需要付会员费。[Apple 注册要求](https://developer.apple.com/programs/enroll/)
 2. **可运行 Xcode 26 或更高版本的 Mac**，以及至少一台 iPhone。Capacitor 8 的当前要求是 Xcode 26+，最低支持 iOS 15。[Capacitor iOS 环境](https://capacitorjs.com/docs/ios)
 3. **真实运营名称、所在国家/地区、支持邮箱和 HTTPS 网站**。隐私政策和支持网页需公开、无需登录可访问；应用内也有入口。[隐私说明要求](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/)
 4. **赛事资料及标识的使用依据**。来源记录不是转载授权。逐项确认哪些事实可使用，哪些 PDF、图像和 Logo 可分发，记录许可、条款或其他合法使用依据。没有依据的素材应先替换或移除。是否涉及赌博服务、导流及适用的运营地法律，应依据实际产品、外链和合作模式作针对性评估；Apple 过审不代替法律判断。
@@ -74,4 +74,4 @@ Xcode 选择 Any iOS Device / Generic iOS Device → Product → Archive → Org
 
 ## 当前尚未完成的外部条件
 
-运营者、邮箱、正式域名与 bundleId 未提供；开发者账号和 Mac 状态待用户回复；公开网页尚未托管；素材使用依据尚未核定；Swift 编译、签名、真机/模拟器截图、TestFlight 和提交审核均未执行。此文档与 readiness.json 会随真实进展更新，不将源码检查视为提审完成。
+运营所在地台湾已配置；主体名称、邮箱、正式域名、bundleId、开发者账号和 Mac 条件均待定。Logo 按用户说明继续保留，具体使用依据尚未记录；赛程及完整 PDF 仍需单独核对。公开网页尚未托管；Swift 编译、签名、真机/模拟器截图、TestFlight 和提交审核均未执行。此文档与 readiness.json 会随真实进展更新，不将源码检查视为提审完成。
