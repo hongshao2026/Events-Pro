@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-import {openDiscoveryDetails,chooseDiscoveryStatus} from './discovery-actions.mjs';
+import {openDiscoveryDetails,chooseDiscoveryStatus,readDiscoveryOption,readDiscoveryFilterChecked} from './discovery-actions.mjs';
 
 const output=resolve('.sites-runtime/qa/event-tags');await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
@@ -32,9 +32,9 @@ try{
  await openDiscoveryDetails(page,row(id));const tag=sheet().getByRole('button',{name:'筛选：德州扑克',exact:true});assert.equal(await tag.innerText(),'#德州扑克');
  await tag.focus();await page.keyboard.press('Enter');await settledTag('nlh',series);
  for(const filter of ['q','from','to','buyin','gtd','statuses','page'])assert.equal(params().has(filter),false,filter);
- assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'');assert.equal(await page.getByRole('checkbox',{name:'全部赛事',exact:true}).getAttribute('aria-checked'),'true');
+ assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'');assert.equal(await readDiscoveryFilterChecked(page,'全部赛事'),'true');
  assert.match(await page.locator('.results-bar').innerText(),/找到\s*72\s*个场次/);assert.equal(await readSaved(),saved);
- await page.reload();await row(id).waitFor();assert.equal(params().get('game'),'nlh');assert.match(await page.getByRole('combobox',{name:'赛事类型',exact:true}).innerText(),/德州扑克/);
+ await page.reload();await row(id).waitFor();assert.equal(params().get('game'),'nlh');assert.match(await readDiscoveryOption(page,'赛事类型'),/德州扑克/);
  await page.goBack();await row(id).waitFor();await page.waitForFunction(()=>document.querySelector('.results-bar>span')===document.activeElement);
  assert.equal(page.url(),priorUrl);assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'QPC01');assert.ok(Math.abs(await page.evaluate(()=>scrollY)-priorScroll)<=2,'Back restores the prior filtered list position');
  assert.equal(await sheet().count(),0);assert.equal(await readSaved(),saved);

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
-import {openDiscoveryDetails,closeDiscoveryDetails,chooseDiscoveryStatus} from './discovery-actions.mjs';
+import {openDiscoveryDetails,closeDiscoveryDetails,chooseDiscoveryStatus,setDiscoveryFilterChecked} from './discovery-actions.mjs';
 
 const output=resolve('.sites-runtime/qa/compact-events');await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
@@ -52,10 +52,10 @@ try{
 
  await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');assert.equal(await sheet().count(),0);assert.equal(await first.locator('.quick-watch').getAttribute('aria-pressed'),'true');
  await page.reload();assert.equal(await row(openingId).getAttribute('data-status'),'watch');
- await page.getByRole('checkbox',{name:'全部赛事',exact:true}).uncheck();await page.getByRole('checkbox',{name:'筛选正在关注',exact:true}).check();
+ await setDiscoveryFilterChecked(page,'全部赛事',false);await setDiscoveryFilterChecked(page,'筛选正在关注',true);
  await first.locator('.quick-watch').focus();await page.keyboard.press('Space');assert.equal(await savedStatus(openingId),'undecided');assert.equal(await first.count(),0);
  await page.waitForFunction(()=>document.querySelector('.results-bar>span')===document.activeElement);assert.ok(page.url().includes('statuses=watch'));
- await page.getByRole('checkbox',{name:'全部赛事',exact:true}).check();
+ await setDiscoveryFilterChecked(page,'全部赛事',true);
  for(const [label,status]of [['参加','attend'],['关注','watch'],['不考虑','skip'],['待定','undecided']]){
   await chooseDiscoveryStatus(page,first,label);assert.equal(await savedStatus(openingId),status);await page.reload();assert.equal(await row(openingId).getAttribute('data-status'),status);
  }
@@ -72,11 +72,11 @@ try{
  await page.evaluate(()=>{Storage.prototype.setItem=window.originalPlanWrite;});await closeDiscoveryDetails(page);await page.getByRole('button',{name:'重新读取',exact:true}).click();
  pass('a failed classification write reports the error inside the sheet and preserves the attended selection and its budget');
 
- await page.getByRole('checkbox',{name:'筛选不考虑',exact:true}).uncheck();await openDiscoveryDetails(page,first);await classify('不考虑');
+ await setDiscoveryFilterChecked(page,'筛选不考虑',false);await openDiscoveryDetails(page,first);await classify('不考虑');
  assert.equal(await first.count(),0);assert.equal(await sheet().isVisible(),true);await classify('关注');assert.equal(await first.count(),1);await classify('参加');await closeDiscoveryDetails(page);
  await openDiscoveryDetails(page,first);await classify('不考虑');await closeDiscoveryDetails(page);assert.equal(await first.count(),0);
  await page.waitForFunction(()=>document.querySelector('.results-bar>span')===document.activeElement);
- await page.getByRole('checkbox',{name:'筛选不考虑',exact:true}).check();await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');await chooseDiscoveryStatus(page,first,'参加');
+ await setDiscoveryFilterChecked(page,'筛选不考虑',true);await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');await chooseDiscoveryStatus(page,first,'参加');
  await search('KPC');const later=page.locator('.mobile-event').nth(4),laterId=await later.getAttribute('data-entry-id');await later.locator('.event-row-open').scrollIntoViewIfNeeded();
  const priorUrl=page.url(),priorScroll=await page.evaluate(()=>scrollY),priorCount=await page.locator('.mobile-event').count();
  await openDiscoveryDetails(page,later);await closeDiscoveryDetails(page);

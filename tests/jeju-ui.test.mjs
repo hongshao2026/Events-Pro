@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,resetDiscoveryFilters,openDiscoveryFilters,finishDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -12,7 +12,7 @@ const data=JSON.parse(await fs.readFile('lib/jeju-poker-festival-2026.json','utf
 const errors=[],requests=[],checks=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});const pass=s=>{checks.push(s);console.log('PASS',s);};
 const id=(n,i=0)=>`${series}/JPF-${n}/${data.find(e=>e.id==='JPF-'+n).starts[i].id}`;
 const row=(n,i=0)=>page.locator(`.mobile-event[data-entry-id="${id(n,i)}"]`);
-const select=async(label,value)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name:value,exact:true}).click();};
+const select=(label,value)=>selectPlannerOption(page,label,value);
 const nav=name=>page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();
 const search=text=>page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill(text);
 const choose=(n,i=0)=>chooseDiscoveryStatus(page,row(n,i),'参加');
@@ -25,9 +25,9 @@ try{
  await search('KPC MAIN EVENT');await choose(3);await choose(3,1);await search('JPF-79');await choose(79);await row(79).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/Day 2 第 14 级/);assert.match(await page.locator('.event-detail-sheet').innerText(),/\$8,000/);await closeDiscoveryDetails(page);
  pass('Jeju APAC card opens 160 starts, original KRW/USD prices, real local branding and honest unknown buy-in without a zero budget');
  await search('');await select('报名费筛选','$8,000 及以下 · USD');assert.equal(await page.locator('.mobile-event').count(),1);assert.ok(page.url().includes('USD%3A8000'));await page.reload();await row(79).waitFor();
- await select('报名费筛选','₩500,000 及以下 · KRW');assert.equal(await row(79).count(),0);assert.equal(await row(1).count(),0);await page.getByRole('button',{name:'重置筛选',exact:true}).click();
- await select('保底筛选','₩1,800,000,000 及以上 · KRW');assert.equal(await page.locator('.mobile-event').count(),4);await page.getByRole('button',{name:'重置筛选',exact:true}).click();await select('赛事类型','卫星赛');assert.match(await page.locator('.results-bar').innerText(),/17.*17/s);
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await search('JPF-32');assert.match(await row(32).innerText(),/11\/01\s+00:00/);await row(32).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/2026-10-31 24:00/);await closeDiscoveryDetails(page);
+ await select('报名费筛选','₩500,000 及以下 · KRW');assert.equal(await row(79).count(),0);assert.equal(await row(1).count(),0);await resetDiscoveryFilters(page);
+ await select('保底筛选','₩1,800,000,000 及以上 · KRW');assert.equal(await page.locator('.mobile-event').count(),4);await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');assert.match(await page.locator('.results-bar').innerText(),/17.*17/s);
+ await resetDiscoveryFilters(page);await search('JPF-32');assert.match(await row(32).innerText(),/11\/01\s+00:00/);await row(32).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/2026-10-31 24:00/);await closeDiscoveryDetails(page);
  await search('JPF-104');await row(104).locator('.event-title').click();assert.match(await page.locator('.event-detail-sheet').innerText(),/₩4,500,000/);assert.match(await page.locator('.event-detail-sheet').innerText(),/2,000,000 KRW.*包含/s);await closeDiscoveryDetails(page);
  pass('currency-scoped filters survive reload, guarantees and satellites match source, midnight rows cross to the correct day and bounty is not charged twice');
  await nav('我的日程');assert.equal(await page.locator('.agenda-row').count(),7);assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/28.*11\/11.*KST/);
@@ -47,8 +47,8 @@ try{
  pass('KRW display preference and editable rate work, USD admin labels stay correct, missing fee can be supplied, PDF downloads byte-for-byte offline');
  await search('PL BIG O FANATIC');await choose(68);await nav('我的日程');await page.getByRole('button',{name:'全部日期',exact:true}).click();await page.locator(`[data-activity-id="${series}/JPF-68/continuation/0"]`).click();assert.match(await page.locator('.agenda-detail-sheet .detail').innerText(),/级别时长\s+原表未列/);await page.getByRole('button',{name:'关闭比赛详情',exact:true}).click();await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});await discover();
  pass('a final-day blind duration absent from the PDF is not inferred from Day 1');
- await search('');await page.getByRole('button',{name:'重置筛选',exact:true}).click();
+ await search('');await resetDiscoveryFilters(page);
  for(const width of [320,390,1440]){await page.setViewportSize({width,height:950});await page.evaluate(()=>window.scrollTo(0,0));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:resolve(out,`discovery-${width}.png`)});}
- await page.setViewportSize({width:320,height:950});await page.getByRole('combobox',{name:'报名费筛选',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);assert.ok((await page.getByRole('option',{name:'₩1,000,000 及以下 · KRW',exact:true}).boundingBox()).height<=44);await page.screenshot({path:resolve(out,'filter-320.png')});await page.keyboard.press('Escape');
+ await page.setViewportSize({width:320,height:950});await openDiscoveryFilters(page);await page.getByRole('combobox',{name:'报名费筛选',exact:true}).click();const popup=await page.locator('.filter-popup').boundingBox();assert.ok(popup.x>=0&&popup.x+popup.width<=320);assert.ok((await page.getByRole('option',{name:'₩1,000,000 及以下 · KRW',exact:true}).boundingBox()).height<=44);await page.screenshot({path:resolve(out,'filter-320.png')});await page.keyboard.press('Escape');await finishDiscoveryFilters(page);
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('phone/desktop layouts and all Jeju flows remain entirely offline without browser errors');
 }finally{await page.screenshot({path:resolve(out,'last-state.png')});await fs.writeFile(resolve(out,'results.json'),JSON.stringify({checks,errors,requests},null,2));await browser.close();}

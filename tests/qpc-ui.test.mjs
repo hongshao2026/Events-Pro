@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,readDiscoveryOption,resetDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -17,7 +17,7 @@ const row=id=>page.locator(`.mobile-event[data-entry-id="${id}"]`);
 const search=()=>page.getByRole('textbox',{name:'搜索赛事',exact:true});
 const choose=async(id,status)=>{await chooseDiscoveryStatus(page,row(id),status);};
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();};
-const select=async(label,name)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name,exact:true}).click();};
+const select=(label,name)=>selectPlannerOption(page,label,name);
 const fits=async locator=>{assert.equal(await locator.evaluate(e=>e.scrollWidth>e.clientWidth+1),false);};
 try{
  await page.goto(file+'#view=home&region=apac');await page.locator(`.festival-card[data-series-id="${series}"]`).click();
@@ -29,13 +29,13 @@ try{
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  pass('APAC card opens all QPC flights with VND amounts, half-hour starts, ICT deadlines and the exact source link');
  await select('报名费筛选','450万₫及以下');assert.ok(page.url().includes('buyin=4500000'));await page.reload();
- assert.match(await page.getByRole('combobox',{name:'报名费筛选',exact:true}).innerText(),/450万₫/);
+ assert.match(await readDiscoveryOption(page,'报名费筛选'),/450万₫/);
  await select('保底筛选','10亿₫及以上');assert.match(await page.locator('.results-bar').innerText(),/9.*场次.*2.*赛事/s);
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await select('赛事类型','卫星赛');
+ await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');
  assert.match(await page.locator('.results-bar').innerText(),/19.*场次.*19.*赛事/s);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
  assert.doesNotMatch(await page.locator('.mobile-event').first().innerText(),/QPCS-/);
  await page.setViewportSize({width:320,height:900});await fits(page.locator('.mobile-event').first());await fits(page.locator('html'));
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await search().fill('#31');
+ await resetDiscoveryFilters(page);await search().fill('#31');
  await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/未标日期/);
  await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'ambiguous-deadline-320.png')});await closeDiscoveryDetails(page);
  await search().fill('QPC47');await row(entry('QPC47',2)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/21 00:40 · ICT/);await closeDiscoveryDetails(page);

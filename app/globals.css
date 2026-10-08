@@ -265,18 +265,62 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .mobile-money .converted-price{font-size:10px;margin:0;font-weight:400}
 .cart-budget .converted-price{font-size:13px;margin:0}
 .cart-entry-money{flex-wrap:wrap}
-.discovery-filter-bar{display:flex;flex-direction:column;gap:11px;padding:0 14px 15px;background:var(--card)}
+.discovery-filter-bar{display:flex;flex-direction:column;gap:7px;padding:10px;background:var(--card)}
 .discovery-filter-bar .date-filter{margin:0;gap:7px}
-.discovery-filter-bar .all-dates,.discovery-filter-bar .calendar-trigger{padding:8px 10px;min-height:38px;font-size:12px}
-.discovery-filter-bar .status-filter{margin:0;padding:0;border:0;background:transparent;gap:6px}
-.discovery-filter-bar .status-filter-heading{justify-content:flex-end;min-height:24px}
-.discovery-filter-bar .status-all{min-height:24px}
-.discovery-filter-bar .status-options{gap:5px}
-.discovery-filter-bar .status-pill{padding:7px 5px;font-size:11px;min-height:36px}
-.discovery-filter-bar .hide-skipped{min-height:25px;padding:2px 0;font-size:11px}
-.discovery-filter-bar .toolbar{padding:0;gap:7px}
-.discovery-filter-bar .results-bar{padding:0}
-.discovery-filter-bar .results-bar>div{margin-top:7px}
+.discovery-filter-bar .calendar-trigger{padding:7px 8px;min-height:44px;width:100%;min-width:0;font-size:11px;gap:5px}
+.calendar-trigger .calendar-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-trigger svg{flex-shrink:0}
+.discovery-filter-bar>.search{flex-basis:auto;min-height:40px;height:40px}
+.discovery-filter-bar>.search input{font-size:12px}
+.discovery-filter-bar>.search button{display:grid;place-items:center;min-width:32px;min-height:32px}
+.discovery-quick-controls{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px}
+.discovery-quick-controls .date-filter{min-width:0}
+.discovery-filter-trigger{display:flex;align-items:center;justify-content:center;gap:5px;min-height:44px;border:1px solid var(--border);border-radius:6px;padding:7px 9px;background:var(--card);color:var(--muted-foreground);font-size:12px}
+.discovery-filter-trigger:hover{background:var(--secondary);color:var(--primary)}
+.discovery-filter-trigger.active{background:var(--secondary);color:var(--primary);border-color:var(--primary)}
+.discovery-filter-trigger>b{display:grid;place-items:center;min-width:16px;height:16px;padding:0 3px;border-radius:4px;font:10px var(--font-data);background:var(--primary);color:var(--primary-foreground)}
+.discovery-filter-bar .results-bar{padding:0;font-size:10px;white-space:nowrap;text-align:right}
+.discovery-filter-bar .results-bar>span{display:block}
+.discovery-active-filters{display:flex;align-items:center;gap:6px;min-width:0;color:var(--primary);font-size:10px;margin-top:-3px}
+.discovery-active-filters>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.discovery-active-filters .clear-filters{flex-shrink:0;display:grid;place-items:center;width:32px;height:32px;padding:0;color:var(--primary)}
+.discovery-workspace{padding-top:10px}
+.discovery-series-header{padding:10px 8px;gap:8px;align-items:center;border-radius:8px;margin-bottom:9px}
+.discovery-back{display:grid;place-items:center;width:44px;min-width:44px;height:44px;border:0;border-radius:6px;background:transparent;color:var(--primary);padding:0}
+.discovery-back:hover{background:var(--secondary)}
+.discovery-series-header .series-logo{width:48px;min-width:48px;height:38px;padding:6px 4px;border-radius:5px}
+.discovery-series-header .series-logo>span{font-size:15px}
+.discovery-series-info{min-width:0;flex:1}
+.discovery-series-info h1{font:600 13px/1.5 var(--font-body);margin:0 0 3px;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.discovery-series-info h1:focus{outline:none}
+.discovery-series-info p{font-size:10px;line-height:1.6;gap:3px;min-width:0;flex-wrap:nowrap}
+.discovery-series-header .discovery-series-location>span{min-width:0;width:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.discovery-series-location>svg{flex-shrink:0}
+.discovery-series-dates{font-variant-numeric:tabular-nums;white-space:nowrap}
+.discovery-filter-sheet{height:100dvh;gap:0}
+.discovery-filter-heading{padding:20px 18px 15px;border-bottom:1px solid var(--border);flex-shrink:0}
+.discovery-filter-heading .cart-close{top:13px;right:10px;display:grid;place-items:center;width:44px;height:44px;padding:0}
+.discovery-filter-scroll{padding:0 18px 16px;overscroll-behavior:contain}
+.discovery-filter-section{padding:18px 0;border-bottom:1px solid var(--border)}
+.discovery-filter-section:last-child{border-bottom:0}
+.discovery-filter-section h3{font-size:13px;margin-bottom:10px}
+.discovery-filter-sheet .status-filter{margin:0;padding:0;border:0;background:transparent;gap:6px}
+.discovery-filter-sheet .status-filter-heading{justify-content:flex-start}
+.discovery-filter-sheet .status-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.discovery-filter-sheet .status-pill{min-height:44px;font-size:12px;gap:6px}
+.discovery-filter-sheet .status-all,.discovery-filter-sheet .hide-skipped{min-height:40px;font-size:12px}
+.discovery-filter-fields{display:grid;gap:12px}
+.discovery-filter-fields h3{margin-bottom:0}
+.discovery-filter-fields>div{display:grid;grid-template-columns:62px minmax(0,1fr);align-items:center;gap:10px}
+.discovery-filter-fields>div>label{font-size:12px;color:var(--muted-foreground)}
+.discovery-filter-fields .filter-select{width:100%;min-width:0;height:44px;font-size:12px}
+.discovery-filter-fields .supplement-toggle{margin:0;min-height:44px;font-size:12px}
+.discovery-filter-footer{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px calc(13px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--card);flex-shrink:0}
+.discovery-filter-reset{min-height:44px;font-size:12px}
+.discovery-filter-done{min-height:44px;flex:1;max-width:220px;font-size:13px}
+.festival-calendar:has(.calendar-all-dates) .calendar-footer{flex-wrap:wrap;padding:12px;gap:8px}
+.festival-calendar:has(.calendar-all-dates) .calendar-footer>span{width:100%;margin-right:0}
+.calendar-footer .calendar-all-dates{margin-right:auto;min-height:40px}
 .profile-page,.admin-page{display:grid;gap:16px}
 .profile-identity{display:flex;align-items:center;gap:12px;padding:19px 16px;background:var(--secondary);border:1px solid var(--border);border-radius:12px}
 .profile-avatar{display:grid;place-items:center;width:52px;height:52px;flex-shrink:0;border-radius:50%;background:var(--primary);color:var(--primary-foreground)}

@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,selectPlannerOption} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -38,11 +38,11 @@ try{
  await region('欧洲').click();assert.equal(await card(triton).count(),1);assert.equal(await card(wpt).count(),0);
  pass('region filtering, keyboard selection, empty recovery and reload persistence remain functional');
  const href=await card(triton).getAttribute('href');assert.ok(href.includes('series='+triton)&&href.includes('view=discover'));
- await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
+ await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
  const first=page.locator(`.mobile-event[data-entry-id="${triton}/T01/T01-D1A"]`);
  await chooseDiscoveryStatus(page,first,'参加');
  await page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill('T12');
- await page.getByRole('link',{name:'返回赛事列表',exact:true}).click();assert.equal(await page.getByRole('radio',{name:'欧洲',exact:true}).getAttribute('aria-checked'),'true');
+ await page.getByRole('button',{name:'返回赛事列表',exact:true}).click();assert.equal(await page.getByRole('radio',{name:'欧洲',exact:true}).getAttribute('aria-checked'),'true');
  await page.reload();await card(triton).waitFor();assert.equal(await page.locator('.festival-card').count(),1);
  await nav('我的日程');await page.locator('.agenda-row').first().waitFor();assert.ok(page.url().includes('series='+triton));
  assert.equal(await page.locator('.agenda-row[data-status="skip"], .agenda-row[data-status="undecided"]').count(),0);
@@ -52,22 +52,22 @@ try{
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'');assert.match(await page.locator('.series-header').innerText(),/PST/);
  await chooseDiscoveryStatus(page,page.locator(`.mobile-event[data-entry-id="${wpt}/W01/R0"]`),'关注');
  await nav('我的自选');await page.locator('.shortlist-table').waitFor();assert.equal(await page.locator('.shortlist-table tr[data-entry-id]').count(),2);assert.match(await page.locator('.shortlist-table').innerText(),/Merit Royal Diamond.*Wynn Las Vegas/s);
- await page.goBack();await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();
+ await page.goBack();await page.getByRole('heading',{name:/完整赛程$/}).waitFor();
  pass('opening another festival resets incompatible filters and retains selections across both series');
- await page.getByRole('link',{name:'返回赛事列表',exact:true}).click();await page.goBack();await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();
+ await page.getByRole('button',{name:'返回赛事列表',exact:true}).click();await page.goBack();await page.getByRole('heading',{name:/完整赛程$/}).waitFor();
  await page.goForward();await card(wpt).waitFor();assert.equal(await page.getByRole('radio',{name:'北美',exact:true}).getAttribute('aria-checked'),'true');
- await card(wpt).locator('img').evaluate(img=>img.dispatchEvent(new Event('error')));assert.equal(await card(wpt).locator('img').count(),0);assert.equal(await card(wpt).locator('.series-logo').innerText(),'WPT');
+ await card(wpt).locator('img').evaluate(img=>img.dispatchEvent(new Event('error')));await card(wpt).locator('.series-logo').getByText('WPT',{exact:true}).waitFor();assert.equal(await card(wpt).locator('img').count(),0);assert.equal(await card(wpt).locator('.series-logo').innerText(),'WPT');
  pass('browser history and image-failure text fallback survive integration');
- await card(wpt).click();await page.locator('.series-header img').evaluate(img=>img.dispatchEvent(new Event('error')));
+ await card(wpt).click();await page.locator('.series-header img').evaluate(img=>img.dispatchEvent(new Event('error')));await page.locator('.series-header .series-logo').getByText('WPT',{exact:true}).waitFor();
  assert.equal(await page.locator('.series-header .series-logo').innerText(),'WPT');
  for(const name of ['Triton ONE · 北塞浦路斯 2026','QPC Circuit · 河内 2026']){
-  await page.getByRole('combobox',{name:'赛事系列',exact:true}).click();await page.getByRole('option',{name,exact:true}).click();
+  await selectPlannerOption(page,'赛事系列',name);
   assert.equal(await page.locator('.series-header img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
  }
  pass('compact headers render both official logos; one brand image failure cannot suppress the next series logo');
  await page.goto(file+'#view=discover&series=missing');await page.getByRole('heading',{name:'没有找到这项赛事',exact:true}).waitFor();assert.equal(await page.locator('.mobile-event').count(),0);
  await page.getByRole('button',{name:'返回赛事首页',exact:true}).last().click();await page.getByRole('radio',{name:'全部地区',exact:true}).waitFor();
- await page.goto(file+'#q=W01&from=2026-11-27&to=2026-11-27');await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();assert.equal(await page.locator('.mobile-event').count(),2);
+ await page.goto(file+'#q=W01&from=2026-11-27&to=2026-11-27');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();assert.equal(await page.locator('.mobile-event').count(),2);
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'W01');
  pass('unknown series offers recovery; old filtered WPT links still open their detailed schedule');
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('all combined homepage flows remain offline without browser errors');

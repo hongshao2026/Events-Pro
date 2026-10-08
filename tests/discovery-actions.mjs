@@ -14,3 +14,45 @@ export async function chooseDiscoveryStatus(page,row,label){
  if(await radio.getAttribute('aria-checked')!=='true')throw new Error('Classification did not update in the visible event detail');
  await closeDiscoveryDetails(page);
 }
+
+const discoveryOptionNames=new Set(['报名费筛选','保底筛选','赛事类型','排序']);
+const seriesIds={'WPT · Wynn 2026':'wpt-wynn-2026','Triton ONE · 北塞浦路斯 2026':'triton-one-cyprus-2026','QPC Circuit · 河内 2026':'qpc-circuit-2026','KPC · 济州岛 2026':'kpc-jeju-2026','JPF · 济州岛 2026':'jeju-poker-festival-2026'};
+
+export async function openDiscoveryFilters(page){
+ const sheet=page.locator('.discovery-filter-sheet');
+ if(!await sheet.isVisible()){await page.getByRole('button',{name:'赛程筛选',exact:true}).click();await sheet.waitFor();}
+ return sheet;
+}
+export async function finishDiscoveryFilters(page){
+ await page.locator('.discovery-filter-sheet').getByRole('button',{name:/^完成筛选，显示 \d+ 个场次$/}).click();
+ await page.locator('.discovery-filter-sheet').waitFor({state:'hidden'});
+ // Radix restores focus after removing the sheet; wait before the next keyboard action.
+ await page.waitForFunction(()=>document.querySelector('button[aria-label="赛程筛选"]')===document.activeElement);
+}
+export async function switchDiscoverySeries(page,label){
+ const id=seriesIds[label];if(!id)throw new Error('Unknown series option: '+label);
+ await page.getByRole('button',{name:'返回赛事列表',exact:true}).click();
+ await page.locator('label.region-option').filter({hasText:/^全部地区$/}).click();
+ await page.locator(`.festival-card[data-series-id="${id}"]`).click();
+ await page.waitForFunction(series=>document.querySelector('.mobile-event')?.getAttribute('data-entry-id')?.startsWith(series+'/'),id);
+}
+export async function selectPlannerOption(page,label,value,{keepOpen=false}={}){
+ if(label==='赛事系列'&&!await page.getByRole('combobox',{name:label,exact:true}).count())return switchDiscoverySeries(page,value);
+ const discovery=discoveryOptionNames.has(label)&&new URLSearchParams(new URL(page.url()).hash.slice(1)).get('view')==='discover';
+ if(discovery)await openDiscoveryFilters(page);
+ await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name:value,exact:true}).click();
+ if(discovery&&!keepOpen)await finishDiscoveryFilters(page);
+}
+export async function readDiscoveryOption(page,label){
+ await openDiscoveryFilters(page);const text=await page.getByRole('combobox',{name:label,exact:true}).innerText();await finishDiscoveryFilters(page);return text;
+}
+export async function setDiscoveryFilterChecked(page,label,checked,{keepOpen=false}={}){
+ const sheet=await openDiscoveryFilters(page);await sheet.getByRole('checkbox',{name:label,exact:true}).setChecked(checked);
+ if(!keepOpen)await finishDiscoveryFilters(page);
+}
+export async function readDiscoveryFilterChecked(page,label){
+ const sheet=await openDiscoveryFilters(page),checked=await sheet.getByRole('checkbox',{name:label,exact:true}).getAttribute('aria-checked');await finishDiscoveryFilters(page);return checked;
+}
+export async function resetDiscoveryFilters(page){
+ const sheet=await openDiscoveryFilters(page);await sheet.getByRole('button',{name:'重置筛选',exact:true}).click();await finishDiscoveryFilters(page);
+}

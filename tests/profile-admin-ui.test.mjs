@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,selectPlannerOption,openDiscoveryFilters,finishDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -14,7 +14,7 @@ const file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href;
 const data=JSON.parse(await fs.readFile('lib/qpc-circuit-2026.json','utf8')),blast=data.find(e=>e.id==='QPC01');
 const row=()=>page.locator(`.mobile-event[data-entry-id="qpc-circuit-2026/QPC01/${blast.starts[0].id}"]`);
 const nav=name=>page.locator('.bottom-nav').getByRole('button',{name,exact:true}).click();
-const select=async(label,value)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name:value,exact:true}).click();};
+const select=(label,value)=>selectPlannerOption(page,label,value);
 const discover=async()=>{await nav('赛事');await page.getByRole('link',{name:'查看 QPC Circuit 2026 完整赛程',exact:true}).click();};
 const manage=async()=>{await nav('我的');await page.getByRole('button',{name:/管理后台/}).click();};
 const failWrites=()=>page.evaluate(()=>{window.originalSettingWrite=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('Full','QuotaExceededError');};});
@@ -23,11 +23,11 @@ const fits=async()=>assert.equal(await page.evaluate(()=>document.documentElemen
 try{
  await page.goto(file+'#view=discover&series=qpc-circuit-2026');await row().waitFor();
  assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000\s*（≈¥232.20）/);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
- assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('region',{name:'赛程筛选',exact:true}).count(),1);
- const filterText=await page.getByRole('region',{name:'赛程筛选',exact:true}).innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);
+ assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('button',{name:'赛程筛选',exact:true}).count(),1);assert.equal(await page.locator('.discovery-filter-sheet').count(),0);
+ await openDiscoveryFilters(page);const filterText=await page.locator('.discovery-filter-sheet').innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);await finishDiscoveryFilters(page);
  assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),0);assert.doesNotMatch(await page.locator('.schedule-panel').innerText(),/个可报名场次/);
- await chooseDiscoveryStatus(page,row(),'参加');await page.locator('.discovery-filter-bar').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(out,'filters-390.png')});
- pass('four navigation items, consolidated filter bar, removed helper copy and native price with parenthesized conversion');
+ await chooseDiscoveryStatus(page,row(),'参加');await openDiscoveryFilters(page);await page.screenshot({path:resolve(out,'filters-390.png')});await finishDiscoveryFilters(page);
+ pass('four navigation items, on-demand filter sheet, removed helper copy and native price with parenthesized conversion');
  await nav('我的');await page.getByLabel('用户名',{exact:true}).fill('小邵');await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionstart');await page.locator('.profile-name-form').dispatchEvent('submit');assert.doesNotMatch(await page.locator('.profile-identity').innerText(),/小邵/);await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionend');await page.getByRole('button',{name:'保存',exact:true}).click();
  assert.match(await page.locator('.profile-identity').innerText(),/小邵.*VIP 0/s);assert.match(await page.locator('.settings-facts').innerText(),/未登录/);
  await select('显示货币','越南盾 · VND');await page.reload();assert.equal(await page.getByLabel('用户名',{exact:true}).inputValue(),'小邵');

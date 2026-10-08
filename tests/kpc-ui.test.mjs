@@ -1,4 +1,4 @@
-import {chooseDiscoveryStatus,closeDiscoveryDetails} from './discovery-actions.mjs';
+import {chooseDiscoveryStatus,closeDiscoveryDetails,selectPlannerOption,readDiscoveryOption,resetDiscoveryFilters} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -29,7 +29,7 @@ const row=id=>page.locator(`.mobile-event[data-entry-id="${id}"]`);
 const search=()=>page.getByRole('textbox',{name:'搜索赛事',exact:true});
 const choose=async(id,status)=>{await chooseDiscoveryStatus(page,row(id),status);};
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();};
-const select=async(label,name)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name,exact:true}).click();};
+const select=(label,name)=>selectPlannerOption(page,label,name);
 const fits=async locator=>{assert.equal(await locator.evaluate(element=>element.scrollWidth>element.clientWidth+1),false);};
 const hashValue=key=>new URLSearchParams(new URL(page.url()).hash.slice(1)).get(key);
 const matchingStarts=(currency,predicate)=>data.filter(event=>event.currency===currency).flatMap(event=>event.starts.filter(slot=>predicate(slot,event)).map(slot=>`${series}/${event.id}/${slot.id}`));
@@ -50,9 +50,9 @@ try{
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  pass('KPC opens the verified 86 starts and 73 events with official numbers, exact minute times, Korean amounts and local deadlines');
 
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await select('报名费筛选','₩500,000 及以下 · KRW');
+ await resetDiscoveryFilters(page);await select('报名费筛选','₩500,000 及以下 · KRW');
  assert.equal(hashValue('buyin'),'KRW:500000');await checkFilter(matchingStarts('KRW',(slot,event)=>(slot.buyin??event.buyin)<=500000));
- await page.reload();assert.match(await page.getByRole('combobox',{name:'报名费筛选',exact:true}).innerText(),/₩500,000.*KRW/);
+ await page.reload();assert.match(await readDiscoveryOption(page,'报名费筛选'),/₩500,000.*KRW/);
  await select('报名费筛选','$5,000 及以下 · USD');assert.equal(hashValue('buyin'),'USD:5000');
  await checkFilter(matchingStarts('USD',(slot,event)=>(slot.buyin??event.buyin)<=5000));
  await select('报名费筛选','全部报名费');await select('保底筛选','₩300,000,000 及以上 · KRW');
@@ -61,15 +61,15 @@ try{
  await page.screenshot({path:resolve(output,'native-filter-320.png')});
  pass('mixed-series native buy-in and guarantee filters isolate KRW and USD, retain explicit currency on reload and fit 320px');
 
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await search().fill(official(63).id);
+ await resetDiscoveryFilters(page);await search().fill(official(63).id);
  await select('赛事类型','德州扑克正赛');assert.equal(await page.locator('.mobile-event').count(),0);
  await select('赛事类型','PLO / 混合游戏');assert.equal(await page.locator('.mobile-event').count(),1);assert.match(await page.locator('.mobile-event').innerText(),/NLH \/ PLO MIXED/);
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await select('赛事类型','卫星赛');
+ await resetDiscoveryFilters(page);await select('赛事类型','卫星赛');
  assert.match(await page.locator('.results-bar').innerText(),/8.*场次.*8.*赛事/s);
  assert.deepEqual((await page.locator('.mobile-event .event-flight').allInnerTexts()).map(label=>label.replace(/^\s*·\s*/,'')),Array(8).fill('首轮'));
  pass('NLH/PLO mixed games stay out of the NLH filter and all eight satellite entries retain their own first-round stage');
 
- await page.getByRole('button',{name:'重置筛选',exact:true}).click();await search().fill(main.id);
+ await resetDiscoveryFilters(page);await search().fill(main.id);
  assert.equal(await page.locator('.mobile-event').count(),6);assert.match(await row(entry(main)).innerText(),/13:30/);
  assert.equal((await row(entry(main,2)).locator('.event-flight').innerText()).replace(/^\s*·\s*/,''),'Day 1C Turbo');
  await choose(entry(main),'参加');await choose(entry(main,1),'参加');await nav('我的日程');
