@@ -29,17 +29,28 @@ assert.equal(event(40).levels,'15/10/5/2');assert.match(event(79).starts[0].regi
 console.log('PASS all 178 Jeju PDF rows reconcile: 140 events, 160 starts, 18 continuations, two USD events, 13 normalized midnights and exact bounty-inclusive totals');
 const out='.sites-runtime/jeju-unit';
 await build({configFile:false,logLevel:'error',build:{outDir:out,emptyOutDir:true,minify:false,lib:{entry:Object.fromEntries(['catalog','agenda','money','app-settings','local-store','schedule'].map(n=>[n,resolve(`lib/${n}.ts`)])),formats:['es'],fileName:(_f,n)=>n+'.js'}}});
-const [{entries},{agendaActivities},{matchesMoneyFilter,seriesMoneyFilters,convertedAmount},{defaultSettings,validateSettings,managedCatalog},{emptyState,budget,makeBackup,parseBackup},{isNlh}]=await Promise.all(['catalog','agenda','money','app-settings','local-store','schedule'].map(n=>import(pathToFileURL(resolve(out,n+'.js')).href)));
+const [{entries},{agendaActivities},{matchesMoneyFilter,moneyFilters,convertedAmount},{defaultSettings,validateSettings,managedCatalog},{emptyState,budget,makeBackup,parseBackup},{isNlh}]=await Promise.all(['catalog','agenda','money','app-settings','local-store','schedule'].map(n=>import(pathToFileURL(resolve(out,n+'.js')).href)));
 const state=emptyState(),attend=id=>{state.selections[id]={status:'attend',version:1};};
 const choose=n=>entries.find(e=>e.eventId==='JPF-'+n);
 for(const n of [1,3,79])attend(choose(n).id);attend(entries.filter(e=>e.eventId==='JPF-3')[1].id);attend('wpt-wynn-2026/W01/R0');
 assert.deepEqual(budget(state).totals,{KRW:2600000,USD:8600});assert.equal(budget(state).unknownCount,1);
 assert.equal(agendaActivities(state,false,'jeju-poker-festival-2026').filter(a=>a.kind==='continuation'&&a.status==='attend').length,3);
 state.budgetMode='events';assert.deepEqual(budget(state).totals,{KRW:1300000,USD:8600});assert.equal(budget(state).unknownCount,1);assert.deepEqual(parseBackup(JSON.stringify(makeBackup(state))).state,state);
-assert.equal(matchesMoneyFilter('KRW:1000000',8000,'USD','KRW','buyin'),false);assert.equal(matchesMoneyFilter('USD:8000',8000,'USD','KRW','buyin'),true);assert.equal(matchesMoneyFilter('KRW:1000000',null,'KRW','KRW','buyin'),false);
-assert.ok(seriesMoneyFilters('KRW',['KRW','USD']).buyin.some(([v])=>v==='USD:8000'));assert.equal(isNlh(event(119)),false);
+assert.equal(matchesMoneyFilter(8000,'USD','KRW:1000000','lte','KRW'),false);assert.equal(matchesMoneyFilter(8000,'USD','USD:8000','lte','KRW'),true);assert.equal(matchesMoneyFilter(null,'KRW','KRW:1000000','lte','KRW'),false);
+assert.ok(moneyFilters('KRW',['KRW','USD']).buyin.some(([v])=>v==='USD:8000'));assert.equal(isNlh(event(119)),false);
 assert.equal(convertedAmount(1300000,'KRW','CNY',defaultSettings().fx.rates),6445.4);
 const old=defaultSettings();delete old.fx.rates.KRW;old.fx.asOf='2026-10-06';const migrated=validateSettings(old);assert.equal(migrated.fx.rates.KRW,0.004958);assert.equal(migrated.fx.asOf,'2026-10-08');assert.equal(old.fx.rates.KRW,undefined);
 old.fx.rates.USD=7;old.fx.source='My rates';const custom=validateSettings(old);assert.equal(custom.fx.rates.USD,7);assert.equal(custom.fx.rates.KRW,null);assert.equal(custom.fx.asOf,'2026-10-06');
 const managed=managedCatalog({'JPF-1':{buyin:0}});assert.equal(budget(state,managed.entries,managed.eventMap).unknownCount,0);assert.equal(managedCatalog({'JPF-3':{buyin:null}}).entries.find(e=>e.eventId==='JPF-3').buyin,null);
 console.log('PASS KRW/USD budgets, unknown-price accounting, currency-scoped filters, conditional continuations, legacy settings migration and deliberate zero/unknown admin overrides');
+
+const combined=emptyState();
+for(const eventId of ['KPC08','JPF-3'])for(const entry of entries.filter(item=>item.eventId===eventId).slice(0,2))combined.selections[entry.id]={status:'attend',version:1};
+for(const eventId of ['KPC03','JPF-79','JPF-1','W01']){const entry=entries.find(item=>item.eventId===eventId);combined.selections[entry.id]={status:'attend',version:1};}
+assert.deepEqual(budget(combined).totals,{KRW:5200000,USD:13600});assert.equal(budget(combined).unknownCount,1);
+for(const [seriesId,eventId]of [['kpc-jeju-2026','KPC08'],['jeju-poker-festival-2026','JPF-3']]){
+ const continuations=agendaActivities(combined,false,seriesId).filter(activity=>activity.event.id===eventId&&activity.kind==='continuation'&&activity.status==='attend');
+ assert.equal(continuations.length,2);assert.ok(continuations.every(activity=>activity.buyin===0&&activity.entry.seriesId===seriesId));
+}
+combined.budgetMode='events';assert.deepEqual(budget(combined).totals,{KRW:2600000,USD:13600});assert.equal(budget(combined).unknownCount,1);assert.deepEqual(parseBackup(JSON.stringify(makeBackup(combined))).state,combined);
+console.log('PASS KPC and JPF combine same-currency budgets, retain independent continuation groups and round-trip both festivals in a v2 backup');

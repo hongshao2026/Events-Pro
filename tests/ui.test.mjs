@@ -62,6 +62,7 @@ await import('./triton-ui.test.mjs');
 await import('./home-ui.test.mjs');
 await import('./qpc-ui.test.mjs');
 await import('./profile-admin-ui.test.mjs');
+await import('./kpc-ui.test.mjs');
 await import('./jeju-ui.test.mjs');
 await import('./shortlist-ui.test.mjs');
 await import('./shortlist-image-ui.test.mjs');

@@ -1,6 +1,7 @@
 import wptLogo from '../assets/wpt-logo.png?inline';
 import tritonOneLogo from '../assets/triton-one-logo.png?inline';
 import quadsLogo from '../assets/quads-logo.svg?inline';
+import kpcLogo from '../assets/kpc-logo.png?inline';
 import jpfLogo from '../assets/jpf-2026-logo.png?inline';
 import tritonPdf from '../sources/triton-one-cyprus-2026.pdf?inline';
 import jejuPdf from '../sources/jeju-poker-festival-2026.pdf?inline';
@@ -41,6 +42,13 @@ export const seriesList:Series[] = [
     start:'2026-10-12',end:'2026-10-21',timeZone:'Asia/Ho_Chi_Minh',timeLabel:'ICT',currency:'VND',
     eventCount:77,entryCount:91,logo:{src:quadsLogo,alt:'Quads · Hanoi Poker Club'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
     sourceUrl:'https://quadspoker.vn/series/qpc-circuit-2026',
+  },
+  {
+    id:'kpc-jeju-2026',title:'KPC Poker Series Jeju 2026',shortTitle:'KPC · 济州岛 2026',mark:'KPC',brand:'KPC',
+    country:'韩国',countryCode:'KR',region:'apac',venue:'LES A Casino',city:'济州岛',
+    start:'2026-10-10',end:'2026-10-21',timeZone:'Asia/Seoul',timeLabel:'KST',currency:'KRW',currencies:['KRW','USD'],
+    eventCount:73,entryCount:86,logo:{src:kpcLogo,alt:'KPC Poker'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-08（读取官网）',
+    sourceUrl:'https://www.kpcpoker.com/seriesTournament.jhtml?leagueId=d3f5de57-34a5-4b16-bfe6-7b44251595f7&lang=en',
   },
   {
     id:'jeju-poker-festival-2026',title:'Jeju Poker Festival 2026',shortTitle:'JPF · 济州岛 2026',mark:'JPF',brand:'JPF',

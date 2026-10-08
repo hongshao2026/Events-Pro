@@ -69,7 +69,7 @@ export function buildShortlistImageModel(state:PlannerState,options:ShortlistIma
 
 const PAGE_WIDTH=1440,MARGIN=40,TABLE_WIDTH=PAGE_WIDTH-MARGIN*2;
 const MAX_DIMENSION=8192,MAX_PIXELS=12_000_000;
-const COLUMN_WIDTHS=[350,162,130,100,165,150,303];
+const COLUMN_WIDTHS=[290,158,182,92,192,182,264];
 const HEADERS=['赛事','开赛时间','报名费','状态','计入预算','保底 / 席位','系列 / 地点'];
 const HEADER_HEIGHT=48,FOOTER_HEIGHT=112;
 const CELL_PADDING=14;
@@ -96,7 +96,7 @@ function imageTheme():Theme{
  };
 }
 type TextStyle={font:string;color:string;lineHeight:number};
-type Block={text:string;style:TextStyle;gap?:number};
+type Block={text:string;style:TextStyle;gap?:number;keepAmount?:boolean};
 type LaidBlock=Block&{lines:string[]};
 type Cell={blocks:LaidBlock[];height:number;align:'left'|'right'};
 type LaidRow={cells:Cell[];height:number};
@@ -131,20 +131,37 @@ function makeLayout(ctx:CanvasRenderingContext2D,model:ShortlistImageModel,theme
  const note:TextStyle={font:`400 16px ${theme.body}`,color:theme.muted,lineHeight:22};
  const money:TextStyle={font:`500 19px ${theme.data}`,color:theme.ink,lineHeight:25};
  const b=(text:string,style=body,gap=0):Block=>({text,style,gap});
+ const moneyBlocks=(label:string,color=theme.ink):Block[]=>{
+  const split=label.indexOf('（'),original=split<0?label:label.slice(0,split);
+  return [{...b(original,{...money,color}),keepAmount:true},...(split<0?[]:[{...b(label.slice(split),note,4),keepAmount:true}])];
+ };
  const rows=model.rows.map(row=>{
   const statusText=row.status==='watch'?'关注':row.status==='pending'?'待安排':'参加';
   const statusStyle={...body,font:`600 19px ${theme.body}`,color:row.status==='watch'?theme.watch:theme.attend};
   const blocks:Block[][]=[
    [b(row.title,title),b(row.detail,note,5)],
    [b(row.date),b(row.time,note,5)],
-   [b(row.buyinLabel,money)],
+   moneyBlocks(row.buyinLabel),
    [b(statusText,statusStyle)],
-   [b(row.amountLabel,{...money,color:row.status==='watch'?theme.muted:theme.ink}),b(row.budgetNote,note,5)],
-   [b(row.guarantee),b(row.guaranteeNote,note,5)],
+   [...moneyBlocks(row.amountLabel,row.status==='watch'?theme.muted:theme.ink),b(row.budgetNote,note,5)],
+   [{...b(row.guarantee),keepAmount:/\d/u.test(row.guarantee)},b(row.guaranteeNote,note,5)],
    [b(row.series),b(row.location,note,5)],
   ];
   const cells=blocks.map((content,index):Cell=>{
-   const laid=content.map(block=>({...block,lines:wrapText(ctx,block.text,COLUMN_WIDTHS[index]-CELL_PADDING*2,block.style.font)}));
+   const width=COLUMN_WIDTHS[index]-CELL_PADDING*2;
+   const laid=content.map(block=>{
+    let style=block.style;
+    // Keep normal currency amounts intact. Unusually long managed amounts can
+    // shrink to 12px, then fall back to wrapping without losing any digits.
+    if(block.keepAmount){
+     const size=Number(style.font.match(/(\d+)px/u)?.[1]||19);
+     for(let next=size;next>=12;next--){
+      const font=style.font.replace(/\d+px/u,`${next}px`);ctx.font=font;
+      style={...style,font};if(ctx.measureText(block.text).width<=width)break;
+     }
+    }
+    return {...block,style,lines:wrapText(ctx,block.text,width,style.font)};
+   });
    return {blocks:laid,height:laid.reduce((sum,block)=>sum+(block.gap||0)+block.lines.length*block.style.lineHeight,0),align:index===2||index===4?'right':'left'};
   });
   return {cells,height:Math.max(84,...cells.map(cell=>cell.height+CELL_PADDING*2))};

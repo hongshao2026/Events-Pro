@@ -6,8 +6,8 @@ import {statuses,shortlistStatuses,statusLabels,type Status} from '@/lib/schedul
 import {entryName,type Entry} from '@/lib/catalog';
 export const longLabels:Record<Status,string>={undecided:'待定',attend:'计划参加',watch:'正在关注',skip:'不考虑'};
 const icons={undecided:Minus,attend:Check,watch:Star,skip:X};
-export function FilterSelect({label,value,onChange,options,disabled=false,id}:{id?:string;label:string;value:string;onChange:(v:string)=>void;options:[string,string][];disabled?:boolean}){
- return <ChoiceRoot value={value} onValueChange={onChange} disabled={disabled}><SelectTrigger id={id} className="filter-select" aria-label={label}><SelectValue/></SelectTrigger><SelectContent position="popper" align="start" className="filter-popup">{options.map(([v,t])=><SelectItem key={v} value={v}>{t}</SelectItem>)}</SelectContent></ChoiceRoot>;
+export function FilterSelect({label,value,onChange,options,disabled=false,id,fitOptions=false}:{id?:string;label:string;value:string;onChange:(v:string)=>void;options:[string,string][];disabled?:boolean;fitOptions?:boolean}){
+ return <ChoiceRoot value={value} onValueChange={onChange} disabled={disabled}><SelectTrigger id={id} className="filter-select" aria-label={label}><SelectValue/></SelectTrigger><SelectContent position="popper" align="start" className={`filter-popup${fitOptions?' fit-options':''}`}>{options.map(([v,t])=><SelectItem key={v} value={v}>{t}</SelectItem>)}</SelectContent></ChoiceRoot>;
 }
 export function EntryActions({entry,value,disabled,onChange}:{entry:Entry;value:Status;disabled:boolean;onChange:(s:Status)=>void}){
  return <RadioGroup className="classification" value={value} onValueChange={v=>onChange(v as Status)} disabled={disabled} aria-label={`${entryName(entry)} 的分类`}>{statuses.map(s=>{const Icon=icons[s];return <label key={s} data-status={s} className={`class-option ${s} ${value===s?'selected':''}`}><RadioGroupItem value={s} className="sr-only" aria-label={statusLabels[s]}/><Icon size={14}/><span>{statusLabels[s]}</span></label>;})}</RadioGroup>;

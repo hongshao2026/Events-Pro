@@ -5,8 +5,8 @@ export const displayCurrencies:DisplayCurrency[]=['CNY','USD','VND','HKD','KRW']
 export const currencyNames:Record<DisplayCurrency,string>={CNY:'人民币',USD:'美元',VND:'越南盾',HKD:'港币',KRW:'韩元'};
 export const currencies:Currency[]=['USD','VND','KRW'];
 const symbols:Record<DisplayCurrency,string>={USD:'$',VND:'₫',CNY:'¥',HKD:'HK$',KRW:'₩'};
-const integerCurrency=(currency:DisplayCurrency)=>currency==='VND'||currency==='KRW';
-export const money=(value:number|null,currency:DisplayCurrency='USD')=>value===null?'未公布':symbols[currency]+value.toLocaleString('en-US',{maximumFractionDigits:integerCurrency(currency)?0:2});
+const fractionDigits=(currency:DisplayCurrency)=>currency==='VND'||currency==='KRW'?0:2;
+export const money=(value:number|null,currency:DisplayCurrency='USD')=>value===null?'未公布':symbols[currency]+value.toLocaleString('en-US',{maximumFractionDigits:fractionDigits(currency)});
 export type ExchangeRates=Record<DisplayCurrency,number|null>;
 export function convertedAmount(value:number,from:DisplayCurrency,to:CurrencyPreference,rates:ExchangeRates):number|null{
  if(to==='original'||from===to)return null;
@@ -15,13 +15,13 @@ export function convertedAmount(value:number,from:DisplayCurrency,to:CurrencyPre
  const amount=value*source/target;
  return Number.isFinite(amount)?amount:null;
 }
-export const convertedMoney=(value:number,currency:DisplayCurrency)=>symbols[currency]+value.toLocaleString('en-US',{minimumFractionDigits:integerCurrency(currency)?0:2,maximumFractionDigits:integerCurrency(currency)?0:2});
+export const convertedMoney=(value:number,currency:DisplayCurrency)=>symbols[currency]+value.toLocaleString('en-US',{minimumFractionDigits:fractionDigits(currency),maximumFractionDigits:fractionDigits(currency)});
 
-// Thresholds are in the selected series' native currency; no implicit FX conversion.
-export function moneyFilters(currency:Currency):{buyin:[string,string][];gtd:[string,string][];quick:{buyin:string;gtd:string}}{
+type MoneyFilters={buyin:[string,string][];gtd:[string,string][];quick:{buyin:string;gtd:string}};
+function nativeMoneyFilters(currency:Currency):MoneyFilters{
  return currency==='KRW'?{
-  buyin:[['all','全部报名费'],['300000','₩30万及以下'],['500000','₩50万及以下'],['1000000','₩100万及以下'],['1500000','₩150万及以下'],['2500000','₩250万及以下'],['4000000','₩400万及以下'],['8000000','₩800万及以下']],
-  gtd:[['all','全部保底'],['880000000','₩8.8亿及以上'],['1200000000','₩12亿及以上'],['1800000000','₩18亿及以上']],
+  buyin:[['all','全部报名费'],['100000','₩100,000 及以下'],['300000','₩300,000 及以下'],['500000','₩500,000 及以下'],['800000','₩800,000 及以下'],['1000000','₩1,000,000 及以下'],['1500000','₩1,500,000 及以下'],['2000000','₩2,000,000 及以下'],['2500000','₩2,500,000 及以下'],['3000000','₩3,000,000 及以下'],['4000000','₩4,000,000 及以下'],['5000000','₩5,000,000 及以下'],['8000000','₩8,000,000 及以下'],['10000000','₩10,000,000 及以下']],
+  gtd:[['all','全部保底'],['50000000','₩50,000,000 及以上'],['100000000','₩100,000,000 及以上'],['300000000','₩300,000,000 及以上'],['880000000','₩880,000,000 及以上'],['1000000000','₩1,000,000,000 及以上'],['1200000000','₩1,200,000,000 及以上'],['1800000000','₩1,800,000,000 及以上'],['2000000000','₩2,000,000,000 及以上']],
   quick:{buyin:'1000000',gtd:'880000000'},
  }:currency==='VND'?{
   buyin:[['all','全部报名费'],['2500000','250万₫及以下'],['4500000','450万₫及以下'],['6600000','660万₫及以下'],['11000000','1,100万₫及以下'],['22000000','2,200万₫及以下'],['55000000','5,500万₫及以下']],
@@ -33,13 +33,28 @@ export function moneyFilters(currency:Currency):{buyin:[string,string][];gtd:[st
   quick:{buyin:'1999',gtd:'250000'},
  };
 }
-export function seriesMoneyFilters(currency:Currency,others:Currency[]=[currency]){
- if(others.length<2)return moneyFilters(currency);
- const options=(kind:'buyin'|'gtd'):[string,string][]=>[["all",kind==='buyin'?'全部报名费':'全部保底'],...others.flatMap(c=>moneyFilters(c)[kind].filter(([v])=>v!=='all').map(([v,label])=>[`${c}:${v}`,label] as [string,string]))];
- return {buyin:options('buyin'),gtd:options('gtd')};
+
+// Mixed-currency series keep native thresholds explicit; no implicit FX conversion.
+export function moneyFilters(currency:Currency,supportedCurrencies:Currency[]=[currency]):MoneyFilters{
+ const supported=[...new Set([currency,...supportedCurrencies])];
+ if(supported.length===1)return nativeMoneyFilters(currency);
+ const options=(kind:'buyin'|'gtd'):[string,string][]=>[
+  ['all',kind==='buyin'?'全部报名费':'全部保底'],
+  ...supported.flatMap(native=>nativeMoneyFilters(native)[kind].filter(([value])=>value!=='all').map(([value,label]):[string,string]=>[`${native}:${value}`,`${label} · ${native}`])),
+ ];
+ const quick=nativeMoneyFilters(currency).quick;
+ return {buyin:options('buyin'),gtd:options('gtd'),quick:{buyin:`${currency}:${quick.buyin}`,gtd:`${currency}:${quick.gtd}`}};
 }
-export function matchesMoneyFilter(filter:string,value:number|null,currency:Currency,fallback:Currency,kind:'buyin'|'gtd'){
- if(filter==='all')return true;if(value===null)return false;
- const parts=filter.split(':'),unit=parts.length===2?parts[0]:fallback,limit=Number(parts.at(-1));
- return currency===unit&&(kind==='buyin'?value<=limit:value>=limit);
+
+// Keep callers of the former JPF helper on the same option and validation contract.
+export const seriesMoneyFilters=moneyFilters;
+
+export function matchesMoneyFilter(amount:number|null,currency:Currency,value:string,comparison:'lte'|'gte',defaultCurrency:Currency):boolean{
+ if(value==='all')return true;
+ if(amount===null)return false;
+ const match=/^(?:(USD|VND|KRW):)?(\d+(?:\.\d+)?)$/.exec(value);
+ if(!match||(match[1]||defaultCurrency)!==currency)return false;
+ const threshold=Number(match[2]);
+ if(!Number.isFinite(amount)||!Number.isFinite(threshold))return false;
+ return comparison==='lte'?amount<=threshold:amount>=threshold;
 }

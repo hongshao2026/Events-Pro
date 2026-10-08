@@ -172,13 +172,24 @@ try{
  for(const zone of ['PST','ICT','KST'])assert.ok(mixedImage.text.includes(zone));
  assert.ok(!mixedImage.text.includes('1 USD = 6.7 CNY'),'Export has no stale hard-coded exchange rate');
  await closePreview();
+ const validSettingsRaw=await page.evaluate(key=>localStorage.getItem(key),SETTINGS_KEY),validPlanRaw=await readState(),corruptSettingsRaw='{broken-settings';
+ await page.evaluate(([key,raw])=>localStorage.setItem(key,raw),[SETTINGS_KEY,corruptSettingsRaw]);await page.reload();await rows().first().waitFor();
+ assert.equal(await exportButton().isDisabled(),true);assert.match(await page.locator('#shortlist-export-description').innerText(),/恢复有效的个人与管理设置/);
+ const blockedDownloads=[],recordBlockedDownload=download=>blockedDownloads.push(download);page.on('download',recordBlockedDownload);
+ await exportButton().evaluate(button=>button.click());await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ assert.equal(await sheet().count(),0);assert.equal(await page.evaluate(()=>window.imageEncodes.length),0);assert.deepEqual(blockedDownloads,[]);page.off('download',recordBlockedDownload);
+ assert.equal(await page.evaluate(key=>localStorage.getItem(key),SETTINGS_KEY),corruptSettingsRaw);assert.equal(await readState(),validPlanRaw);
+ await page.evaluate(([key,raw])=>{localStorage.setItem(key,raw);window.dispatchEvent(new StorageEvent('storage',{key,newValue:raw}));},[SETTINGS_KEY,validSettingsRaw]);
+ await page.waitForFunction(()=>!document.querySelector('button[aria-label="导出图片"]')?.disabled);assert.match(await qpcRow.innerText(),/QPC 自选导出管理测试/);
+ const settingsRecovered=await capture('recovered-settings');assert.ok(settingsRecovered.text.includes('QPC 自选导出管理测试'));await closePreview();
+ pass('corrupt settings block image generation and download without overwriting raw settings or selections; restoring valid settings recovers managed export');
  settings.profile.currency='original';await saveState(mixed,settings);const nativeImage=await capture('original-currencies');assert.ok(!nativeImage.text.includes('≈'));await closePreview();
  settings.profile.currency='HKD';settings.fx.rates.HKD=null;await saveState(mixed,settings);const missingImage=await capture('missing-exchange-rate');assert.ok(missingImage.text.includes('汇率未设置'));assert.ok(!missingImage.text.includes('HK$0'));await closePreview();
  pass('table and real PNG share managed hidden events, USD/VND/KRW subtotals, unpublished fees, personal currency and editable or missing rates');
 
  const full=emptyState();full.revision=1;
  for(const [index,entry]of entries.entries())full.selections[entry.id]={status:index%3===0?'watch':'attend',version:1};
- await saveState(full);assert.equal(await rows().count(),entries.length);assert.ok(new Set(entries.map(entry=>entry.seriesId)).size>=4,'The stress fixture includes every integrated series');
+ await saveState(full);assert.equal(await rows().count(),entries.length);assert.ok(new Set(entries.map(entry=>entry.seriesId)).size>=5,'The stress fixture includes every integrated series');
  const fullBefore=await readState(),large=await capture('full-catalog');
  assert.ok(large.size.height/large.size.width>complete.size.height/complete.size.width*5,'Image proportions grow with the full plan even when it scales to fit device limits');
  assert.ok(Math.max(large.size.width,large.size.height)<=8192);

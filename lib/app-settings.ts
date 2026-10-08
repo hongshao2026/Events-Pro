@@ -23,8 +23,9 @@ export function validateSettings(value:unknown):AppSettings{
  // The original four-currency v1 store remains valid. Never overwrite a user's custom rates.
  if(!Object.hasOwn(validFx.rates,'KRW')){const original=validFx.asOf==='2026-10-06'&&validFx.source==='中国银行折算价'&&validFx.rates.USD===6.7351&&validFx.rates.VND===0.000258&&validFx.rates.HKD===0.8584;validFx.rates.KRW=original?0.004958:null;if(original)validFx.asOf='2026-10-08';}
  if(new Date(validFx.asOf).toISOString().slice(0,10)!==validFx.asOf)fail();
- for(const currency of displayCurrencies){const rate=validFx.rates[currency];if(rate!==null&&(typeof rate!=='number'||!Number.isFinite(rate)||rate<1e-8||rate>1e8))fail();}
- if(validFx.rates.CNY!==1||!object(overrides)||Object.keys(overrides).length>events.length)fail();
+ const rates=validFx.rates;
+ for(const currency of displayCurrencies){const rate=rates[currency];if(rate!==null&&(typeof rate!=='number'||!Number.isFinite(rate)||rate<1e-8||rate>1e8))fail();}
+ if(rates.CNY!==1||!object(overrides)||Object.keys(overrides).length>events.length)fail();
  const clean:Record<string,EventOverride>={};
  for(const [id,patch]of Object.entries(overrides as Record<string,unknown>)){
   const event=known.get(id);if(!event||!object(patch))fail();
@@ -37,7 +38,7 @@ export function validateSettings(value:unknown):AppSettings{
   if(p.hidden!==undefined&&typeof p.hidden!=='boolean')fail();
   clean[id]={...p} as EventOverride;
  }
- return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,validFx.rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
+ return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
 }
 export function readSettings():AppSettings{
  try{const raw=localStorage.getItem(SETTINGS_KEY);return raw?validateSettings(JSON.parse(raw)):defaultSettings();}
