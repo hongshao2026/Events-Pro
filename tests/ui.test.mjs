@@ -21,7 +21,7 @@ const choose=async(event,slot,status)=>{await chooseDiscoveryStatus(page,row(eve
 const all=()=>page.getByRole('checkbox',{name:'参加与关注',exact:true});
 const cal=()=>page.locator('.schedule-calendar-panel');
 const day=(month,date)=>cal().getByRole('button',{name:new RegExp(`^2026年${month}月${date}日`)});
-const palette=locator=>locator.evaluate(e=>{const surface=e.querySelector('.event-date')||e,style=getComputedStyle(surface);return {background:style.backgroundColor,border:surface===e?style.borderLeftColor:style.color};});
+const palette=locator=>locator.evaluate(e=>{const surface=e.querySelector('.event-time-block .event-clock-label')||e,style=getComputedStyle(surface);return {background:style.backgroundColor,border:surface===e?style.borderLeftColor:style.color};});
 const settle=()=>page.waitForTimeout(150);
 try{
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row('W01','R0').waitFor();assert.equal(await page.locator('.mobile-event').count(),15);pass('phone discovery renders 15 independently selectable flights');

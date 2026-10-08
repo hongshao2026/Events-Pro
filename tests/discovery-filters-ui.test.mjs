@@ -50,6 +50,8 @@ try{
  pass('same-trigger and Escape close filters; outside search keeps focus, internal scrolling stays open, and page scrolling dismisses the dropdown');
 
  await chooseDiscoveryStatus(page,first(),'参加');const baseline=await saved();
+ // Finish the detail sheet's delayed focus restoration before starting another keyboard interaction.
+ await page.waitForFunction(entry=>document.querySelector(`.mobile-event[data-entry-id="${entry}"] .event-row-open`)===document.activeElement,id);
  await trigger().focus();await page.keyboard.press('Enter');await popover().waitFor();
  assert.equal(await popover().getByRole('textbox',{name:'搜索赛事',exact:true}).count(),0);assert.equal(await popover().getByRole('button',{name:/^选择赛事日期/}).count(),0);
  await setDiscoveryFilterChecked(page,'全部赛事',false,{keepOpen:true});assert.equal(await page.locator('.mobile-event').count(),0);

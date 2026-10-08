@@ -20,6 +20,17 @@ const discover=async series=>{await page.goto(file+'#view=discover&series='+seri
 const nav=name=>page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();
 const classify=async label=>{await sheet().locator('.class-option').filter({hasText:new RegExp('^'+label+'$')}).click();assert.equal(await sheet().getByRole('radio',{name:label,exact:true}).getAttribute('aria-checked'),'true');};
 const fits=async(locator,label)=>assert.equal(await locator.evaluate(element=>element.scrollWidth>element.clientWidth+1),false,label);
+const overlaps=(a,b)=>a.x<b.x+b.width-1&&a.x+a.width>b.x+1&&a.y<b.y+b.height-1&&a.y+a.height>b.y+1;
+const completeAmount=async(locator,label)=>{
+ const geometry=await locator.evaluate(element=>{const range=document.createRange();range.selectNodeContents(element);const fragments=Array.from(range.getClientRects()).filter(rect=>rect.width>0&&rect.height>0),box=element.getBoundingClientRect(),content=element.closest('.event-row-content').getBoundingClientRect();return {lines:new Set(fragments.map(rect=>Math.round(rect.top))).size,contained:fragments.every(rect=>rect.left>=box.left-1&&rect.right<=box.right+1&&rect.left>=content.left-1&&rect.right<=content.right+1)};});
+ assert.equal(geometry.lines,1,`${label} remains one complete amount`);assert.equal(geometry.contained,true,`${label} is fully visible inside the information column`);
+};
+const actionCorner=async(card,selector)=>{
+ const box=await card.boundingBox(),action=await card.locator(selector).boundingBox();
+ assert.ok(box.x+box.width-action.x-action.width>=0&&box.x+box.width-action.x-action.width<=16,'Plan control stays against the right edge');
+ assert.ok(box.y+box.height-action.y-action.height>=0&&box.y+box.height-action.y-action.height<=14,'Plan control stays against the bottom edge');
+ for(const content of await card.locator('.event-time-block,.event-cutoff-block,.event-title-banner,.event-buyin,.event-guarantee,.mobile-event-meta').all())assert.equal(overlaps(action,await content.boundingBox()),false,`Plan control does not overlap ${await content.getAttribute('class')}`);
+};
 const savedStatus=id=>page.evaluate(id=>JSON.parse(localStorage.getItem('poker-planner-local-v2')).state.selections[id]?.status||'undecided',id);
 const grouped=async detail=>{
  for(const name of ['报名信息','比赛结构','续赛安排','资料来源'])assert.equal(await detail.getByRole('heading',{name,exact:true}).count(),1,name);
@@ -33,7 +44,8 @@ try{
  assert.match(await first.innerText(),/10\/10.*11:00/s);assert.match(await first.innerText(),/Day 1A/);assert.match(await first.innerText(),/#1\b/);
  assert.equal(await first.locator('.classification,.detail').count(),0,'The list is a preview; rules and four-way actions live in the detail');
  assert.doesNotMatch(await first.innerText(),/德州扑克|保底由各起始组共享/);assert.match(await first.innerText(),/整赛保底.*₩180,000,000/s);
- assert.match(await first.locator('.registration-summary').innerText(),/15:25/);
+ assert.match(await first.locator('.event-cutoff-block.registration-summary').innerText(),/截买.*10\/10.*15:25.*KST/s);
+ assert.equal(await first.locator('.event-cutoff-block time').getAttribute('datetime'),'2026-10-10T15:25');
  for(const width of [390,320]){
   await page.setViewportSize({width,height:950});await fits(page.locator('html'),'No horizontal page scroll');await fits(first,'Event row stays inside phone width');
   const open=await first.locator('.event-row-open').boundingBox(),card=await first.boundingBox(),quick=await first.locator('.quick-watch').boundingBox();
@@ -41,14 +53,17 @@ try{
   assert.ok(card.height<=150,`A normal event stays compact at ${width}px: ${card.height}px`);
   const title=await first.locator('.event-title').boundingBox(),flight=await first.locator('.event-flight').boundingBox();
   assert.ok(Math.abs(title.y-flight.y)<=2,'Flight remains on the same title line');assert.equal(await first.locator('.event-title').evaluate(element=>getComputedStyle(element).whiteSpace),'nowrap');
+  const start=await first.locator('.event-time-block').boundingBox(),cutoff=await first.locator('.event-cutoff-block').boundingBox(),info=await first.locator('.event-row-content').boundingBox();
+  assert.ok(start.x+start.width<=cutoff.x&&cutoff.x+cutoff.width<=info.x,'Three distinct columns read start, cutoff, event information from left to right');assert.ok(Math.abs(start.y-cutoff.y)<=1,'Both time columns align at the top');
+  assert.match(await first.locator('.event-time-block').innerText(),/开赛.*10\/10.*11:00.*KST/s);await completeAmount(first.locator('.price-amount>span'),'Native buy-in');await completeAmount(first.locator('.converted-price'),'Converted buy-in');
   const native=await first.locator('.price-amount>span').boundingBox(),converted=await first.locator('.converted-price').boundingBox();
-  assert.ok(Math.abs((native.y+native.height/2)-(converted.y+converted.height/2))<=4,'Normal original and converted amounts share one line');
-  metrics.push({width,card});await first.screenshot({path:resolve(output,`after-card-${width}.png`)});
+  assert.equal(overlaps(native,converted),false,'Original and converted amounts may wrap without overlapping');await actionCorner(first,'.quick-watch');
+  metrics.push({width,card,start,cutoff,info,quick});await first.screenshot({path:resolve(output,`after-card-${width}.png`)});
  }
  await first.locator('.event-row-open').click({position:{x:15,y:20}});await sheet().waitFor();await grouped(sheet().locator('.detail'));
  await fits(sheet(),'Event detail fits a 320px phone');await sheet().screenshot({path:resolve(output,'grouped-discovery-320.png')});
  await page.keyboard.press('Escape');await sheet().waitFor({state:'hidden'});await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"] .event-row-open`)===document.activeElement,openingId);assert.equal(await first.locator('.event-row-open').evaluate(element=>element===document.activeElement),true);
- pass('WSOP-inspired rows keep date/time, title, native/converted buy-in and separate guarantee; the whole row opens one accessible detail at 320/390px');
+ pass('three-column rows show aligned start/cutoff blocks and complete event amounts, with an unobstructed lower-right watch action and accessible whole-row details at 320/390px');
 
  await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');assert.equal(await sheet().count(),0);assert.equal(await first.locator('.quick-watch').getAttribute('aria-pressed'),'true');
  await page.reload();assert.equal(await row(openingId).getAttribute('data-status'),'watch');
@@ -62,7 +77,7 @@ try{
  await openDiscoveryDetails(page,first);await sheet().getByRole('radio',{name:'待定',exact:true}).focus();await page.keyboard.press('ArrowRight');
  assert.equal(await sheet().getByRole('radio',{name:'参加',exact:true}).evaluate(element=>element===document.activeElement),true);await page.keyboard.press('Space');
  assert.equal(await savedStatus(openingId),'attend');await closeDiscoveryDetails(page);
- assert.equal(await first.locator('.quick-watch').count(),0);assert.match(await first.locator('.event-planned').innerText(),/参加/);
+ assert.equal(await first.locator('.quick-watch').count(),0);assert.match(await first.locator('.event-planned').innerText(),/参加/);await actionCorner(first,'.event-planned');
  pass('quick watch toggles and persists; all four plans remain available in the sheet, with keyboard activation and no shortcut that downgrades attendance');
 
  await openDiscoveryDetails(page,first);const savedBeforeFailure=await page.evaluate(()=>localStorage.getItem('poker-planner-local-v2'));
@@ -98,14 +113,16 @@ try{
  pass('discovery, shortlist and agenda keep shared grouped rules and exact sources; conditional finals stay read-only and add no budget');
 
  await discover('qpc-circuit-2026');await search('QPC47');const imperial=qpc.find(event=>event.id==='QPC47'),overnight=row(`qpc-circuit-2026/QPC47/${imperial.starts[2].id}`);
- assert.match(await overnight.locator('.registration-summary').innerText(),/10\/21.*00:40/s);await search('QPC31');const ambiguous=page.locator('.mobile-event');
- assert.match(await ambiguous.locator('.registration-summary').innerText(),/见详情/);assert.doesNotMatch(await ambiguous.locator('.registration-summary').innerText(),/12:00|13:05/);
+ assert.match(await overnight.locator('.event-cutoff-block').innerText(),/10\/21.*00:40.*ICT/s);assert.equal(await overnight.locator('.event-cutoff-block time').getAttribute('datetime'),'2026-10-21T00:40');assert.match(await overnight.locator('.event-time-block').innerText(),/10\/20/);await search('QPC31');const ambiguous=page.locator('.mobile-event');
+ assert.match(await ambiguous.locator('.event-cutoff-block').innerText(),/见详情/);assert.doesNotMatch(await ambiguous.locator('.event-cutoff-block').innerText(),/12:00|13:05/);assert.equal(await ambiguous.locator('.event-cutoff-block time').count(),0);
  await openDiscoveryDetails(page,ambiguous);assert.match(await sheet().innerText(),/未标日期/);assert.match(await sheet().innerText(),/13:05/);await closeDiscoveryDetails(page);
- await discover('triton-one-cyprus-2026');await search('T21');assert.match(await page.locator('.registration-summary').innerText(),/11\/13.*00:30/s);
+ await discover('triton-one-cyprus-2026');await search('T21');assert.match(await page.locator('.event-cutoff-block').innerText(),/11\/13.*00:30.*EET/s);assert.match(await page.locator('.event-time-block').innerText(),/11\/12/);
  assert.equal(await page.locator('.event-guarantee b').innerText(),'无保底');await openDiscoveryDetails(page,page.locator('.mobile-event'));assert.equal(await sheet().locator('.event-detail-prize strong').innerText(),'无保底');await closeDiscoveryDetails(page);
  await search('T06');assert.match(await page.locator('.mobile-event').innerText(),/资格限制/);await page.locator('.event-title').click();assert.match(await sheet().locator('.detail').innerText(),/仅限女性/);await closeDiscoveryDetails(page);
  await discover('kpc-jeju-2026');await search('KPC63');assert.equal(await page.locator('.mobile-event-meta').count(),0);
  await openDiscoveryDetails(page,page.locator('.mobile-event'));assert.equal(await sheet().getByRole('button',{name:'筛选：混合游戏',exact:true}).count(),1);assert.match(await sheet().locator('.detail').innerText(),/混合/);await closeDiscoveryDetails(page);
+ await discover('wpt-wynn-2026');await search('W01');assert.match(await page.locator('.event-cutoff-block').first().innerText(),/未公布/);assert.doesNotMatch(await page.locator('.event-cutoff-block').first().innerText(),/\d{2}:\d{2}/);
+ await discover('jeju-poker-festival-2026');await search('JPF-3');const levelOnly=page.locator('.mobile-event[data-entry-id^="jeju-poker-festival-2026/JPF-3/"]').first();assert.match(await levelOnly.locator('.event-cutoff-block').innerText(),/第\s*9\s*级/);assert.doesNotMatch(await levelOnly.locator('.event-cutoff-block').innerText(),/\d{2}:\d{2}/);
  pass('cross-day deadlines and source ambiguity remain visible; game labels move into details, eligibility stays in the list, and absent guarantees read 无保底');
 
  await discover('qpc-circuit-2026');await search('QPC01');const longTitle='QPC 国际扑克锦标赛超长赛事名称 INTERNATIONAL HIGH ROLLER CHAMPIONSHIP QUALIFIER';
@@ -117,6 +134,7 @@ try{
   assert.equal(title.whiteSpace,'nowrap');assert.equal(title.textOverflow,'ellipsis');assert.ok(title.clipped);assert.ok(title.height<=title.lineHeight+1,'Long title remains one line');
   const titleBox=await longCard.locator('.event-title').boundingBox(),flightBox=await longCard.locator('.event-flight').boundingBox();assert.ok(Math.abs(titleBox.y-flightBox.y)<=2,'Flight stays visible beside a truncated name');
   assert.match(await longCard.innerText(),/₫999,999,999,999/);assert.match(await longCard.innerText(),/₫1,000,000,000,000/);
+  await completeAmount(longCard.locator('.price-amount>span'),'Large native buy-in');await completeAmount(longCard.locator('.converted-price'),'Large converted buy-in');await actionCorner(longCard,'.quick-watch');
   const guarantee=await longCard.locator('.event-guarantee b').evaluate(element=>{const range=document.createRange();range.selectNodeContents(element);const lines=Array.from(range.getClientRects()).filter(rect=>rect.width>0&&rect.height>0),box=element.getBoundingClientRect();return {text:element.textContent,lines:lines.length,contained:lines.every(rect=>rect.left>=box.left-1&&rect.right<=box.right+1)};});
   assert.equal(guarantee.text,'₫1,000,000,000,000');assert.equal(guarantee.lines,1,'A long guarantee stays one complete amount instead of splitting its final digits');assert.equal(guarantee.contained,true,'The complete guarantee fits its visible box');
   await longCard.screenshot({path:resolve(output,`long-title-values-${width}.png`)});
