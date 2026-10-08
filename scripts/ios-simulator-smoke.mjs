@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {access,copyFile,mkdir,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {access,copyFile,mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {setTimeout} from 'node:timers/promises';
 import {projectRoot,readReleaseConfig} from './release-config.mjs';
@@ -48,8 +49,16 @@ try{
  assert.ok(Number.isInteger(report.nativePID)&&report.nativePID>0,'The installed app must retain a live process after startup');
  report.checks.push('Native app launched and retains a live process after startup');
  sim('io',device,'screenshot',resolve(output,'01-events.png'));
+ const screenshot=resolve(output,'01-events.jpg');
+ sim('io',device,'screenshot','--type=jpeg',screenshot);
+ const pixels=run('sips',['-g','pixelWidth','-g','pixelHeight','-g','hasAlpha',screenshot]);
+ report.screenshot={file:'01-events.jpg',format:'JPEG',width:Number(pixels.match(/pixelWidth:\s+(\d+)/)?.[1]),
+  height:Number(pixels.match(/pixelHeight:\s+(\d+)/)?.[1]),hasAlpha:pixels.match(/hasAlpha:\s+(\w+)/)?.[1],
+  sha256:createHash('sha256').update(await readFile(screenshot)).digest('hex')};
+ assert.equal(report.screenshot.width,1206);assert.equal(report.screenshot.height,2622);
+ assert.equal(report.screenshot.hasAlpha,'no','Store screenshot evidence must not contain an alpha channel');
  await copyFile(resolve(projectRoot,'ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'),resolve(output,'Package.resolved'));
- report.checks.push('Real simulator screenshot and actual Swift Package.resolved captured');
+ report.checks.push('Real simulator PNG and opaque 1206x2622 JPEG captured with actual Swift Package.resolved');
  report.success=true;
  console.log('PASS real iOS Simulator installation, startup and evidence capture; visual and device acceptance still required');
 }catch(error){
