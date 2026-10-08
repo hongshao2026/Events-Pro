@@ -218,19 +218,26 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 /* Festival discovery is the parent of each series' detailed schedule. */
 .series-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--primary);min-height:36px;margin:-4px 0 12px;border-radius:5px}
 .series-back:hover{text-decoration:underline}
-.region-filter{padding:5px 0 20px}
-.region-filter h2{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--muted-foreground);margin-bottom:12px}
-.region-options{display:flex;flex-wrap:wrap;gap:8px}
-.region-option{display:flex;align-items:center;justify-content:center;padding:9px 14px;min-height:40px;border:1px solid var(--border);border-radius:7px;background:var(--card);font-size:13px;color:var(--muted-foreground);cursor:pointer}
-.region-option:hover{border-color:var(--primary);color:var(--primary)}
-.region-option.active{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground);font-weight:600}
-.region-option:focus-within{outline:3px solid var(--ring);outline-offset:3px}
+.home-workspace{padding-top:12px}
+.home-heading{margin-bottom:6px}
+.home-heading>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
+.home-heading h1{font-size:20px;margin:0}
+.home-heading p{font-size:11px;margin:0;line-height:1.6}
+.region-filter{padding:0 0 4px}
+.region-options{display:flex;flex-wrap:nowrap;gap:4px}
+.region-option{position:relative;display:flex;flex:1;align-items:center;justify-content:center;padding:8px 0;min-width:44px;min-height:44px;border:0;border-radius:5px;background:transparent;font-size:13px;color:var(--muted-foreground);white-space:nowrap;cursor:pointer}
+.region-option:first-child{flex:1.45}
+.region-option::after{content:'';position:absolute;bottom:2px;left:50%;width:22px;height:3px;border-radius:2px;transform:translateX(-50%);background:transparent}
+.region-option:hover{background:var(--secondary);color:var(--primary)}
+.region-option.active{color:var(--primary);font-weight:600}
+.region-option.active::after{background:var(--primary)}
+.region-option:has(:focus-visible){outline:3px solid var(--ring);outline-offset:1px}
 .region-option:active{filter:brightness(.96)}
-.series-results{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--border);padding:0 0 15px;color:var(--muted-foreground);font-size:12px}
+.series-results{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--border);padding:4px 0 8px;color:var(--muted-foreground);font-size:11px}
 .series-results b{color:var(--foreground);font-weight:600}
 .series-results>span:last-child{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap}
 .series-results>span:last-child svg{transform:rotate(90deg)}
-.series-month>h2{display:flex;align-items:baseline;gap:4px;font:600 21px var(--font-display);margin:22px 0 12px}
+.series-month>h2{display:flex;align-items:baseline;gap:4px;font:600 21px var(--font-display);margin:14px 0 10px}
 .series-month>h2 span{font:12px var(--font-body);color:var(--muted-foreground);margin-right:5px}
 .festival-card{display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);margin-bottom:18px;transition:border-color .12s}
 .festival-card:hover{border-color:var(--primary)}
@@ -252,7 +259,7 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .series-empty{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0}
 .series-header .series-logo{width:70px;height:50px;background:var(--primary);padding:10px 6px;border-radius:7px}
 .series-header .series-logo>span{font-size:21px}
-@media(max-width:359px){.region-options{gap:6px}.region-option{font-size:12px;padding:8px 11px}.series-results{font-size:11px;gap:5px}.series-results>span:last-child{font-size:10px}.festival-card-body{padding:17px}.festival-card h3{font-size:19px}.festival-card-foot{padding:13px 17px}.festival-dates{font-size:13px;gap:5px}}
+@media(max-width:359px){.region-option{font-size:12px}.series-results{gap:5px}.series-results>span:last-child{font-size:10px}.festival-card-body{padding:17px}.festival-card h3{font-size:19px}.festival-card-foot{padding:13px 17px}.festival-dates{font-size:13px;gap:5px}}
 @media(forced-colors:active){.festival-card,.region-option{border:1px solid CanvasText}.region-option.active{outline:2px solid Highlight}.festival-brand{background:Canvas;color:CanvasText}.series-logo>span{color:CanvasText}}
 
 /* Profile, local management and currency display use the existing product tokens. */

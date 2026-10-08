@@ -20,7 +20,7 @@ export function SeriesHome({catalog,region,onRegionChange,hrefForSeries,onOpen}:
     event.preventDefault();onOpen(id);
   };
   return <section className="series-home" aria-label="赛事系列列表">
-    <div className="region-filter"><h2><Globe2 size={16}/>选择地区</h2>
+    <div className="region-filter">
       <RadioGroup value={region} onValueChange={value=>onRegionChange(value as RegionFilter)} orientation="horizontal" className="region-options" aria-label="赛事地区">
         {regions.map(item=><label key={item.id} className={`region-option ${item.id===region?'active':''}`}>
           <RadioGroupItem value={item.id} aria-label={item.label} className="sr-only"/><span>{item.label}</span>
