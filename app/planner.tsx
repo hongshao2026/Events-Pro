@@ -12,7 +12,7 @@ import {SeriesHome,SeriesLogo} from '@/components/planner/series-home';
 import {seriesCatalog} from '@/lib/series';
 import {StatusBadge} from '@/components/planner/status';
 import {BudgetAmounts} from '@/components/planner/budget-amounts';
-import {moneyFilters} from '@/lib/money';
+import {moneyFilters,matchesMoneyFilter} from '@/lib/money';
 import {PriceAmount} from '@/components/planner/price-amount';
 import {SettingsProvider,useAppSettings} from '@/components/planner/settings-context';
 import {ProfilePage,type AccountInfo} from '@/components/planner/profile-page';
@@ -32,7 +32,7 @@ function fromUrl():Filters{
  const p=new URLSearchParams(window.location.hash.slice(1));const f={...defaults},festival=getSeries(p.get('series'));
  f.q=p.get('q')||'';f.supp=p.get('supp')==='yes';f.page=Math.max(1,Math.floor(Number(p.get('page'))||1));
  const status=p.get('statuses')??p.get('status');if(status&&status!=='all')f.statuses=status==='none'?[]:statuses.filter(s=>status.split(',').includes(s));
- for(const [key,options]of Object.entries({buyin:moneyFilters(festival.currency).buyin.map(([value])=>value),gtd:moneyFilters(festival.currency).gtd.map(([value])=>value),game:['all','nlh','satellite','mixed'],sort:['date','buyin','gtd']})){
+ for(const [key,options]of Object.entries({buyin:moneyFilters(festival.currency,festival.currencies).buyin.map(([value])=>value),gtd:moneyFilters(festival.currency,festival.currencies).gtd.map(([value])=>value),game:['all','nlh','satellite','mixed'],sort:['date','buyin','gtd']})){
   const value=p.get(key);if(value&&options.includes(value))f[key as 'buyin'|'gtd'|'game'|'sort']=value;
  }
  const from=p.get('from')||p.get('date')||'',to=p.get('to')||from;
@@ -58,7 +58,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const {settings,settingsError,reloadSettings,catalog,navigateSafely}=useAppSettings();
  const {entries,eventMap}=catalog;
  const [route,setRoute]=useState<AgendaRoute>(agendaFromUrl);
- const series=getSeries(route.seriesId),amountFilters=moneyFilters(series.currency);
+ const series=getSeries(route.seriesId),amountFilters=moneyFilters(series.currency,series.currencies);
  const seriesEntries=useMemo(()=>entries.filter(entry=>entry.seriesId===route.seriesId),[route.seriesId,entries]);
  const originalEntries=seriesEntries.filter(entry=>!entry.event.supplement),supplementCount=seriesEntries.length-originalEntries.length;
  const scrolls=useRef({home:0,discover:0,schedule:0,profile:0,admin:0});
@@ -106,13 +106,13 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   if(!filters.statuses.includes(status))return false;
   if(q&&!`${e.eventId} ${e.event.officialNumber?'#'+e.event.officialNumber:''} ${entryName(e)} ${e.event.group} ${e.buyin} ${e.event.notes}`.toLowerCase().includes(q))return false;
   if(filters.from&&(e.date<filters.from||e.date>filters.to))return false;
-  if(filters.buyin!=='all'&&e.buyin>Number(filters.buyin))return false;
-  if(filters.gtd!=='all'&&(e.event.kind==='satellite'||(e.event.guarantee||0)<Number(filters.gtd)))return false;
+  if(!matchesMoneyFilter(e.buyin,e.currency,filters.buyin,'lte',series.currency))return false;
+  if(filters.gtd!=='all'&&(e.event.kind==='satellite'||!matchesMoneyFilter(e.event.guarantee||0,e.currency,filters.gtd,'gte',series.currency)))return false;
   if(filters.game==='satellite'&&e.event.kind!=='satellite')return false;
   if(filters.game==='nlh'&&!isNlh(e.event))return false;
   if(filters.game==='mixed'&&(e.event.kind==='satellite'||isNlh(e.event)))return false;
   return true;
- }).sort((a,b)=>filters.sort==='buyin'?a.buyin-b.buyin:filters.sort==='gtd'?(b.event.guarantee||0)-(a.event.guarantee||0):a.date.localeCompare(b.date)||a.hour-b.hour),[universe,state.selections,filters]);
+ }).sort((a,b)=>filters.sort==='buyin'?a.currency.localeCompare(b.currency)||a.buyin-b.buyin:filters.sort==='gtd'?a.currency.localeCompare(b.currency)||(b.event.guarantee||0)-(a.event.guarantee||0):a.date.localeCompare(b.date)||a.hour-b.hour),[universe,state.selections,filters,series.currency]);
  const pages=Math.max(1,Math.ceil(filtered.length/size)),page=Math.min(filters.page,pages),shown=filtered.slice((page-1)*size,page*size);
  useEffect(()=>{
   const currentHash=plannerHash({...filters,page},route);
@@ -157,7 +157,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
     <div className="discovery-filter-bar" role="region" aria-label="赛程筛选"><FestivalCalendar compact key={series.id} series={series} from={filters.from} to={filters.to} onChange={(from,to)=>update({from,to})} plannedDates={attending.filter(entry=>entry.seriesId===series.id).map(e=>e.date)}/>
     <StatusFilter compact value={filters.statuses} onChange={value=>update({statuses:value})} counts={counts}/>
     <div className="toolbar"><div className="search"><Search size={18}/><input ref={searchRef} aria-label="搜索赛事" placeholder="搜索赛事、Day 1A、编号或报名费…" value={draft} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={e=>{composing.current=false;update({q:e.currentTarget.value});}} onChange={e=>{setDraft(e.target.value);if(!composing.current)update({q:e.target.value});}}/>{draft&&<button aria-label="清空搜索" onClick={()=>{setDraft('');update({q:''});searchRef.current?.focus();}}><X size={16}/></button>}</div><FilterSelect label="报名费筛选" value={filters.buyin} onChange={buyin=>update({buyin})} options={amountFilters.buyin}/><FilterSelect label="保底筛选" value={filters.gtd} onChange={gtd=>update({gtd})} options={amountFilters.gtd}/><FilterSelect label="赛事类型" value={filters.game} onChange={game=>update({game})} options={[["all","全部类型"],["nlh","德州扑克正赛"],["satellite","卫星赛"],["mixed","PLO / 混合游戏"]]}/></div>
-    <div className="results-bar"><span aria-live="polite">找到 <b>{filtered.length}</b> 个场次 <small>· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span><div><button className="clear-filters" onClick={reset}><RotateCcw size={13}/>重置筛选</button><FilterSelect label="排序" value={filters.sort} onChange={sort=>update({sort})} options={[["date","日期顺序"],["buyin","报名费从低到高"],["gtd","保底从高到低"]]}/></div></div>
+    <div className="results-bar"><span aria-live="polite">找到 <b>{filtered.length}</b> 个场次 <small>· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span><div><button className="clear-filters" onClick={reset}><RotateCcw size={13}/>重置筛选</button><FilterSelect label="排序" value={filters.sort} onChange={sort=>update({sort})} options={[["date","日期顺序"],["buyin",series.currencies?.length?"按币种 · 报名费升序":"报名费从低到高"],["gtd",series.currencies?.length?"按币种 · 保底降序":"保底从高到低"]]}/></div></div>
     </div><div className="mobile-events">{shown.map(entry=>{const e=entry.event;return <article data-entry-id={entry.id} data-status={state.selections[entry.id]?.status||'undecided'} className={`mobile-event status-surface row-${state.selections[entry.id]?.status||'undecided'}`} key={entry.id}><div className="mobile-event-top"><span>{shortDate(entry.date)} · {clock(entry.hour)}</span><span className="flight-tag">{entry.flightLabel}</span><StatusBadge status={state.selections[entry.id]?.status||'undecided'}/></div><button className="event-title" aria-expanded={expanded===entry.id} aria-controls={`detail-${entry.slot.id}-mobile`} onClick={()=>setExpanded(expanded===entry.id?null:entry.id)}>{e.title}<ChevronDown size={16}/></button><div className="mobile-event-meta">{eventNumber(e)} · {e.kind==='satellite'?'卫星赛':e.group}{e.restricted?' · 资格限制':''}{e.supplement?' · 官方补充':''}</div><div className="mobile-money"><span>报名 <b><PriceAmount value={entry.buyin} currency={entry.currency}/></b></span><span>{e.kind==='satellite'?'席位':'赛事保底'} <b>{guarantee(e)}</b></span></div>{e.starts.length>1&&e.guarantee&&<p className="shared-guarantee">保底由各起始组共享</p>}{actions(entry)}{expanded===entry.id&&detail(entry,'mobile')}</article>;})}</div>
     {!shown.length&&<div className="empty-state"><Search size={26}/><h3>没有符合条件的场次</h3><p>{filters.statuses.length?'调整日期、分类或报名费，再找一场想打的。':'当前没有勾选任何分类，请选择至少一种。'}</p><button onClick={reset}>查看全部赛事</button></div>}
     <div className="pagination"><span>{filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)}`:'0'} / {filtered.length} 场次</span><div><button disabled={page===1} onClick={()=>update({page:page-1})}>上一页</button><span>{page} / {pages}</span><button disabled={page===pages} onClick={()=>update({page:page+1})}>下一页</button></div></div>

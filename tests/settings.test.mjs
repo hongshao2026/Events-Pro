@@ -7,12 +7,22 @@ await build({configFile:false,logLevel:'error',build:{outDir:out,emptyOutDir:tru
 const [{defaultSettings,validateSettings,managedCatalog,makeSettingsBackup,parseSettingsBackup,readSettings,writeSettings,SETTINGS_KEY},{convertedAmount,convertedMoney},{budget,emptyState},{agendaActivities,agendaFromUrl}]=await Promise.all(['app-settings','money','local-store','agenda'].map(n=>import(pathToFileURL(resolve(out,n+'.js')).href)));
 const state=defaultSettings();
 assert.equal(state.profile.currency,'CNY');assert.equal(convertedAmount(900000,'VND','CNY',state.fx.rates),232.2);
+assert.equal(state.fx.rates.KRW,null);assert.equal(convertedAmount(1000000,'KRW','CNY',state.fx.rates),null);
 assert.equal(convertedMoney(convertedAmount(600,'USD','CNY',state.fx.rates),'CNY'),'¥4,041.06');
 assert.equal(convertedAmount(900000,'VND','VND',state.fx.rates),null);assert.equal(convertedAmount(600,'USD','original',state.fx.rates),null);
 assert.equal(convertedAmount(900000,'VND','HKD',{...state.fx.rates,HKD:null}),null);
 assert.equal(convertedAmount(600,'USD','HKD',{CNY:1,USD:7,VND:0.00025,HKD:0.875}),4800);
 console.log('PASS native/cross-currency amounts, same-currency suppression, no-rate handling and decimal formatting');
 for(const mutation of [s=>s.fx.asOf='2026-02-30',s=>s.fx.rates.USD=0,s=>s.fx.rates.VND=-1,s=>s.fx.rates.HKD=Infinity,s=>s.fx.rates.CNY=7,s=>s.profile.currency='BTC',s=>s.profile.username='x'.repeat(41),s=>s.eventOverrides.missing={title:'bad'},s=>s.eventOverrides.QPC01={buyin:-5},s=>s.eventOverrides.QPC01={admin:true}]){const bad=structuredClone(state);mutation(bad);assert.throws(()=>validateSettings(bad));}
+for(const rate of [undefined,0,-1,NaN,Infinity,'0.005',{},1e-9,1e9]){const bad=structuredClone(state);bad.fx.rates.KRW=rate;assert.throws(()=>validateSettings(bad),'Explicit invalid KRW rates must not be migrated as absent');}
+const legacySettings={...structuredClone(state),revision:12,profile:{username:'原有用户',currency:'HKD'},eventOverrides:{QPC01:{buyin:5000000}}};delete legacySettings.fx.rates.KRW;
+const legacyBefore=structuredClone(legacySettings),migratedSettings=validateSettings(legacySettings);
+assert.deepEqual(migratedSettings,{...legacySettings,fx:{...legacySettings.fx,rates:{...legacySettings.fx.rates,KRW:null}}});assert.deepEqual(legacySettings,legacyBefore);
+assert.deepEqual(parseSettingsBackup(JSON.stringify({app:'events-pro-settings',schemaVersion:1,savedAt:'2026-10-06T00:00:00Z',settings:legacySettings})).settings,migratedSettings);
+for(const currency of ['CNY','USD','VND','HKD']){const bad=structuredClone(legacySettings);delete bad.fx.rates[currency];assert.throws(()=>validateSettings(bad),'Only newly introduced KRW may be absent');}
+const krwSettings=structuredClone(state);krwSettings.profile.currency='KRW';krwSettings.fx.rates.KRW=0.005;
+assert.deepEqual(parseSettingsBackup(JSON.stringify(makeSettingsBackup(krwSettings))).settings,krwSettings);
+console.log('PASS KRW defaults to no estimate, v1 settings/backups migrate without mutation, and explicit invalid rates are rejected');
 const catalog=managedCatalog({QPC01:{title:'Managed BLASTOFF',buyin:5000000,guarantee:8000000000,hidden:true,adminNotes:'Local note'}}),event=catalog.eventMap.get('QPC01');
 assert.equal(event.title,'Managed BLASTOFF');assert.equal(event.hidden,true);assert.ok(event.starts.every(s=>s.buyin===5000000));assert.equal(event.guarantee,8000000000);
 const planned=emptyState(),entry=catalog.entries.find(e=>e.eventId==='QPC01');planned.selections[entry.id]={status:'attend',version:1};planned.selections['wpt-wynn-2026/W01/R0']={status:'attend',version:1};
@@ -23,6 +33,8 @@ console.log('PASS validation rejects invalid money/config; overrides retain IDs,
 let disk;globalThis.localStorage={getItem:()=>disk??null,setItem:(key,value)=>{assert.equal(key,SETTINGS_KEY);disk=value;}};
 assert.deepEqual(readSettings(),state);state.profile.username='测试玩家';state.eventOverrides={QPC01:{buyin:5000000}};writeSettings(state);assert.deepEqual(readSettings(),state);
 assert.deepEqual(parseSettingsBackup(JSON.stringify(makeSettingsBackup(state))).settings,state);
+disk=JSON.stringify(legacySettings);const legacyDisk=disk;assert.deepEqual(readSettings(),migratedSettings);assert.equal(disk,legacyDisk);
+const invalidKrw=structuredClone(state);invalidKrw.fx.rates.KRW='bad';assert.throws(()=>writeSettings(invalidKrw));assert.equal(disk,legacyDisk);
 disk='{bad';assert.throws(()=>readSettings());assert.equal(disk,'{bad');
 localStorage.setItem=()=>{throw new DOMException('Full','QuotaExceededError');};assert.throws(()=>writeSettings(state),/未能保存/);assert.equal(disk,'{bad');
 for(const view of ['profile','admin']){globalThis.window={location:{hash:`#view=${view}&series=qpc-circuit-2026`}};assert.equal(agendaFromUrl().view,view);}

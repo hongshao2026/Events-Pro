@@ -13,7 +13,7 @@ export type Region = Exclude<RegionFilter,'all'>;
 export type Series = {
   id:string; title:string; shortTitle:string; mark:string; brand:string;
   country:string; countryCode?:string; region:Region; venue:string; city:string;
-  start:string; end:string; timeZone:string; timeLabel:string; currency:Currency;
+  start:string; end:string; timeZone:string; timeLabel:string; currency:Currency; currencies?:Currency[];
   eventCount:number; entryCount:number; logo?:{src:string;alt:string};
   sourceLabel:string; sourceUpdated?:string; sourceUrl?:string;
 };
@@ -37,6 +37,13 @@ export const seriesList:Series[] = [
     start:'2026-10-12',end:'2026-10-21',timeZone:'Asia/Ho_Chi_Minh',timeLabel:'ICT',currency:'VND',
     eventCount:77,entryCount:91,logo:{src:quadsLogo,alt:'Quads · Hanoi Poker Club'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
     sourceUrl:'https://quadspoker.vn/series/qpc-circuit-2026',
+  },
+  {
+    id:'kpc-jeju-2026',title:'KPC Poker Series Jeju 2026',shortTitle:'KPC · 济州岛 2026',mark:'KPC',brand:'KPC',
+    country:'韩国',countryCode:'KR',region:'apac',venue:'LES A Casino',city:'济州岛',
+    start:'2026-10-10',end:'2026-10-21',timeZone:'Asia/Seoul',timeLabel:'KST',currency:'KRW',currencies:['KRW','USD'],
+    eventCount:73,entryCount:86,sourceLabel:'官方赛程',sourceUpdated:'2026-10-08（读取官网）',
+    sourceUrl:'https://www.kpcpoker.com/seriesTournament.jhtml?leagueId=d3f5de57-34a5-4b16-bfe6-7b44251595f7&lang=en',
   },
 ];
 // Compatibility exports point to the same catalog; never maintain two lists.

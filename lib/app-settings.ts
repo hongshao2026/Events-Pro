@@ -8,7 +8,7 @@ export type EventOverride={title?:string;buyin?:number;guarantee?:number|null;ad
 export type BlindLevel={level:number;smallBlind:number;bigBlind:number;ante:number;minutes:number;breakAfterMinutes?:number};
 export type AppSettings={version:1;revision:number;profile:{username:string;currency:CurrencyPreference};fx:{rates:ExchangeRates;asOf:string;source:string};eventOverrides:Record<string,EventOverride>};
 export type SettingsBackup={app:'events-pro-settings';schemaVersion:1;savedAt:string;settings:AppSettings};
-export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584},asOf:'2026-10-06',source:'中国银行折算价'},eventOverrides:{}});
+export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:null},asOf:'2026-10-06',source:'中国银行折算价'},eventOverrides:{}});
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const text=(v:unknown,max:number):v is string=>typeof v==='string'&&v.length<=max;
 const amount=(v:unknown):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0&&v<=1e12;
@@ -21,8 +21,10 @@ export function validateSettings(value:unknown):AppSettings{
  if(!object(fx)||!object(fx.rates)||!text(fx.source,120)||!text(fx.asOf,10)||!/^\d{4}-\d{2}-\d{2}$/.test(fx.asOf as string)||!Number.isFinite(Date.parse(fx.asOf as string)))fail();
  const validProfile=profile as AppSettings['profile'],validFx=fx as AppSettings['fx'];
  if(new Date(validFx.asOf).toISOString().slice(0,10)!==validFx.asOf)fail();
- for(const currency of displayCurrencies){const rate=validFx.rates[currency];if(rate!==null&&(typeof rate!=='number'||!Number.isFinite(rate)||rate<1e-8||rate>1e8))fail();}
- if(validFx.rates.CNY!==1||!object(overrides)||Object.keys(overrides).length>events.length)fail();
+ // Existing v1 settings predate KRW. Only an absent key migrates; explicit invalid values still fail.
+ const rates={...validFx.rates,KRW:Object.hasOwn(validFx.rates,'KRW')?validFx.rates.KRW:null};
+ for(const currency of displayCurrencies){const rate=rates[currency];if(rate!==null&&(typeof rate!=='number'||!Number.isFinite(rate)||rate<1e-8||rate>1e8))fail();}
+ if(rates.CNY!==1||!object(overrides)||Object.keys(overrides).length>events.length)fail();
  const clean:Record<string,EventOverride>={};
  for(const [id,patch]of Object.entries(overrides as Record<string,unknown>)){
   const event=known.get(id);if(!event||!object(patch))fail();
@@ -35,7 +37,7 @@ export function validateSettings(value:unknown):AppSettings{
   if(p.hidden!==undefined&&typeof p.hidden!=='boolean')fail();
   clean[id]={...p} as EventOverride;
  }
- return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,validFx.rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
+ return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
 }
 export function readSettings():AppSettings{
  try{const raw=localStorage.getItem(SETTINGS_KEY);return raw?validateSettings(JSON.parse(raw)):defaultSettings();}

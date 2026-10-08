@@ -63,3 +63,4 @@ await import('./home-ui.test.mjs');
 await import('./qpc-ui.test.mjs');
 
 await import('./profile-admin-ui.test.mjs');
+await import('./kpc-ui.test.mjs');
