@@ -1,6 +1,6 @@
 # Mac 接手与实际验收记录
 
-日期：2026-10-08（Asia/Shanghai）。当前结论：本机网页/资源检查通过，远程 Mac 已完成真实不签名 Swift 编译；本机 Xcode、模拟器运行、签名、真机、TestFlight 与正式发行材料尚未完成。尚不具备 App Store 提审条件。
+日期：2026-10-08（Asia/Shanghai）。当前结论：本机网页/资源检查通过，远程 Mac 已完成真实不签名 Swift 编译、iPhone 模拟器安装/启动与首页截图检查；本机完整 Xcode、本机模拟器、完整功能、签名、真机、TestFlight 与正式发行材料尚未完成。尚不具备 App Store 提审条件。
 
 ## 仓库与构建身份
 
@@ -10,9 +10,10 @@
 | GitHub / 基线 | `hongshao2026/Events-Pro` 的 main，`f38063171063196033b50aedf9b42df4a1417107`；fetch 后 main 已最新，指定祖先检查退出码 0 |
 | 独立工作区 / 分支 | `~/Developer/Events-Pro-mac-ios` / `codex/mac-ios-validation` |
 | 修复提交 | `5b81aac`，仅修改首页浏览器测试的跨平台修饰键 |
+| 原生验证工具 | `3cc35fa` 增加真实模拟器启动与证据附件，`d31caef` 要求有效 PID，`61a4ea1` 保存 JPEG 与实际 Swift 锁；`945761f` 起增加独立 XCTest 目标，后续补齐两种型号、附件导出、历史证据隔离与控件标签查询 |
 | 应用配置 | `1.0.0 (1)`、`com.example.eventspro`；均为当前开发配置，正式 Bundle ID 待用户核定 |
 | 发行行为 | 免费、离线，iOS/单文件构建强制关闭登录；未改数据结构、备份格式、共享接口或原生源码 |
-| 提交/集成 | 本轮成果在独立分支本地提交；未合入 main、未推送分支、未签名或上传应用 |
+| 提交/集成 | 源码与工具提交已推送 `origin/codex/mac-ios-validation`，未合入 main；未签名、Archive 或上传应用 |
 
 ## 本机环境与安装结果
 
@@ -35,6 +36,7 @@
 | `npm run ios:open` | 已执行，Capacitor CLI 返回 0；其实现仅向 macOS 派发打开工程且不等待 Xcode，不能证明 Xcode 已安装或实际打开工程 |
 | 本机 `xcodebuild ... CODE_SIGNING_ALLOWED=NO build` | 前置环境失败：只选择了 CommandLineTools，Swift 编译未启动；无本机编译或模拟器运行结果 |
 | `npm run release:check -- --online` | 退出码 1，10 项真实缺项；配置不完整，在线 URL 核对尚未执行 |
+| 新增模拟器工具的本机静态检查 | `node --check`、lint、TypeScript、单元与 build 通过；最终离线 HTML 无变化。真实 native 执行使用下述远程 CI，不声称已在本机运行 |
 
 开发政策六页及入口已生成至 `legal-site/`，带开发预览及 noindex；未作为正式公开政策托管。网页截图已查看 320px 首页与 390px 置顶页；它们属于浏览器 QA。
 
@@ -47,15 +49,45 @@
 | `ios-sync.log` | `9b195ee925c322ee1432cd0111138143b57b04dcdf1acab36819229519f22f54` |
 | `ios-check.log` | `8882d035254092bdde79fbe98085c91fa8d131f7bd0c53a66da5b753b49c5919` |
 
-## 远程真实 Swift 编译
+## 远程基线真实 Swift 编译
 
 已触发仓库现有 `iOS simulator compile` 工作流：[Run 37789044340](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340)，实际源码为完整 `f380631` 基线。2026-10-08 22:03（Asia/Shanghai）完成，结论 `success`。
 
 - GitHub macos-15 runner，Xcode 26.3（17C529），执行真实 `xcodebuild`，日志包含 AppDelegate/SceneDelegate 等 SwiftCompile 和 `** BUILD SUCCEEDED **`。
 - 构建目标为 Debug / generic iOS Simulator，arm64 与 x86_64，`CODE_SIGNING_ALLOWED=NO`。
 - 实际包解析：capacitor-swift-pm 8.5.3、IONFilesystemLib 2.0.0，Browser/Filesystem/Share 使用锁定 npm 本地包。
-- 日志仅有未使用 AppIntents.framework 的 metadata 提取提示，无编译错误。本机 `Package.resolved` 待 Xcode 实际解析生成并保存。
-- 没有启动远程或本机模拟器、没有 Apple 签名、Archive、真机或上传。源代码修复只影响测试修饰键，原生工程和依赖与 CI 基线一致。
+- 日志仅有未使用 AppIntents.framework 的 metadata 提取提示，无编译错误。
+- 这次基线任务只有编译，没有启动模拟器；随后独立分支增加并实际执行了下述启动检查。没有 Apple 签名、Archive、真机或上传。
+
+## 远程真实 iOS 模拟器启动
+
+[Run 37792355643](https://github.com/hongshao2026/Events-Pro/actions/runs/37792355643)，源码完整 `3cc35fae76aa5e969a22635d064479a00588d122`，2026-10-08 22:27（Asia/Shanghai）完成并成功。GitHub macos-15 / Xcode 26.3（17C529），App 为 `1.0.0 (1)` / `com.example.eventspro`。
+
+- 真实 `xcodebuild` 后，在新建的 iPhone 16 Pro / iOS 26.2 模拟器安装 App，`simctl launch` 返回实际进程 `5153`，十秒后检查进程登记并截图；随后仅关闭、删除该任务自己创建的模拟器。
+- 人工查看原生 1206 × 2622 赛事首页，内容、字形、顶部/底部安全区与导航正常，无空白启动。原始 PNG 含 alpha，只作为 QA；不把它记作可直接上传的商店图。
+- 下载附件到工作区 `.sites-runtime/qa/remote-ios-startup-37792355643/`；GitHub 附件保留 14 天，本机文件保留。它不是浏览器模拟桥截图。
+- 实际 Xcode 生成的 `Package.resolved` 已复制到工程 `ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/` 并在 `61a4ea1` 保存：capacitor-swift-pm 8.5.3 / `4c7f346d16196e21fbe23d4a7a6fc7af62af6742`，ion-ios-filesystem 2.0.0 / `13848aab4f3447ff98dfdbe72ff8ef31bf333db0`。ION 固定提交与当前许可依据一致；本机 Xcode 尚未实际解析。
+- [Run 37794750850](https://github.com/hongshao2026/Events-Pro/actions/runs/37794750850) 在源码 `61a4ea1d1b40f1004dba5ac1593dec76cb8c41f3` 再次通过真实编译/启动，确认启动十秒后有效 PID `7917`。直接采集的 `01-events.jpg` 为 1206 × 2622、`hasAlpha: no`，已人工查看正常；实际 Swift 锁与工程保存的文件逐字一致。证据下载至 `.sites-runtime/qa/remote-ios-startup-37794750850/`。
+- `61a4ea1` 的启动检查只覆盖安装和首页，不能证明自选、预算、日历、文件分享、导入、升级保留或真机功能。随后 `945761f` 增加原生 XCTest 目标，通过正常界面进行选择/预算/日历/图片预览/同次安装重启检查，无注入数据或模拟插件，排除在 Archive 之外；实际执行结果须另行记录，不能把已写测试视为通过。
+
+| 首次启动证据 | SHA-256 |
+|---|---|
+| `01-events.png` | `96cc6bcee3413bf6d282b275a3f5fd3d5405a4e069c2f45e6a4c452a649f1a43` |
+| `results.json` | `72b23359dd806a3eb600d5d6e86b844b2bafbebbffe7da243a47f7f6ea626f0e` |
+| 实际 `Package.resolved` | `37aed3e931f98d30be85af6676d8316f594a51b846984847a06e61160dcb8748` |
+
+| 无透明 JPEG 启动复验 | SHA-256 |
+|---|---|
+| `01-events.jpg`（`61a4ea1`） | `91fad9f2cf8da63cce0b4e3e6c870fba0805a98367c0d753b59032bc7fdb717f` |
+| `results.json`（`61a4ea1`） | `ea20048f6530dba9ade7c60c7dde7776e46b66237978a533fbe1706d09b58522` |
+
+## 原生 XCTest 实际执行与复验
+
+[Run 37795839177](https://github.com/hongshao2026/Events-Pro/actions/runs/37795839177)，源码 `945761f8fdd138463ba8ff556fae2e1bb72d69b6`：App 编译/启动通过，UITests-Runner 实际编译并执行 1 项 XCTest，结论为失败。原生首页控件与 KPC 链接点击成功，随后只以 Button 类型查询首场赛程未找到目标，58 秒后断言失败；不是编译或签名失败，也不能写成原生功能通过。完整错误与 xcresult 保存至 `.sites-runtime/qa/remote-ios-ui-37795839177/`，初始测试日志另在 `.sites-runtime/qa/mac-handoff/native-uitest-37795839177.log`。测试退出后的 `failure.png` 是模拟器主屏幕，不能替代失败现场图片。
+
+`59fb4f3` 改为保留相同的准确标签、查询原生控件树的全部类型，增加截图与无障碍树附件，以及完整 xcodebuild 测试日志；同时要求两项参加预算合计 ₩1,600,000，第三项关注不计预算，避免只检查单行报名费。两种 iPhone 型号的 [复验 Run 37798281701](https://github.com/hongshao2026/Events-Pro/actions/runs/37798281701) 均实际执行 1 项 XCTest并失败。控件树确认赛程详情为 Other，关注为 Switch；两组“参加”已通过正常界面保存，后续将关注当作 Button 查询失败。Native XCTest JPEG 附件导出已真实执行，大屏赛事首页及赛程原图为 1320 × 2868、无透明通道，已人工查看正常。
+
+`6857b09` 修正关注查询，日历行也按准确标签查询全部类型，保留同样的选择、预算和场次断言。[第三轮 Run 37800207752](https://github.com/hongshao2026/Events-Pro/actions/runs/37800207752) 已在两种型号执行，结果须待完成并读取实际报告后记录。测试不注入本机存储、JS 或模拟插件；目标不参与正式 Archive。所有真机直装、升级与 TestFlight 项继续未执行。
 
 ## 继续操作与待定项
 

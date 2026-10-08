@@ -138,7 +138,7 @@ npm run ios:open
 
 ## 5. 模拟器和真实 iPhone
 
-在 Xcode 中选择 Scheme `App`，等待 Swift 包解析完成。当前原生核心固定为 8.5.3，IONFilesystemLib 固定为 2.0.0；解析后的其他原生版本与许可应按 [依赖声明核对](docs/app-store/DEPENDENCY-NOTICES.md) 检查，并保存实际 Package.resolved。
+在 Xcode 中选择 Scheme `App`，等待 Swift 包解析完成。当前原生核心固定为 8.5.3，IONFilesystemLib 固定为 2.0.0；已将远程真实 Xcode 26.3 构建生成的 Package.resolved 保存至 `ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/`。本机首次构建仍须核对实际解析版本与锁文件，并按 [依赖声明核对](docs/app-store/DEPENDENCY-NOTICES.md) 检查原生版本与许可。
 
 先选择已安装的 iPhone 模拟器，点击运行。也可从根目录执行与 Mac CI 一致的不签名编译：
 
@@ -146,7 +146,16 @@ npm run ios:open
 xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/DerivedData CODE_SIGNING_ALLOWED=NO build
 ```
 
-编译成功后，可执行 `node scripts/ios-simulator-smoke.mjs`：创建独立 iPhone 16 Pro 模拟器，安装并启动真实 App，保存启动截图、环境与版本记录以及实际 Package.resolved，再清理它自己创建的模拟器。输出位于 `.sites-runtime/qa/ios-simulator/`，不操作已有模拟器或真机。启动截图需人工查看；此命令不验证分享、导入、升级或 TestFlight。仓库 Mac CI 使用同一命令，并保存 14 天的证据附件。
+编译成功后，可执行 `node scripts/ios-simulator-smoke.mjs`：创建独立 iPhone 16 Pro 模拟器，安装并启动真实 App，检查启动后仍有有效进程，保存 PNG 和直接采集的无透明 JPEG、环境与版本记录以及实际 Package.resolved，再清理它自己创建的模拟器。JPEG 的实际像素、无透明通道与 SHA-256 会写入报告。输出位于 `.sites-runtime/qa/ios-simulator/` 下每次新建的时间戳/型号目录，避免复验覆盖历史；不操作已有模拟器或真机。
+
+可继续执行原生 UI 测试，采集赛事、赛程、自选、日历、图片预览和同次安装重启后的画面。此流程通过正常 iOS 界面操作，不注入记录或模拟插件，测试目标不参与 Archive：
+
+```sh
+EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
+EVENTS_PRO_SIMULATOR_MODEL=iPhone-16-Pro-Max EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
+```
+
+默认中屏为 1206 × 2622，大屏为 1320 × 2868；XCTest 结果、PNG/JPEG 附件和摘要也保存在对应目录。截图需人工查看，当前场景只覆盖 KPC 三项计划与单币预算，不验证所有系列/预算模式、系统分享、文件导入、升级或 TestFlight。预算断言使用两项参加的合计，区别于单行报名费，并核对关注不增加预算。仓库 Mac CI 使用两种型号执行同一命令，证据附件保留 14 天；最终结果按 [实际记录](docs/app-store/MAC-VALIDATION-2026-10-08.md) 核对，不因存在测试代码就记为通过。
 
 模拟器编译通过后，连接 iPhone，信任电脑并按系统提示开启开发者模式（如需要）：
 

@@ -7,17 +7,18 @@
 | 项目 | 当前真实状态 |
 |---|---|
 | 仓库 | 已新克隆至 `~/Developer/Events-Pro`，main 干净且最新，确认包含 `f380631` |
-| 工作区 | `~/Developer/Events-Pro-mac-ios`，独立分支 `codex/mac-ios-validation`，基线 `f380631` |
+| 工作区 | `~/Developer/Events-Pro-mac-ios`，独立分支 `codex/mac-ios-validation`，基线 `f380631`；源码和原生验证工具已推送该分支，未合入 main |
 | 环境 | Apple Silicon / macOS 26.4；并存 Node 24.21.0、原 Node 25.9.0；Chromium/WebKit 安装完成 |
 | 本机完整检查 | 修复 Mac 修饰键测试后 `npm run verify` 退出码 0；17 份浏览器报告共 153 项检查通过 |
 | 单独 iOS 资源检查 | `ios:sync`、`ios:check` 通过，四份原生 plist 解析 OK；`ios:open` 已派发打开请求，不代表已安装或启动 Xcode |
-| 真实 Swift 编译 | [远程 Mac CI](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340) 在 `f380631` / Xcode 26.3 下通过不签名模拟器目标编译；没有运行模拟器 |
+| 真实 Swift 编译/远程模拟器 | [基线编译](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340) 在 `f380631` / Xcode 26.3 下通过；[分支启动检查](https://github.com/hongshao2026/Events-Pro/actions/runs/37792355643) 在 `3cc35fa` 完成真实 iPhone 16 Pro / iOS 26.2 安装、启动、首页原图与 Swift 锁捕获，已人工查看；仅启动，不是完整功能验收 |
+| 原生 UI 测试 | `61a4ea1` JPEG 启动复验通过；`945761f` 与 `59fb4f3` 实际 XCTest 分别因详情/关注控件类型查询失败，已定位为原生 Other/Switch；已正常保存两项参加并导出原生页面。`6857b09` 第三轮两种型号复验运行中，完整功能未记为通过 |
 | 本机 Xcode/模拟器 | 当前只有 CommandLineTools，本机 xcodebuild 前置失败，Swift 未启动；Mac App Store 当前 Xcode 要求 macOS 26.6，已打开兼容版本的官方历史下载，等待本人登录、安装、接受许可 |
 | 真机与 TestFlight | 未执行。可先用本人 Apple 账号的 Personal Team 直装；TestFlight 待付费会员就绪 |
-| 材料 | 简繁政策预览已本地生成，真机矩阵与原生截图执行单已补齐；正式 URL、截图和最终审核联系信息尚未完成 |
+| 材料 | 简繁政策预览、真机矩阵与截图执行单已准备，远程首页原图已捕获；正式 URL、完整商店组图和最终审核联系信息尚未完成 |
 | 正式发行检查 | `release:check -- --online` 正确返回 1，共 10 项缺项；未执行线上 URL 检查，四项 readiness 保持 pending |
 
-详细命令结果、日志摘要、环境修复与接下来由本人完成的操作见 [Mac 实际验收记录](MAC-VALIDATION-2026-10-08.md)。本轮代码修复提交为 `5b81aac`，只修正浏览器测试的 Ctrl/Meta 差异；产品、原生源码、数据和备份格式未变。成果本地提交在独立分支，未合入 main 或推送，未签名、托管、上传或提审。
+详细命令结果、日志摘要、环境修复与接下来由本人完成的操作见 [Mac 实际验收记录](MAC-VALIDATION-2026-10-08.md)。代码修复 `5b81aac` 只修正浏览器测试的 Ctrl/Meta 差异；随后补充真实模拟器检查、证据捕获、实际 Swift 锁和独立原生 UI 测试目标。应用行为、App 的 Swift 源码、数据和备份格式未变。源码与工具在独立分支提交并推送，未合入 main，未签名、托管、上传应用或提审。
 
 ## 交接基线与历史
 
@@ -38,7 +39,7 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 | 开源声明 | 实际构建模块及原生/CSS 声明共 66 项，保留原文与版权；随 public 和原生 Settings.bundle 交付；补充来源及最终框架的正式复核仍待完成 |
 | 商店资料 | 上架操作指南、简繁商店描述草稿、英文审核备注、数据实践核对、素材权利清单及真实设备验收模板 |
 | 发行检查 | 正式配置、验收证据与可选线上 URL 检查；信息缺失时拒绝正式政策和发行资源命令；开发预览明确标注未准备就绪 |
-| CI | 网页检查增加 WebKit；另有 Mac 不签名模拟器编译工作流，尚未远端执行 |
+| CI | 网页检查增加 WebKit；Mac 工作流已真实执行不签名 Swift 编译和模拟器启动，保存原生图、环境记录和 Swift 锁；Windows 初版交接时尚未执行 |
 
 ## 验证记录
 
@@ -51,7 +52,7 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 - 台湾所在地配置更新后，通过发行配置测试、ios:sync、ios:check、6 组 Chromium/WebKit 政策与清除检查及 git diff --check；确认简繁静态隐私草稿均包含台湾且继续标注开发预览。正式发行检查仍正确阻止剩余 10 项缺项。
 - main 集成阶段重新独立 npm ci，并完整通过 npm run verify，退出码 0：原有五站/首页/紧凑筛选/自选/预算/PNG/备份/模拟登录回归及新增 iOS 资源、66 项依赖声明、政策和模拟原生桥检查全部通过，17 份浏览器报告共 153 组检查无页面错误。单文件 HTML 从本次最终源码重新生成；完整日志位于集成目录 .sites-runtime/qa/integrate-ios-mac/verify.log。Mac 文档的相对链接、npm 命令和代码块检查通过，正式发行检查仍报告 10 项真实缺项。
 
-浏览器与模拟原生桥接的检查不替代 Swift 编译、iOS 模拟器或真机。现有内置 PDF 使离线资源包约 10.2 MB，构建有体积提示；首次打开及完整导出性能仍需实际 iPhone 核对。以上为 Windows 历史验收；Mac CI 本次已实际运行并编译通过，仍未执行真实服务器、登录、邮件发送、Apple 签名、账号注册或审核操作。
+浏览器与模拟原生桥接的检查不替代 Swift 编译、iOS 模拟器或真机。现有内置 PDF 使离线资源包约 10.2 MB，构建有体积提示；首次打开及完整导出性能仍需实际 iPhone 核对。以上为 Windows 历史验收；Mac CI 本次已实际编译并在真实模拟器安装/启动，仍未执行完整原生功能、真实服务器、登录、邮件发送、Apple 签名、账号注册或审核操作。
 
 ## 下一阶段与外部条件
 
@@ -62,8 +63,8 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 | Apple Developer 账号与 Mac | 已接手 arm64 Mac，Node/浏览器就绪；完整 Xcode 待本人安装，会员未注册 | 按 MAC-SETUP.md 安装兼容 Xcode、本人登录、选择 Team 与签名；本人完成身份/付费/协议 |
 | 公开政策与支持 URL | 页面源内容已完成，未托管 | 正式信息齐备后构建与托管至用户域名，核对 HTTPS、访问和托管日志告知 |
 | 赛事资料、Logo 和 PDF 使用依据 | Logo 按用户说明保留，具体依据未记录；赛程/PDF 尚未核定 | 逐项记录许可/条款或合法使用依据；完整 PDF 单独核对 |
-| Swift 编译、签名、真机验收与隐私报告 | 远程不签名 Swift 编译通过；本机编译、签名、真机与 Archive 待执行 | 在本机 Xcode/模拟器和真实 iPhone 按 IOS-DEVICE-QA.md 验收；保存实际 SPM 锁并检查所有原生依赖 |
-| 真正 iPhone 商店截图 | 执行单已准备，原图未制作 | 按 STORE-SCREENSHOTS.md 从同一验收构建的真机或模拟器生成 |
+| Swift 编译、签名、真机验收与隐私报告 | 远程不签名 Swift 编译及真实模拟器启动通过，实际 SPM 锁已保存；本机编译、完整功能、签名、真机与 Archive 待执行 | 在本机 Xcode/模拟器和真实 iPhone 按 IOS-DEVICE-QA.md 验收；核对已保存的实际 SPM 锁与所有原生依赖 |
+| 真正 iPhone 商店截图 | 已捕获远程模拟器首页 QA 原图，完整商店组图未完成 | 按 STORE-SCREENSHOTS.md 从同一验收构建的真机或模拟器生成并核对无透明通道 |
 | TestFlight 与 App Store Connect | 未上传/创建商店记录 | 配置免费、台湾发行范围，据实填写年龄分级、隐私和出口合规，再上传并测试 |
 | 提交审核与发布 | 未执行 | 以实际最终构建和材料复核；获得用户提交指令后再提交，Apple 审核结果不能预先保证 |
 

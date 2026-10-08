@@ -1,6 +1,8 @@
 # iPhone 商店截图执行单
 
-状态：待制作。2026-10-08 已核对 [Apple 截图规格](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)，尚无本机 iOS 模拟器或真实 iPhone 图片。浏览器 QA 图片仅作为布局检查，不列为商店交付或真机证据。
+状态：已取得远程真实 iOS 模拟器首页原图，完整商店组图待制作。2026-10-08 已核对 [Apple 截图规格](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)。[远程启动检查](https://github.com/hongshao2026/Events-Pro/actions/runs/37792355643) 使用 `3cc35fa` / `1.0.0 (1)` / `com.example.eventspro`，在 iPhone 16 Pro、iOS 26.2 上采集 1206 × 2622 原生首页，已人工查看正常。其原始 PNG 含 alpha，仅作为 QA；启动脚本现已增加直接采集无透明 JPEG。仍无本机模拟器或真机结果，完整功能与正式身份未验收。浏览器 QA 图片仅作为布局检查。
+
+[JPEG 复验](https://github.com/hongshao2026/Events-Pro/actions/runs/37794750850) 已成功：源码 `61a4ea1`，同一版本、型号与 OS，直接采集 `01-events.jpg` 为 1206 × 2622、无透明通道，已人工查看；SHA-256 `91fad9f2cf8da63cce0b4e3e6c870fba0805a98367c0d753b59032bc7fdb717f`。文件保存在工作区 `.sites-runtime/qa/remote-ios-startup-37794750850/`。这是开发身份下的原生首页草稿，完整组图与 App Store Connect 上传仍待执行。
 
 ## 候选构建与尺寸
 
@@ -10,7 +12,7 @@
 
 | 对应设备 | 原生像素尺寸 | 当前状态 |
 |---|---|---|
-| Dynamic Island 中屏，例如 iPhone 16 Pro | 1206 × 2622 | 待截图；Apple 当前必需尺寸类别 |
+| Dynamic Island 中屏，例如 iPhone 16 Pro | 1206 × 2622 | 已有远程首页 QA 图；完整候选组图待制作；Apple 当前必需尺寸类别 |
 | Dynamic Island 大屏，例如 iPhone 16 Pro Max | 1320 × 2868 | 待截图；用于大屏展示 |
 
 Apple 当前接受 PNG/JPEG，每个设备尺寸至少 1 张、最多 10 张，无透明通道。最终以 App Store Connect 实际显示的必需槽位与提交当天官方规格复核，不用缩放浏览器画面填充原生截图。当前工程仅支持 iPhone，未加入 iPad 截图或优化声明。
@@ -35,11 +37,11 @@ Xcode 编译并启动该候选构建，选择对应型号的模拟器。通过�
 
 ```sh
 mkdir -p .sites-runtime/qa/store-screenshots/medium
-xcrun simctl io booted screenshot .sites-runtime/qa/store-screenshots/medium/01-events.png
-sips -g pixelWidth -g pixelHeight -g hasAlpha .sites-runtime/qa/store-screenshots/medium/01-events.png
+xcrun simctl io booted screenshot --type=jpeg .sites-runtime/qa/store-screenshots/medium/01-events.jpg
+sips -g pixelWidth -g pixelHeight -g hasAlpha .sites-runtime/qa/store-screenshots/medium/01-events.jpg
 ```
 
-逐场景截图，再在大屏模拟器重复到 `large/`。这里的 `booted` 只在仅有一个已启动模拟器时使用；多个模拟器时先用 `xcrun simctl list devices booted`，明确目标 UDID 再截图。测试日志和截图原件暂存忽略目录；最终选定的非私人商店图再保存到 `docs/app-store/screenshots/` 并登记摘要。
+逐场景截图，再在大屏模拟器重复到 `large/`；表格中的 `.png` 场景名也可使用对应 `.jpg`。直接采集 JPEG 可避免 simctl 默认 PNG 的 alpha 通道，仍须核对 `hasAlpha: no`、实际像素与画面。这里的 `booted` 只在仅有一个已启动模拟器时使用；多个模拟器时先用 `xcrun simctl list devices booted`，明确目标 UDID 再截图。测试日志和截图原件暂存忽略目录；最终选定的非私人商店图再保存到 `docs/app-store/screenshots/` 并登记摘要。
 
 ## 最终交付记录
 
