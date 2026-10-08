@@ -565,6 +565,9 @@ html{scroll-padding-bottom:110px}
 @media(max-height:550px){.event-detail-heading{max-height:30dvh;overflow-y:auto}.event-detail-actions{max-height:35dvh;overflow-y:auto}}
 
 /* iOS owns the status bar; the document still owns vertical scrolling. */
+/* The document scrolls behind UIKit's status bar. Keep scrolled text below
+   readable system chrome without changing the page's scroll container. */
+.native-ios::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--background);z-index:1000;pointer-events:none}
 .native-ios .app-bar{padding-top:calc(14px + env(safe-area-inset-top))}
 .native-ios .cart-heading{padding-top:calc(24px + env(safe-area-inset-top))}
 .native-ios .cart-close{top:calc(20px + env(safe-area-inset-top))}

@@ -83,6 +83,10 @@
 
 ## 原生 XCTest 实际执行与复验
 
+2026-10-09 原生分享附件还确认滚动“我的”页面时货币文字进入状态栏，与系统时间重叠（`37823004699` 两型号 JSON 分享原图）。追加 scoped `native-ios` 固定顶部安全区背景，复用 `--background`、不接收点击，保留文档滚动和现有布局；设计约定同步更新。完整本机 `npm run verify` 退出码 0，日志 `.sites-runtime/qa/mac-handoff/native-safe-area-verify.log`；这是浏览器、资源与模拟桥回归，真实滚动截图复验待执行，Q10 仍未完整验收。功能分支不提交生成的单文件 HTML。
+
+`0d25c8c` 的 [Project checks 37825629628](https://github.com/hongshao2026/Events-Pro/actions/runs/37825629628) 首次在汇率筛选测试清空韩元输入后的保存按钮处超时（按钮仍禁用）。保留失败日志 `.sites-runtime/qa/mac-handoff/project-37825629628-failed.log`；同源码本机 `buyin-range-ui` 七项全部通过，CI attempt 2 的完整 verify 随后也通过。未复现该失败，原因未确认；没有修改汇率应用逻辑、放宽或删除断言。
+
 分享关闭修正后的 [Run 37823004699](https://github.com/hongshao2026/Events-Pro/actions/runs/37823004699)（head `5e994c773e0ac151701e29ee95a205fa0c6e22c8`，合成源码 `e13c4d4deb69623df9a1f4d1191f9603cfaaaeec`，源码树一致）两型号首次与覆盖安装后 XCTest 各 1 项通过、0 失败、0 跳过；最终实际原生包均为构建 2，Swift 锁一致，无附件导出错误。[Project checks 37823004453](https://github.com/hongshao2026/Events-Pro/actions/runs/37823004453) 完整 verify 通过。原件已下载到 `.sites-runtime/qa/remote-ios-share-37823004699/`；结果 SHA-256：中屏 `a820b15a5aaad716bb9af5064404e1c2e44e967b8bdff1bd4696b6cf3f75babc`，大屏 `657dba2f255aa857c782572f8085de8b6fdda8ab966f4f1794284baecf3e06f7`。人工查看真实附件发现：中屏两次图片菜单均仅显示空容器，控件树没有文件标题和操作项；大屏图片和两型号两类 JSON 菜单内容正常。测试当时仅要求容器存在，不能证明中屏图片分享可用。保留已有取消、预览、错误提示、计划及覆盖安装断言，新增等待实际文件标题/格式/系统操作项就绪后才取消和截图；复验待执行，未声称文件保存、恢复或真实分享送达。
 
 系统分享扩展 [Run 37820536832](https://github.com/hongshao2026/Events-Pro/actions/runs/37820536832)，head `4acdeb3a0bc311b2aea74d9f0ea193e9725f465f`，两型号实际编译通过、UI 测试失败。首次图片分享已出现原生 ActivityListView，显示 PNG 文件名称/大小以及保存图像等系统操作；iOS 26.2 此界面提供 PopoverDismissRegion（“关闭弹出式窗口”）而没有测试假定的 Close/关闭按钮。失败属于测试控件查询，不能推断导出故障；尚未执行成功取消、重试、两类备份或后续覆盖安装。保留全部图片/数量/预算/日历断言，按实际无障碍树修正为确认系统分享界面、点击菜单外的关闭区域并等待界面消失。此轮 Project checks 为 cancelled，不能记作通过。原始附件在 `.sites-runtime/qa/remote-ios-share-37820536832/`，错误日志在 `.sites-runtime/qa/mac-handoff/native-share-37820536832-failed.log`；修正后的真实复验另行登记。
