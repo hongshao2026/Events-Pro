@@ -101,7 +101,10 @@ final class PlannerUITests: XCTestCase {
     @MainActor
     private func capture(_ name: String, _ app: XCUIApplication) {
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        // Capture the complete native screen, including system chrome and safe
+        // areas, rather than only the application's window after page scrolling.
+        let screen = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screen)
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
@@ -109,7 +112,7 @@ final class PlannerUITests: XCTestCase {
         accessibility.name = name + "-accessibility"
         accessibility.lifetime = .keepAlways
         add(accessibility)
-        guard let jpeg = UIImage(data: app.screenshot().pngRepresentation)?.jpegData(compressionQuality: 0.95) else {
+        guard let jpeg = UIImage(data: screen.pngRepresentation)?.jpegData(compressionQuality: 0.95) else {
             XCTFail("Could not encode native screenshot as JPEG")
             return
         }
