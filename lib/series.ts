@@ -1,6 +1,9 @@
 import wptLogo from '../assets/wpt-logo.png?inline';
 import tritonOneLogo from '../assets/triton-one-logo.png?inline';
 import quadsLogo from '../assets/quads-logo.svg?inline';
+import jpfLogo from '../assets/jpf-2026-logo.png?inline';
+import tritonPdf from '../sources/triton-one-cyprus-2026.pdf?inline';
+import jejuPdf from '../sources/jeju-poker-festival-2026.pdf?inline';
 import type {Currency} from './money';
 
 export const regions = [
@@ -13,9 +16,9 @@ export type Region = Exclude<RegionFilter,'all'>;
 export type Series = {
   id:string; title:string; shortTitle:string; mark:string; brand:string;
   country:string; countryCode?:string; region:Region; venue:string; city:string;
-  start:string; end:string; timeZone:string; timeLabel:string; currency:Currency;
+  start:string; end:string; timeZone:string; timeLabel:string; currency:Currency; currencies?:Currency[];
   eventCount:number; entryCount:number; logo?:{src:string;alt:string};
-  sourceLabel:string; sourceUpdated?:string; sourceUrl?:string;
+  sourceLabel:string; sourceUpdated?:string; sourceUrl?:string; sourcePdf?:{src:string;filename:string};
 };
 export const seriesList:Series[] = [
   {
@@ -30,6 +33,7 @@ export const seriesList:Series[] = [
     country:'塞浦路斯',region:'europe',venue:'Merit Royal Diamond',city:'北塞浦路斯',
     start:'2026-11-05',end:'2026-11-15',timeZone:'Asia/Famagusta',timeLabel:'EET',currency:'USD',
     eventCount:22,entryCount:29,logo:{src:tritonOneLogo,alt:'Triton ONE'},sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-02 22:09',
+    sourcePdf:{src:tritonPdf,filename:'Triton ONE N.Cyprus 2026 - Tournament Schedule & Structure.pdf'},
   },
   {
     id:'qpc-circuit-2026',title:'QPC Circuit 2026',shortTitle:'QPC Circuit · 河内 2026',mark:'QPC',brand:'QPC',
@@ -37,6 +41,13 @@ export const seriesList:Series[] = [
     start:'2026-10-12',end:'2026-10-21',timeZone:'Asia/Ho_Chi_Minh',timeLabel:'ICT',currency:'VND',
     eventCount:77,entryCount:91,logo:{src:quadsLogo,alt:'Quads · Hanoi Poker Club'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-03（读取官网）',
     sourceUrl:'https://quadspoker.vn/series/qpc-circuit-2026',
+  },
+  {
+    id:'jeju-poker-festival-2026',title:'Jeju Poker Festival 2026',shortTitle:'JPF · 济州岛 2026',mark:'JPF',brand:'JPF',
+    country:'韩国',countryCode:'KR',region:'apac',venue:'LES A Casino · Jeju Shinhwa World',city:'济州岛',
+    start:'2026-10-28',end:'2026-11-11',timeZone:'Asia/Seoul',timeLabel:'KST',currency:'KRW',currencies:['KRW','USD'],
+    eventCount:140,entryCount:160,logo:{src:jpfLogo,alt:'JPF · Jeju Poker Festival 2026'},sourceLabel:'下载原始赛程 PDF',sourceUpdated:'2026-10-08（用户提供 PDF）',
+    sourceUrl:'https://playreddragon.com/jpf-faq.html',sourcePdf:{src:jejuPdf,filename:'Jeju-Poker-Festival-2026-Schedule.pdf'},
   },
 ];
 // Compatibility exports point to the same catalog; never maintain two lists.
