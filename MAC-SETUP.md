@@ -146,6 +146,8 @@ npm run ios:open
 xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/DerivedData CODE_SIGNING_ALLOWED=NO build
 ```
 
+编译成功后，可执行 `node scripts/ios-simulator-smoke.mjs`：创建独立 iPhone 16 Pro 模拟器，安装并启动真实 App，保存启动截图、环境与版本记录以及实际 Package.resolved，再清理它自己创建的模拟器。输出位于 `.sites-runtime/qa/ios-simulator/`，不操作已有模拟器或真机。启动截图需人工查看；此命令不验证分享、导入、升级或 TestFlight。仓库 Mac CI 使用同一命令，并保存 14 天的证据附件。
+
 模拟器编译通过后，连接 iPhone，信任电脑并按系统提示开启开发者模式（如需要）：
 
 1. “Xcode → Settings → Accounts”登录自己的开发者账号。

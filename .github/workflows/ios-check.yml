@@ -1,4 +1,4 @@
-name: iOS simulator compile
+name: iOS simulator compile and startup
 
 on:
   workflow_dispatch:
@@ -35,3 +35,14 @@ jobs:
       - run: npm run ios:check
       - name: Compile without signing or upload
         run: xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/DerivedData CODE_SIGNING_ALLOWED=NO build
+      - name: Install and launch on a fresh iPhone simulator
+        run: node scripts/ios-simulator-smoke.mjs
+      - name: Save simulator evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ios-simulator-evidence
+          path: .sites-runtime/qa/ios-simulator/
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn
