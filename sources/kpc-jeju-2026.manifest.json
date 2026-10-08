@@ -1,0 +1,34 @@
+{
+  "seriesId": "kpc-jeju-2026",
+  "name": "KPC POKER SERIES OCT 2026",
+  "sourceUrl": "https://www.kpcpoker.com/seriesTournament.jhtml?leagueId=d3f5de57-34a5-4b16-bfe6-7b44251595f7&lang=en",
+  "retrievedOn": "2026-10-08",
+  "start": "2026-10-10",
+  "end": "2026-10-21",
+  "venue": "LES A CASINO, JEJU ISLAND, SOUTH KOREA",
+  "city": "Jeju",
+  "countryCode": "KR",
+  "timeZone": "Asia/Seoul",
+  "timeLabel": "KST",
+  "currencies": [
+    "KRW",
+    "USD"
+  ],
+  "eventCount": 73,
+  "entryCount": 86,
+  "continuationCount": 15,
+  "slotCount": 101,
+  "satelliteEventCount": 8,
+  "currencySlots": {
+    "KRW": 74,
+    "USD": 27
+  },
+  "currencyEvents": {
+    "KRW": 56,
+    "USD": 17
+  },
+  "pdfUrl": "https://www.kpcpoker.com/u/cms/en/202609/23121842exqf.pdf",
+  "pdfVersion": "2026-09-22 (01)",
+  "logoUrl": "https://www.kpcpoker.com/r/cms/en/en/images/top-logo.png?v1",
+  "sourceSha256": "07599d4624835541f89463448b13e2868f344c2021819dc21682726cc383e0cf"
+}

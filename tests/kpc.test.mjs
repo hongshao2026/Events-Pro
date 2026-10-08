@@ -1,0 +1,80 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {build} from 'vite';
+
+const out='.sites-runtime/kpc-unit';
+await build({configFile:false,logLevel:'error',build:{outDir:out,emptyOutDir:true,minify:false,lib:{entry:Object.fromEntries(['catalog','schedule','money','agenda','local-store'].map(n=>[n,resolve(`lib/${n}.ts`)])),formats:['es'],fileName:(_f,n)=>n+'.js'}}});
+const [{entries,eventMap,seriesList,validDate},{events,clock,slotName,guarantee,isNlh},{matchesMoneyFilter},{agendaActivities},{emptyState,budget,parseBackup,makeBackup}]=await Promise.all(['catalog','schedule','money','agenda','local-store'].map(n=>import(pathToFileURL(resolve(out,n+'.js')).href)));
+const source=JSON.parse(readFileSync('sources/kpc-jeju-2026.source.json','utf8'));
+const manifest=JSON.parse(readFileSync('sources/kpc-jeju-2026.manifest.json','utf8'));
+assert.equal(createHash('sha256').update(readFileSync('sources/kpc-jeju-2026.source.json')).digest('hex'),manifest.sourceSha256);
+const series='kpc-jeju-2026',festival=seriesList.find(s=>s.id===series),kpc=events.filter(e=>e.seriesId===series);
+const starts=kpc.flatMap(e=>e.starts),finals=kpc.flatMap(e=>e.continuations);
+assert.equal(kpc.length,73);assert.equal(starts.length,86);assert.equal(finals.length,15);
+assert.equal(kpc.filter(e=>e.kind==='satellite').length,8);
+assert.equal(new Set(events.map(e=>e.id)).size,events.length);
+assert.equal(new Set(entries.map(e=>e.id)).size,entries.length);
+assert.equal(new Set([...starts,...finals].map(s=>s.id)).size,101);
+assert.equal(source.events.length,101);assert.equal(source.api.totalNumberOfRecords,101);
+assert.deepEqual(source.events.reduce((counts,r)=>(counts[Number(r.dailyDetails.startDate.slice(8,10))-10]++,counts),Array(12).fill(0)),[9,14,10,11,14,12,12,8,4,3,2,2]);
+for(const row of source.events){
+ const event=kpc.find(e=>[...e.starts,...e.continuations].some(s=>s.id===row.id));assert.ok(event,row.name);
+ const continuation=row.dailyDetails.day>=2;
+ const slot=(continuation?event.continuations:event.starts).find(s=>s.id===row.id);assert.ok(slot,row.name);
+ const currency=row.subscription.currencySymbol==='₩'?'KRW':'USD';
+ assert.equal(event.currency,currency);assert.equal(slot.date,row.dailyDetails.startDate.slice(0,10));
+ assert.equal(clock(slot.hour),row.dailyDetails.startDate.slice(11,16));
+ assert.equal(new Date(`${row.dailyDetails.startDate}+09:00`).getTime(),new Date(row.dailyDetails.startDateUTC).getTime());
+ assert.equal(slot.registrationCloses,row.dailyDetails.subscriptionClose?.slice(0,16)||undefined);
+ assert.equal(slot.sourceUrl,`https://www.kpcpoker.com/seriesTournamentDetail.jhtml?id=${row.id}`);
+ assert.equal(slot.buyin,continuation?null:row.subscription.buyin.amount);
+ assert.equal(slot.chips,continuation||event.id==='KPCS01'?null:row.subscription.buyin.chips);
+ assert.equal(slot.levels,event.id==='KPC38'?'75/90':String(row.dailyDetails.levelMinutes));
+ if(!continuation){
+  assert.equal(event.buyin,row.subscription.buyin.amount);
+  assert.equal(event.guarantee,event.kind==='satellite'?null:row.subscription.guaranteedAmount||null);
+ }
+ assert.equal(validDate(slot.date,festival),true);
+}
+assert.deepEqual(kpc.reduce((counts,e)=>(counts[e.currency]++,counts),{KRW:0,USD:0}),{KRW:56,USD:17});
+assert.deepEqual(festival.currencies,['KRW','USD']);assert.equal(festival.timeZone,'Asia/Seoul');
+assert.equal(validDate('2026-10-09',festival),false);assert.equal(validDate('2026-10-22',festival),false);
+console.log('PASS all 101 official KPC occurrences reconcile by UUID, dates, KST instants, currencies, exact buy-ins, guarantees, chips, levels and registration deadlines');
+
+const main=eventMap.get('KPC08'),kings=eventMap.get('KPC52');
+assert.equal(main.buyin,1300000);assert.equal(main.guarantee,880000000);assert.equal(main.starts.length,6);
+assert.deepEqual(main.continuations.map(s=>s.date),['2026-10-15','2026-10-16']);
+assert.equal(kings.buyin,15000);assert.equal(kings.currency,'USD');assert.equal(kings.starts.length,2);
+assert.deepEqual(kings.continuations.map(s=>s.date),['2026-10-19','2026-10-20']);
+assert.equal(clock(eventMap.get('KPC01').starts[2].hour),'20:15');
+assert.equal(eventMap.get('KPC01').starts[2].registrationCloses,'2026-10-10T22:30');
+assert.equal(slotName(eventMap.get('KPC61').starts[0]),'Day 1');
+assert.equal(slotName(eventMap.get('KPCMS01').starts[0]),'首轮');
+assert.equal(slotName(main.starts[2]),'Day 1C Turbo');
+assert.equal(isNlh(eventMap.get('KPC63')),false);
+assert.equal(guarantee(eventMap.get('KPCMS03')),'10 席');
+assert.match(eventMap.get('KPCS01').restricted,/前 6 名/);assert.match(eventMap.get('KPCS01').restricted,/并非公开免费/);
+assert.equal(eventMap.get('KPCS01').chips,null);assert.equal(slotName(eventMap.get('KPCS01').starts[0]),'资格决赛');
+assert.match(eventMap.get('KPC02').continuations[0].notes,/11:45/);
+assert.equal(clock(eventMap.get('KPC02').continuations[0].hour),'12:00');
+assert.match(eventMap.get('KPC18').continuations[0].notes,/延迟报名/);
+assert.match(eventMap.get('KPC38').starts[0].notes,/75/);
+console.log('PASS independent source anchors: both main events, 20:15 start, satellite seats, restricted final, explicit stages, mixed-game filter and documented source exceptions');
+
+const state=emptyState(),selected=entries.filter(e=>e.eventId==='KPC08').slice(0,2),usd=entries.find(e=>e.eventId==='KPC03');
+for(const entry of [...selected,usd])state.selections[entry.id]={status:'attend',version:1};
+state.selections['wpt-wynn-2026/W01/R0']={status:'attend',version:1};
+assert.deepEqual(budget(state).totals,{KRW:2600000,USD:5600});
+state.budgetMode='events';assert.deepEqual(budget(state).totals,{KRW:1300000,USD:5600});
+assert.deepEqual(parseBackup(JSON.stringify(makeBackup(state))).state,state);
+const agenda=agendaActivities(state,false,series);
+assert.equal(agenda.length,101);
+const selectedFinals=agenda.filter(a=>a.event.id==='KPC08'&&a.kind==='continuation');
+assert.equal(selectedFinals.length,2);assert.ok(selectedFinals.every(a=>a.status==='attend'&&a.buyin===0));
+const nativeOnly=entries.filter(e=>e.seriesId===series&&matchesMoneyFilter(e.buyin,e.currency,'KRW:2000000','lte','KRW'));
+assert.ok(nativeOnly.length>0);assert.ok(nativeOnly.every(e=>e.currency==='KRW'&&e.buyin<=2000000));
+assert.equal(nativeOnly.some(e=>e.id===usd.id),false);
+console.log('PASS same-series mixed-currency budgets, cross-series USD sum, both budget modes, v2 backups, continuation deduplication and native currency filters');

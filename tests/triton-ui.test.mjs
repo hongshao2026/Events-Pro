@@ -20,7 +20,7 @@ const first=`${series}/T01/T01-D1A`,wpt='wpt-wynn-2026/W01/R0';
 try{
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row(wpt).waitFor();await select(wpt,'参加');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('W01');
- await selector().focus();await page.keyboard.press('Enter');await page.getByRole('listbox').waitFor();await page.getByRole('option',{name:'WPT · Wynn 2026',exact:true}).focus();await page.keyboard.press('End');await page.waitForFunction(()=>document.activeElement?.textContent?.includes('北塞浦路斯'));await page.keyboard.press('Enter');
+ await selector().focus();await page.keyboard.press('Enter');await page.getByRole('listbox').waitFor();await page.getByRole('option',{name:'WPT · Wynn 2026',exact:true}).focus();await page.keyboard.press('ArrowDown');await page.waitForFunction(()=>document.activeElement?.textContent?.includes('北塞浦路斯'));await page.keyboard.press('Enter');
  await row(first).waitFor();assert.ok(page.url().includes(`series=${series}`));
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事'}).inputValue(),'');
  assert.match(await page.locator('.results-bar').innerText(),/29.*场次.*22.*赛事/s);
@@ -72,10 +72,10 @@ try{
  pass('main event creates three conditional days; cross-series shortlist and both budget modes retain original WPT selections');
  await nav('赛事发现');await row(wpt).waitFor();assert.equal(await row(wpt).getAttribute('data-status'),'attend');
  await switchTo('Triton ONE · 北塞浦路斯 2026');await row(first).waitFor();assert.equal(await row(first).getAttribute('data-status'),'attend');
- const backupDownload=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
+ await nav('我的');const backupDownload=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
  const backup=await backupDownload,backupPath=resolve(output,'cross-series.json');await backup.saveAs(backupPath);
  const saved=JSON.parse(await fs.readFile(backupPath,'utf8'));assert.equal(Object.keys(saved.state.selections).length,4);
- await select(first,'不考虑');await page.getByLabel('选择备份文件').setInputFiles(backupPath);
+ await nav('赛事发现');await switchTo('Triton ONE · 北塞浦路斯 2026');await select(first,'不考虑');await page.getByLabel('选择备份文件').setInputFiles(backupPath);
  await page.getByRole('button',{name:'确认恢复',exact:true}).click();
  await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status==='attend',first);
  pass('v2 export and restore round-trip selections from both festivals without a schema migration');
