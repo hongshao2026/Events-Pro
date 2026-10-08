@@ -31,7 +31,21 @@ Xcode 安装在其他位置时使用它的实际路径。运行 npm 安装和构
 
 ## 2. 把这次 main 带到 Mac
 
-此次交接同时提供 `Events-Pro-Mac-handoff` 文件夹，包含 `Events-Pro-main.bundle`、本文副本和 `handoff.json`。交接包保留 main 的提交历史，无需复制 Windows 的 node_modules 或工作目录。Windows worktree 的 `.git` 可能指向 Windows 路径，不能直接作为 Mac 仓库使用。
+本次按用户要求通过 GitHub 的 main 交接，仓库是 <https://github.com/hongshao2026/Events-Pro>。在 Mac 打开“终端”：
+
+```sh
+mkdir -p "$HOME/Developer"
+cd "$HOME/Developer"
+git clone --branch main https://github.com/hongshao2026/Events-Pro.git Events-Pro
+cd Events-Pro
+git log -1 --oneline
+git status --short
+git merge-base --is-ancestor 9706c22 HEAD
+```
+
+最后一条命令退出码 0 表示包含已验收的 iOS/main 集成提交；最新 main 还包含 GitHub 接手文档修订。根目录应有 `MAC-SETUP.md`、`capacitor.config.ts` 和 `ios/App/App.xcodeproj`。已有同名目录时先检查并保存自己的修改，不直接覆盖；已有该仓库且 main 干净时可 `git switch main` 后 `git pull --ff-only origin main`。
+
+也保留了离线交接包作为备用：`Events-Pro-Mac-handoff` 文件夹包含 `Events-Pro-main.bundle`、文档副本和 `handoff.json`。它是制作时 main 的快照；后续新提交以 GitHub 为准。无需复制 Windows 的 node_modules 或工作目录。Windows worktree 的 `.git` 可能指向 Windows 路径，不能直接作为 Mac 仓库使用。
 
 将整个文件夹放到 Mac 的“下载”目录，然后运行：
 
@@ -57,7 +71,7 @@ shasum -a 256 "$HOME/Downloads/Events-Pro-Mac-handoff/Events-Pro-main.bundle"
 git remote set-url origin https://github.com/hongshao2026/Events-Pro.git
 ```
 
-本次交接以 bundle 为准，不把 GitHub 页面默认显示的提交当作本次最新 main。只有确认远端 main 已包含这次集成后，才直接从 GitHub 克隆。个人计划和设置不在 Git 中；若需要 Windows 浏览器中的记录，分别导出参赛 JSON 与设置 JSON，在 iPhone 中分别恢复。
+从离线包克隆并设置 origin 后，若 main 干净，可 `git pull --ff-only origin main` 接收后续文档和代码。个人计划和设置不在 Git 中；若需要 Windows 浏览器中的记录，分别导出参赛 JSON 与设置 JSON，在 iPhone 中分别恢复。
 
 ## 3. 安装依赖并做第一轮检查
 

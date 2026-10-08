@@ -1,6 +1,6 @@
 # 台湾 iPhone 上架准备进度
 
-更新日期：2026-10-08。长目标尚未完成，真实运营信息、Mac/Xcode 验收和内容权利依据仍需补齐。用户已要求把当前准备合入 main，并将在 Mac 继续后续工作。本次 main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 codex/ios-taiwan 的四项提交 6604154、262b45b、6a65d12、2afa32b；集成基线为 33472bc，在独立 worktree Events-Pro-integrate-ios-mac-20261008 完成完整验证。后续从 main 和根目录 MAC-SETUP.md 接手，不再以 Windows 功能 worktree 作为唯一源码入口。尚未推送、签名、托管、上传或提交审核。
+更新日期：2026-10-08。长目标尚未完成，真实运营信息、Mac/Xcode 验收和内容权利依据仍需补齐。用户已要求把当前准备合入 main，并将在 Mac 继续后续工作。本次 main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 codex/ios-taiwan 的四项提交 6604154、262b45b、6a65d12、2afa32b；集成基线为 33472bc，在独立 worktree Events-Pro-integrate-ios-mac-20261008 完成完整验证，集成提交为 9706c22。用户随后明确要求推送 GitHub，Mac 以 GitHub main 和根目录 MAC-SETUP.md 接手，最终推送结果在交付消息核对。不再以 Windows 功能 worktree 作为唯一源码入口。尚未签名、托管、上传 TestFlight 或提交商店审核。
 
 2026-10-08 用户补充：“其他都待定，主体台湾，赛事logo公开的可以使用。”运营所在地已写为台湾；具体承担责任的人或组织名称、邮箱、网站、正式 bundleId、Apple 账号及 Mac 条件继续待定。现有 Logo 保留，用户说明及尚需记录的具体依据见 content-rights.md；未将该说明扩展为完整 PDF 分发授权。四项验收仍为 pending，release:check 当前报告 10 个缺项。当前执行环境为 Windows，未发现 xcodebuild；原生测试结果来自桌面 WebKit 模拟桥接，没有真实编译、签名或真机证据，也没有正在等待的已启动 Mac/Apple 构建任务。长目标仍受外部条件限制。
 
@@ -48,4 +48,4 @@
 
 主界面目前为简体中文，繁体政策和商店草稿已准备；完整繁体 UI 尚未实现。首版无需在线账户，暂不涉及服务器账户删除流程。未来若增加账户、分析、广告或云同步，应同步修改实际功能、政策及商店声明。
 
-Mac 接手见 [MAC-SETUP.md](../../MAC-SETUP.md)，商店材料见 [台湾上架指南](TAIWAN-RELEASE.md)，数据核对见 [隐私实践](PRIVACY-AUDIT.md)。本次同时提供 main 的 Git bundle 和交接清单供 Mac 克隆，清单记录最终提交及包摘要；GitHub main 未同步时以该包为准。readiness.json 保持真实 pending 状态，外部项目只有得到真实验收证据后才能改为 verified。
+Mac 接手见 [MAC-SETUP.md](../../MAC-SETUP.md)，商店材料见 [台湾上架指南](TAIWAN-RELEASE.md)，数据核对见 [隐私实践](PRIVACY-AUDIT.md)。优先克隆 GitHub main，已有离线 Git bundle 仅作其制作时的快照备份，清单记录对应提交及摘要。readiness.json 保持真实 pending 状态，外部项目只有得到真实验收证据后才能改为 verified。
