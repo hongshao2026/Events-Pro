@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "status": "development-draft",
+  "sourceCommit": "e1b18803ff99a8b98a00e2d84f5679c8edd90a09",
+  "runUrl": "https://github.com/hongshao2026/Events-Pro/actions/runs/37807293715",
+  "captureMethod": "XCUIScreen.main.screenshot(); JPEG encoded with UIKit at 0.95; no cropping, resizing or compositing",
+  "demo": "Normal native UI: KPC BANKROLL BUILDER Day 1A/1B attend, Day 1C watch; flight budget KRW 1600000",
+  "limitations": [
+    "Development Bundle ID; final candidate pending",
+    "Single-series demo; cross-series showcase pending",
+    "Not physical-device, signing, backup restore, upgrade or TestFlight evidence",
+    "Some captures show a scrolled page and omit the status bar; local simulator/device safe-area review and final framing pending"
+  ],
+  "devices": [
+    {
+      "model": "iPhone 16 Pro",
+      "runtime": "iOS 26.2",
+      "xcode": "Xcode 26.3\nBuild version 17C529",
+      "version": "1.0.0",
+      "buildNumber": "1",
+      "bundleId": "com.example.eventspro",
+      "artifactName": "ios-simulator-evidence-iPhone-16-Pro",
+      "completedAt": "2026-10-08T16:27:56.295Z",
+      "passedTests": 1,
+      "failedTests": 0,
+      "resultsSha256": "c4fa421f8c4c31e603dcc8b5519c6604fcc72c0c3cdc0994855c23ef978de122",
+      "files": [
+        {
+          "file": "medium/01-events.jpg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "f867cb37c4babb41b1e404a29e5b9176e2e5b0b76f297d68ca7ade653b4ea1c3",
+          "sourceAttachment": "01-events-jpeg_0_CE70382F-088D-4E8A-ADE2-286404E0765A.jpeg",
+          "captureTimestamp": 1791476743.501,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "medium/02-schedule.jpg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "452b071b35c8d0e7b1aa3138500e39dba5985d66cfba7f94f5eaed65305f0181",
+          "sourceAttachment": "02-schedule-jpeg_0_3299D41C-EC4E-4618-B972-49C1B1E715F0.jpeg",
+          "captureTimestamp": 1791476752.744,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "medium/03-calendar.jpg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "3d31bc9dae0d6c2e2c18a5448fe733fc6153e45a0a51d634623f8c5071c9a5d7",
+          "sourceAttachment": "03-calendar-jpeg_0_163F9823-85F2-4235-AFB0-7FC22C10840D.jpeg",
+          "captureTimestamp": 1791476822.492,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "medium/04-shortlist.jpg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "3b7a653a17184483536e78c83f018dbe7c8247c914bae83fa1318085c481fa8a",
+          "sourceAttachment": "04-shortlist-jpeg_0_4644B7B9-D265-404D-BCB8-7506C43C7D8B.jpeg",
+          "captureTimestamp": 1791476812.762,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "medium/05-image.jpg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "6ccaff7e796ce5d8e180427470209e2034fdcd9ab4ac1facbf74fdea60ae9d75",
+          "sourceAttachment": "05-image-jpeg_0_90EF9E41-C041-4E4A-B9B6-A03A1B8E43FC.jpeg",
+          "captureTimestamp": 1791476836.057,
+          "visualReview": "content-reviewed; final framing pending"
+        }
+      ]
+    },
+    {
+      "model": "iPhone 16 Pro Max",
+      "runtime": "iOS 26.2",
+      "xcode": "Xcode 26.3\nBuild version 17C529",
+      "version": "1.0.0",
+      "buildNumber": "1",
+      "bundleId": "com.example.eventspro",
+      "artifactName": "ios-simulator-evidence-iPhone-16-Pro-Max",
+      "completedAt": "2026-10-08T16:26:07.922Z",
+      "passedTests": 1,
+      "failedTests": 0,
+      "resultsSha256": "d922ca92a268bb93485389a68256455f53dc3abee9b3532c2d3cdbe36bab3e14",
+      "files": [
+        {
+          "file": "large/01-events.jpg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "f190a85c3f454dba041215f6e8235c90b2676c583658c4505019da35b76f0a75",
+          "sourceAttachment": "01-events-jpeg_0_E5A2824F-18BF-4CE9-8CDD-FD64D21D4491.jpeg",
+          "captureTimestamp": 1791476633.366,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "large/02-schedule.jpg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "4aef5c0fa8295657f0591e78be9d69cbcc4b8342726924c9c0af0bc68ee467ea",
+          "sourceAttachment": "02-schedule-jpeg_0_DC096ABF-5706-44F6-A5E9-623584468B62.jpeg",
+          "captureTimestamp": 1791476642.462,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "large/03-calendar.jpg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "e4b74aeb481c83f219260c25c28ce21fde9c61f1de7c5f677fdcb636e5eeaccb",
+          "sourceAttachment": "03-calendar-jpeg_0_2250AA42-1AB1-4FDD-827D-6D7373B82F0E.jpeg",
+          "captureTimestamp": 1791476714.098,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "large/04-shortlist.jpg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "8137435967a05e24c545b669a6b917058061dbd212f1fcaa8618df82a4b1a351",
+          "sourceAttachment": "04-shortlist-jpeg_0_9DD94741-5AC8-4BE1-B425-D0D69B17BDDB.jpeg",
+          "captureTimestamp": 1791476703.438,
+          "visualReview": "content-reviewed; final framing pending"
+        },
+        {
+          "file": "large/05-image.jpg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "a394bcd60aeeba85d95709a0a1879b03e38423a01cd5c4de4b504051d39d0cdb",
+          "sourceAttachment": "05-image-jpeg_0_26B42287-F05B-41AC-9465-BB2D768A83D0.jpeg",
+          "captureTimestamp": 1791476727.936,
+          "visualReview": "content-reviewed; final framing pending"
+        }
+      ]
+    }
+  ],
+  "visualReview": "Codex inspected all ten original JPEGs on 2026-10-09 Asia/Shanghai: page content and amounts visible; final framing, status bar and safe areas require local simulator/device review"
+}

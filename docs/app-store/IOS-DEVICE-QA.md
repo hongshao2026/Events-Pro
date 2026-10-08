@@ -1,6 +1,6 @@
 # iOS 真机验收记录模板
 
-状态：以下完整功能矩阵尚未全部执行。2026-10-09 已在远程真实 iPhone 16 Pro/Pro Max、iOS 26.2、Xcode 26.3 完成编译、启动与有限原生功能；源码 `cc213e7` / `1.0.0 (1)` / 开发 Bundle ID `com.example.eventspro`，CI 自动执行、Codex 读取报告及查看原图，证据见 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md)。桌面 Chromium/WebKit 与模拟原生桥结果另行区分，真机直装与 TestFlight 尚未执行。
+状态：以下完整功能矩阵尚未全部执行。2026-10-09 已在远程真实 iPhone 16 Pro/Pro Max、iOS 26.2、Xcode 26.3 完成编译、启动与有限原生功能；源码 `cc213e7` 首次通过、`e1b1880` 完整屏幕采集复验也通过，`1.0.0 (1)` / 开发 Bundle ID `com.example.eventspro`，CI 自动执行、Codex 读取报告及查看原图，证据见 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md)。桌面 Chromium/WebKit 与模拟原生桥结果另行区分，真机直装与 TestFlight 尚未执行。
 
 记录设备型号、iOS 版本、Xcode 版本、源码提交、应用版本/构建号、测试日期、执行人及每项实际结果。
 

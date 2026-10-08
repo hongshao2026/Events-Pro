@@ -107,6 +107,10 @@
 | results.json SHA-256 | `186164deeb825b04631b1298187615ac5fcd5aec53a481668c3e5e772a14953f` | `ff6bdcc24ba538554ca3dbfddbed8712a0f5b0f753696cf6c060479260043632` |
 | xcodebuild-test.log SHA-256 | `26c221998e631c9ea7a2b8916552c2a55d7c96da1593beef50399ba573a99aba` | `f8b7a900c7196f4e193b3c749e495e9a374b1299aa6f0d0364a089647b6266b7` |
 
+截图复验 [Run 37807293715](https://github.com/hongshao2026/Events-Pro/actions/runs/37807293715) 使用完整 `e1b18803ff99a8b98a00e2d84f5679c8edd90a09`，同样的 Xcode、OS 与开发身份；两组实际 XCTest 各 1 项通过、0 失败。2026-10-09 00:28（Asia/Shanghai）完成，标准尺寸运行 146.030 秒、大屏 152.640 秒，实际 SPM 锁再次一致。两套共十张完整屏幕 JPEG 已核对像素/无透明并逐图查看内容，作为非私人草稿保存于 [screenshots/draft](screenshots/draft/README.md)，构建与逐图摘要见 [capture-manifest.json](screenshots/draft/capture-manifest.json)。结果文件 SHA-256：中屏 `c4fa421f8c4c31e603dcc8b5519c6604fcc72c0c3cdc0994855c23ef978de122`；大屏 `d922ca92a268bb93485389a68256455f53dc3abee9b3532c2d3cdbe36bab3e14`。完整附件已下载至 `.sites-runtime/qa/remote-ios-ui-37807293715/`。
+
+完整屏幕接口的输出仍有部分页面位于滚动位置、未显示状态栏；本机 Simulator/真机须复核状态栏、顶部和安全区，选最终取景，不以这组草稿记作完整 Q10 通过。正式身份与跨系列演示继续待完成，storeScreenshots 保持 pending，已指向草稿依据。
+
 测试不注入本机存储、JS 或模拟插件；目标不参与正式 Archive。所有真机直装、升级与 TestFlight 项继续未执行。
 
 ## 继续操作与待定项

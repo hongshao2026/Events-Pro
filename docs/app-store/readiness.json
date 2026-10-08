@@ -2,5 +2,5 @@
   "nativeDeviceQA": {"status": "pending", "evidence": ""},
   "contentRights": {"status": "pending", "evidence": "docs/app-store/content-rights.md"},
   "publicPolicyAndSupport": {"status": "pending", "evidence": ""},
-  "storeScreenshots": {"status": "pending", "evidence": ""}
+  "storeScreenshots": {"status": "pending", "evidence": "docs/app-store/screenshots/draft/README.md"}
 }
