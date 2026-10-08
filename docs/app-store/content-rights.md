@@ -10,7 +10,7 @@
 | QPC 标识与赛程 | assets/quads-logo.svg；sources/qpc-circuit-2026.md | 待核定 |
 | KPC 标识与赛程 | assets/kpc-logo.png；sources/kpc-jeju-2026.md | 待核定 |
 | JPF 标识、赛程、内置 PDF | assets/jpf-2026-logo.png；sources/jeju-poker-festival-2026.pdf、相关 md | 待核定标识及完整 PDF 分发依据 |
-| 依赖库/图标 | package-lock.json；Lucide 图标、Capacitor 等各包 LICENSE | 发行前核对对应开源许可与必要声明 |
+| 依赖库/图标 | package-lock.json；实际 bundle 与 vendor/ios-notices/；[依赖声明核对](DEPENDENCY-NOTICES.md) | 本地生成 66 项完整声明并随 iOS 资源交付；补充原文的来源差异、最终原生框架与 Archive 仍需正式复核 |
 
 针对每项资料记录：权利人、适用条款/授权文件及日期、许可范围（App 内展示/完整 PDF 分发/地区/有效期）、已采取的替换或移除措施、核对人和结论。不要把下载来源链接或用户提供的文件当作已取得对外分发权。
 

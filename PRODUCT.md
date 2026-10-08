@@ -10,6 +10,8 @@ iOS 表格图片先生成并展示预览，由用户再次点击“分享或存�
 
 iOS 版个人资料准确展示本机保存与手动备份，不显示尚未开放的 VIP；赛事编辑不显示未实施的盲注结构占位。网页保留既有账户代码与布局，认证仍默认关闭。
 
+iOS 构建从实际模块收集开源许可原文，补齐输出样式和原生依赖声明；完整文本随 public 交付，并生成已登记的原生 Settings.bundle 阅读页。IONFilesystemLib 固定对应核对版本。缺少正文、未经核定的许可证类型或版本不匹配时拒绝构建；来源差异与最终原生框架复核仍保留在发行材料中，见 docs/app-store/DEPENDENCY-NOTICES.md。
+
 app-release.config.json 统一维护公开运营信息与构建标识；未配置时显示测试说明，正式政策构建与发行检查明确失败。生成的公开页面尚未托管。Native 工程、构建资源及隐私清单检查不能代替 Mac 编译、签名、真机、内容权利和 Apple 审核。实际状态见 docs/app-store/TASK-STATUS.md 与 TAIWAN-RELEASE.md。
 
 ## 当前产品任务

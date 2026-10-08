@@ -5,6 +5,7 @@ ios-dist/
 legal-site/
 ios/App/App/public/
 ios/App/App/capacitor.config.json
+ios/App/App/Settings.bundle/
 ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
 ios/App/App.xcodeproj/xcuserdata/
 ios/App/CapApp-SPM/.build/

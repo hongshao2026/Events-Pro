@@ -44,6 +44,8 @@ npm run ios:open
 
 本项目用 Swift Package Manager，打开的是 `ios/App/App.xcodeproj`，无需安装 CocoaPods。Xcode 首次解析包需要联网。完整依赖版本见 package-lock.json；Capacitor 原生核心在 Package.swift 中精确锁定，其他 Swift 传递依赖在 Mac 解析后检查并保存 Package.resolved。
 
+IONFilesystemLib 也已固定为对应许可核对的 2.0.0。构建自动生成完整开源声明与原生 Settings.bundle，详见 [依赖许可](DEPENDENCY-NOTICES.md)。改变原生版本后需要同步原文与复核记录；首次 Mac 构建还须核对最终框架及系统设置入口，不以源文件登记视为已通过。
+
 1. Xcode → App target → Signing & Capabilities，选择你自己的 Team 并开启自动签名。Bundle Identifier 与配置、Developer Portal、App Store Connect 必须一致。
 2. 选择模拟器运行，再选择真实 iPhone 运行。测试事项见 `IOS-DEVICE-QA.md`；特别检查文件导入、系统分享取消与重试、安全区、软键盘、应用重启后的记录及飞行模式。
 3. 通过后保存真实验收记录，并将 readiness.json 的 nativeDeviceQA 指向该记录。记录设备、OS、Xcode、源码提交和结果。

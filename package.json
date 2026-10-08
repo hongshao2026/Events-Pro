@@ -31,7 +31,8 @@
     "release:check": "node scripts/check-release.mjs",
     "ios:release": "npm run release:check && node scripts/build-ios.mjs --release && cap sync ios && node scripts/configure-ios.mjs",
     "test:release:ui": "node tests/release-ui.test.mjs",
-    "test:native:ui": "node tests/native-ui.test.mjs"
+    "test:native:ui": "node tests/native-ui.test.mjs",
+    "test:ios:notices": "node tests/ios-notices.test.mjs"
   },
   "dependencies": {
     "@capacitor/browser": "8.0.5",

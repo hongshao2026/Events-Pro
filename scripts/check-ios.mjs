@@ -16,6 +16,11 @@ assert.doesNotMatch(info,/NSAllowsArbitraryLoads|NSCameraUsageDescription|NSPhot
 assert.match(info,/NSPhotoLibraryAddUsageDescription/,'Saving a shared PNG to Photos needs the add-only purpose string');
 assert.match(info,/<key>CFBundleLocalizations<\/key>\s*<array><string>zh-Hans<\/string><\/array>/,'The declared app language must match its actual interface');
 for(const name of ['CapacitorShare','CapacitorFilesystem','CapacitorBrowser'])assert.ok(spm.includes(name),`${name} missing from native package`);
+const licensePolicy=JSON.parse(await read('vendor/ios-notices/config.json'));
+assert.ok(spm.includes(`.package(url: "${licensePolicy.nativeFilesystem.url}", exact: "${licensePolicy.nativeFilesystem.version}")`),'Native filesystem must match its reviewed license version');
+assert.ok(pbx.includes('E20A00010000000000000001 /* Settings.bundle in Resources */,')&&pbx.includes('E20A00010000000000000002 /* Settings.bundle */,'),'License Settings bundle must be registered as an app resource');
+const acknowledgements=await read('ios/App/App/Settings.bundle/Acknowledgements.plist');assert.match(acknowledgements,/Copyright|COPYRIGHT/);assert.match(await read('ios/App/App/Settings.bundle/Root.plist'),/PSChildPaneSpecifier/);
+assert.ok((await read('ios/App/App/public/THIRD-PARTY-NOTICES.txt')).includes('Apache Software Foundation'));
 const icon=JSON.parse(await read('ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json')).images[0].filename;
 const bytes=await readFile(resolve(projectRoot,'ios/App/App/Assets.xcassets/AppIcon.appiconset',icon));
 assert.equal(bytes.readUInt32BE(16),1024);assert.equal(bytes.readUInt32BE(20),1024);assert.equal(bytes[25],2,'Icon must be an opaque RGB PNG');
