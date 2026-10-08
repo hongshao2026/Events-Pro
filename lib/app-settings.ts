@@ -1,23 +1,29 @@
 import {events,type Event} from './schedule';
 import {buildEntries} from './catalog';
+import {seriesList} from './series';
 import {displayCurrencies,type CurrencyPreference,type ExchangeRates} from './money';
 
 export const SETTINGS_KEY='events-pro-settings-v1';
 export type EventOverride={title?:string;buyin?:number|null;guarantee?:number|null;adminNotes?:string;hidden?:boolean};
 // Reserved contract for the future structure editor; this release does not modify blind schedules.
 export type BlindLevel={level:number;smallBlind:number;bigBlind:number;ante:number;minutes:number;breakAfterMinutes?:number};
-export type AppSettings={version:1;revision:number;profile:{username:string;currency:CurrencyPreference};fx:{rates:ExchangeRates;asOf:string;source:string};eventOverrides:Record<string,EventOverride>};
+export type AppSettings={version:1;revision:number;profile:{username:string;currency:CurrencyPreference;pinnedSeriesId:string|null};fx:{rates:ExchangeRates;asOf:string;source:string};eventOverrides:Record<string,EventOverride>};
 export type SettingsBackup={app:'events-pro-settings';schemaVersion:1;savedAt:string;settings:AppSettings};
-export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:0.004958},asOf:'2026-10-08',source:'中国银行折算价'},eventOverrides:{}});
+export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY',pinnedSeriesId:null},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:0.004958},asOf:'2026-10-08',source:'中国银行折算价'},eventOverrides:{}});
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const text=(v:unknown,max:number):v is string=>typeof v==='string'&&v.length<=max;
 const amount=(v:unknown):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0&&v<=1e12;
 const known=new Map(events.map(e=>[e.id,e]));
+const knownSeriesIds=new Set(seriesList.map(series=>series.id));
 export function validateSettings(value:unknown):AppSettings{
  const fail=()=>{throw new Error('设置文件包含无效内容，原设置未更改。');};
  if(!object(value)||value.version!==1||!Number.isSafeInteger(value.revision)||(value.revision as number)<0||(value.revision as number)>=Number.MAX_SAFE_INTEGER-1)fail();
  const data=value as Record<string,unknown>,profile=data.profile,fx=data.fx,overrides=data.eventOverrides;
  if(!object(profile)||!text(profile.username,40)||!['original',...displayCurrencies].includes(String(profile.currency)))fail();
+ const pin=Object.hasOwn(profile as object,'pinnedSeriesId')?(profile as Record<string,unknown>).pinnedSeriesId:null;
+ if(pin!==null&&(!text(pin,120)||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(pin)))fail();
+ // A removed/newer festival must not make unrelated saved settings unusable. Reading never rewrites storage.
+ const pinnedSeriesId=typeof pin==='string'&&knownSeriesIds.has(pin)?pin:null;
  if(!object(fx)||!object(fx.rates)||!text(fx.source,120)||!text(fx.asOf,10)||!/^\d{4}-\d{2}-\d{2}$/.test(fx.asOf as string)||!Number.isFinite(Date.parse(fx.asOf as string)))fail();
  const validProfile=profile as AppSettings['profile'],validFx=structuredClone(fx) as AppSettings['fx'];
  // The original four-currency v1 store remains valid. Never overwrite a user's custom rates.
@@ -38,7 +44,7 @@ export function validateSettings(value:unknown):AppSettings{
   if(p.hidden!==undefined&&typeof p.hidden!=='boolean')fail();
   clean[id]={...p} as EventOverride;
  }
- return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
+ return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency,pinnedSeriesId},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
 }
 export function readSettings():AppSettings{
  try{const raw=localStorage.getItem(SETTINGS_KEY);return raw?validateSettings(JSON.parse(raw)):defaultSettings();}

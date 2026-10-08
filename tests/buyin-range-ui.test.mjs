@@ -8,6 +8,7 @@ import {chooseDiscoveryStatus,openDiscoveryFilters,finishDiscoveryFilters,setDis
 const output=resolve('.sites-runtime/qa/buyin-range');await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
 const context=await browser.newContext({viewport:{width:390,height:950},offline:true,reducedMotion:'reduce'}),page=await context.newPage();page.setDefaultTimeout(15000);
+await page.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
 const checks=[],errors=[],requests=[];page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>{if(/^https?:/.test(request.url()))requests.push(request.url());});
 const pass=message=>{checks.push(message);console.log('PASS',message);};
 const series='kpc-jeju-2026',data=JSON.parse(await fs.readFile('lib/kpc-jeju-2026.json','utf8')),opening=data.find(event=>event.id==='KPC01'),id=`${series}/${opening.id}/${opening.starts[0].id}`;

@@ -155,6 +155,7 @@ try {
   // Separate profiles ensure rate limit and network tests do not inherit sessions.
   const failureContext = await browser.newContext({ viewport: { width: 320, height: 700 }, reducedMotion: 'reduce' });
   const failurePage = await failureContext.newPage(); failurePage.on('pageerror', error => errors.push(error.message));
+  await failurePage.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
   let rateLimit = true;
   await failureContext.route(`${provider}/**`, route => rateLimit
     ? route.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ code: 'over_email_send_rate_limit' }) })
@@ -184,6 +185,7 @@ try {
     };
   });
   const blockedPage = await blockedContext.newPage();
+  await blockedPage.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
   await blockedPage.goto(base); await blockedPage.getByRole('button', { name: '登录', exact: true }).click();
   await blockedPage.getByText('浏览器禁止了登录所需的存储', { exact: false }).waitFor();
   assert.equal(await blockedPage.getByLabel('邮箱地址', { exact: true }).count(), 0);

@@ -9,6 +9,7 @@ const data=JSON.parse(await fs.readFile('lib/qpc-circuit-2026.json','utf8'));
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
 const context=await browser.newContext({viewport:{width:390,height:950},offline:true,reducedMotion:'reduce'});
 const page=await context.newPage(),checks=[],errors=[],requests=[];
+await page.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
 page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});
 const pass=name=>{checks.push(name);console.log('PASS',name);};
 const file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href,series='qpc-circuit-2026';

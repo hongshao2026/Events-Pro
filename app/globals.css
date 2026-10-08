@@ -236,10 +236,26 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .series-results{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--border);padding:4px 0 8px;color:var(--muted-foreground);font-size:11px}
 .series-results b{color:var(--foreground);font-weight:600}
 .series-results>span:last-child{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap}
-.series-results>span:last-child svg{transform:rotate(90deg)}
-.series-month>h2{display:flex;align-items:baseline;gap:4px;font:600 21px var(--font-display);margin:14px 0 10px}
-.series-month>h2 span{font:12px var(--font-body);color:var(--muted-foreground);margin-right:5px}
-.festival-card{display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);margin-bottom:18px;transition:border-color .12s}
+.series-group-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:8px 0}
+.series-group-heading h2{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;margin:0;white-space:nowrap}
+.series-group-count{font:12px var(--font-body);color:var(--muted-foreground);font-variant-numeric:tabular-nums}
+.series-group-empty{font-size:11px;color:var(--muted-foreground);text-align:right}
+.series-phase-dot{width:6px;height:6px;border-radius:50%;background:var(--primary)}
+.series-phase-dot.ongoing{background:var(--attend)}
+.pinned-series .series-group-heading h2{color:var(--primary)}
+.series-phase{font-size:11px;color:var(--primary);background:var(--secondary);border-radius:4px;padding:2px 6px}
+.series-phase[data-phase=ongoing]{color:var(--attend);background:var(--attend-bg)}
+.series-phase[data-phase=ended]{color:var(--muted-foreground);background:var(--muted)}
+.series-archive{margin-top:8px;border-top:1px solid var(--border)}
+.series-archive>summary{display:flex;align-items:center;gap:7px;min-height:44px;padding:8px 0;cursor:pointer;font-size:13px;color:var(--muted-foreground);list-style:none;border-radius:4px}
+.series-archive>summary::-webkit-details-marker{display:none}
+.series-archive>summary:focus-visible,.series-results:focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+.series-archive>summary>svg{margin-left:auto}
+.series-archive[open]>summary>svg{transform:rotate(180deg)}
+.series-pin-error{margin:6px 0}
+.festival-item{position:relative;margin-bottom:14px}
+.festival-card{display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);transition:border-color .12s}
+.festival-item.is-pinned .festival-card{border-color:var(--primary)}
 .festival-card:hover{border-color:var(--primary)}
 .festival-card:active{border-color:var(--primary);filter:brightness(.98)}
 .festival-brand{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:111px;padding:25px 20px;background:var(--primary);color:var(--primary-foreground)}
@@ -255,11 +271,16 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .festival-dates svg{color:var(--primary)}
 .festival-counts{font-size:12px;color:var(--muted-foreground);margin-top:9px}
 .festival-counts span{margin:0 6px}
-.festival-card-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--border);padding:13px 20px;font-size:13px;color:var(--primary);font-weight:600;min-height:48px}
+.festival-card-foot{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding:13px 100px 13px 20px;font-size:13px;color:var(--primary);font-weight:600;min-height:50px}
+.festival-pin{position:absolute;right:10px;bottom:3px;display:flex;align-items:center;justify-content:center;gap:5px;min-width:76px;min-height:44px;padding:8px;border:0;border-radius:6px;background:var(--card);color:var(--muted-foreground);font-size:12px}
+.festival-pin:hover{color:var(--primary);background:var(--secondary)}
+.festival-pin[aria-pressed=true]{color:var(--primary);background:var(--secondary)}
+.festival-pin:disabled{opacity:.5;cursor:not-allowed}
+.festival-pin:active{filter:brightness(.96)}
 .series-empty{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0}
 .series-header .series-logo{width:70px;height:50px;background:var(--primary);padding:10px 6px;border-radius:7px}
 .series-header .series-logo>span{font-size:21px}
-@media(max-width:359px){.region-option{font-size:12px}.series-results{gap:5px}.series-results>span:last-child{font-size:10px}.festival-card-body{padding:17px}.festival-card h3{font-size:19px}.festival-card-foot{padding:13px 17px}.festival-dates{font-size:13px;gap:5px}}
+@media(max-width:359px){.region-option{font-size:12px}.series-results{gap:5px}.series-results>span:last-child{font-size:10px}.festival-card-body{padding:17px}.festival-card h3{font-size:19px}.festival-card-foot{padding:13px 95px 13px 17px}.festival-dates{font-size:13px;gap:5px}}
 @media(forced-colors:active){.festival-card,.region-option{border:1px solid CanvasText}.region-option.active{outline:2px solid Highlight}.festival-brand{background:Canvas;color:CanvasText}.series-logo>span{color:CanvasText}}
 
 /* Profile, local management and currency display use the existing product tokens. */

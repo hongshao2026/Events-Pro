@@ -21,6 +21,7 @@ assert.equal(usdEvent.currency,'USD');assert.equal(usdEvent.buyin,5000);assert.e
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
 const context=await browser.newContext({viewport:{width:390,height:950},offline:true,reducedMotion:'reduce'});
 const page=await context.newPage(),checks=[],errors=[],requests=[];
+await page.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
 page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>{if(/^https?:/.test(request.url()))requests.push(request.url());});
 const pass=name=>{checks.push(name);console.log('PASS',name);};
 const file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href;

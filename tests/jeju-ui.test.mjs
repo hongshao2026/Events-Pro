@@ -8,6 +8,7 @@ import {pathToFileURL} from 'node:url';
 const out=resolve('.sites-runtime/qa/jeju');await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
 const context=await browser.newContext({viewport:{width:390,height:950},offline:true,reducedMotion:'reduce'}),page=await context.newPage();page.setDefaultTimeout(15000);
+await page.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
 const data=JSON.parse(await fs.readFile('lib/jeju-poker-festival-2026.json','utf8')),series='jeju-poker-festival-2026',file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href;
 const errors=[],requests=[],checks=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});const pass=s=>{checks.push(s);console.log('PASS',s);};
 const id=(n,i=0)=>`${series}/JPF-${n}/${data.find(e=>e.id==='JPF-'+n).starts[i].id}`;

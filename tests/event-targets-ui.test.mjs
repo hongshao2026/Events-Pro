@@ -8,6 +8,7 @@ import {openDiscoveryDetails,closeDiscoveryDetails,chooseDiscoveryStatus,setDisc
 const output=resolve('.sites-runtime/qa/event-targets');await fs.mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?{executablePath:process.env.CHROMIUM_EXECUTABLE}:{})});
 const context=await browser.newContext({viewport:{width:320,height:950},offline:true,reducedMotion:'reduce'}),page=await context.newPage();page.setDefaultTimeout(15000);
+await page.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
 const checks=[],errors=[],requests=[];page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>{if(/^https?:/.test(request.url()))requests.push(request.url());});
 const pass=message=>{checks.push(message);console.log('PASS',message);};
 const data=JSON.parse(await fs.readFile('lib/kpc-jeju-2026.json','utf8')),wpt=JSON.parse(await fs.readFile('lib/schedule.json','utf8')),series='kpc-jeju-2026',file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href;

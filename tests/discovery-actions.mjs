@@ -33,7 +33,10 @@ export async function switchDiscoverySeries(page,label){
  const id=seriesIds[label];if(!id)throw new Error('Unknown series option: '+label);
  await page.getByRole('button',{name:'返回赛事列表',exact:true}).click();
  await page.locator('label.region-option').filter({hasText:/^全部地区$/}).click();
- await page.locator(`.festival-card[data-series-id="${id}"]`).click();
+ const card=page.locator(`.festival-card[data-series-id="${id}"]`);
+ const archive=page.locator('details:not([open])').filter({has:card});
+ if(await archive.count())await archive.locator('summary').click();
+ await card.click();
  await page.waitForFunction(series=>document.querySelector('.mobile-event')?.getAttribute('data-entry-id')?.startsWith(series+'/'),id);
 }
 export async function selectPlannerOption(page,label,value,{keepOpen=false}={}){
