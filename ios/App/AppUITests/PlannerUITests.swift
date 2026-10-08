@@ -76,16 +76,31 @@ final class PlannerUITests: XCTestCase {
 
     @MainActor
     private func dismissNativeShareSheet(_ name: String, _ app: XCUIApplication) {
-        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "关闭")).firstMatch
-        if !close.waitForExistence(timeout: 30) {
+        let activity = app.otherElements["ActivityListView"]
+        if !activity.waitForExistence(timeout: 30) {
             capture("failure-" + name, app)
             XCTFail("Native activity controller did not open\n\(app.debugDescription)")
             return
         }
+        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "关闭")).firstMatch
         capture(name, app)
         // Only dismiss the native controller. No recipient or external app is
         // selected; cancellation does not claim a file was delivered or saved.
-        tap(close, app)
+        if close.exists {
+            tap(close, app)
+        } else {
+            // iOS 26.2 presents a popover with this accessible backdrop instead
+            // of a Close button. The observed popover starts below mid-screen;
+            // tap the backdrop above it, never an activity or recipient.
+            let backdrop = app.otherElements["PopoverDismissRegion"]
+            XCTAssertTrue(backdrop.exists, "Missing native share dismissal region\n\(app.debugDescription)")
+            let point = backdrop.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1))
+            XCTAssertFalse(activity.frame.contains(point.screenPoint), "Dismissal point must be outside the native activities")
+            point.tap()
+        }
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: activity)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
     }
 
     // The harness invokes this separately after a real same-ID installation of

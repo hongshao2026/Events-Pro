@@ -83,6 +83,8 @@
 
 ## 原生 XCTest 实际执行与复验
 
+系统分享扩展 [Run 37820536832](https://github.com/hongshao2026/Events-Pro/actions/runs/37820536832)，head `4acdeb3a0bc311b2aea74d9f0ea193e9725f465f`，两型号实际编译通过、UI 测试失败。首次图片分享已出现原生 ActivityListView，显示 PNG 文件名称/大小以及保存图像等系统操作；iOS 26.2 此界面提供 PopoverDismissRegion（“关闭弹出式窗口”）而没有测试假定的 Close/关闭按钮。失败属于测试控件查询，不能推断导出故障；尚未执行成功取消、重试、两类备份或后续覆盖安装。保留全部图片/数量/预算/日历断言，按实际无障碍树修正为确认系统分享界面、点击菜单外的关闭区域并等待界面消失。此轮 Project checks 为 cancelled，不能记作通过。原始附件在 `.sites-runtime/qa/remote-ios-share-37820536832/`，错误日志在 `.sites-runtime/qa/mac-handoff/native-share-37820536832-failed.log`；修正后的真实复验另行登记。
+
 2026-10-09 草稿 PR #2 的最终检查已成功：[网页检查 Run 37810081999](https://github.com/hongshao2026/Events-Pro/actions/runs/37810081999)、[两型号原生检查 Run 37810082036](https://github.com/hongshao2026/Events-Pro/actions/runs/37810082036)。PR head 为 `410f6fc9390ae590ffef1cebb375f94fecc6ff59`，实际测试 GitHub 合成提交 `691a06a18f6f26c0ae1be23cf7dc30bd988fa39a`；已核对其父提交包含 main 与 head，源码树完全一致。两个实际 XCTest 各通过 1 项、0 失败，Swift 锁一致，附件已下载至 `.sites-runtime/qa/remote-ios-ui-37810082036/`。结果摘要 SHA-256：标准尺寸 `e79406fd4f74eaa4528d8a807dbf412d7f8aeb751d79589fa1935cadeca3680d`，大屏 `fdf4842b33faf94beef1e755e1e24ddf122bffa5742af796198dfa0ab44780dc`。仍是原有限范围，不包含覆盖安装。
 
 随后新增可选的同源码高原生构建号覆盖安装探针：先执行原有正常界面流程保存三条计划，实际重新编译并将原生 CFBundleVersion 从 1 递增为 2，同 ID 覆盖安装，再独立 XCTest 读取既有自选、韩元预算与条件日历，不重新创建选择或恢复备份。公开配置仍为构建 1，探针包不是正式候选；设置恢复、变更代码迁移、真机与 TestFlight 不在其范围。实际结果继续单独登记，不据此更新 readiness。
