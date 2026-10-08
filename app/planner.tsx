@@ -90,6 +90,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const openDetail=(entry:Entry,trigger:HTMLButtonElement)=>{detailTriggerRef.current=trigger;setOpenEntryId(entry.id);};
  const returnFromDetail=()=>{const target=detailTriggerRef.current?.isConnected?detailTriggerRef.current:resultsRef.current;target?.focus({preventScroll:true});};
  const [pendingBackup,setPendingBackup]=useState<Backup|null>(null),[importError,setImportError]=useState('');
+ const [exportingBackup,setExportingBackup]=useState(false);
  const stateRef=useRef(snapshot.data),searchRef=useRef<HTMLInputElement>(null),importRef=useRef<HTMLInputElement>(null),importButtonRef=useRef<HTMLButtonElement>(null),composing=useRef(false);
  const state=snapshot.data,blocked=!!snapshot.error;
  const setState=useCallback((data:PlannerState)=>{stateRef.current=data;setSnapshot({data,error:''});},[]);
@@ -173,7 +174,8 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   for(const tool of tools){try{void Promise.resolve(ctx.registerTool(tool,{signal:controller.signal})).catch(()=>{});}catch{/* Optional browser capability. */}}return()=>controller.abort();
  },[choose,blocked,entries,eventMap]);
  const error=snapshot.error||saveError||importError;
- const localTools=<div className="backup-actions"><button disabled={blocked} onClick={()=>downloadBackup(stateRef.current)}><Download size={14}/>导出备份</button><button ref={importButtonRef} onClick={()=>importRef.current?.click()}><Upload size={14}/>恢复备份</button></div>;
+ const exportBackup=async()=>{if(exportingBackup||blocked)return;setExportingBackup(true);setImportError('');try{await downloadBackup(stateRef.current);}catch{setImportError('未能导出参赛自选备份，请重试。');}finally{setExportingBackup(false);}};
+ const localTools=<div className="backup-actions"><button disabled={blocked||exportingBackup} aria-busy={exportingBackup} onClick={()=>void exportBackup()}><Download size={14}/>导出备份</button><button ref={importButtonRef} onClick={()=>importRef.current?.click()}><Upload size={14}/>恢复备份</button></div>;
  const seriesView=route.view==='discover'||route.view==='schedule';
  const activeFilterLabels=[
   filters.statuses.length!==statuses.length?(filters.statuses.length?filters.statuses.map(status=>longLabels[status]).join('、'):'未选分类'):'',

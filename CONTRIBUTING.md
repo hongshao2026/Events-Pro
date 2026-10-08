@@ -46,13 +46,15 @@ npm run dev -- --port 5177 --strictPort
 
 ```powershell
 # 首次安装测试浏览器；也可通过 CHROMIUM_EXECUTABLE 指定现有 Chrome
-npx playwright install chromium
+npx playwright install chromium webkit
 npm run verify
 git diff --check
 git status --short
 ```
 
-verify 依次执行 lint、typecheck、全部单元测试、离线构建、WPT/Triton/QPC/KPC/JPF/首页浏览器回归、模拟登录浏览器检查。截图在忽略目录 .sites-runtime/qa/。登录测试使用隔离服务和临时浏览器数据，不发真实邮件，不启用项目登录。CI 使用同一命令，不部署。
+verify 依次执行 lint、typecheck、全部单元测试、离线构建、WPT/Triton/QPC/KPC/JPF/首页浏览器回归、模拟登录浏览器检查、iOS 离线构建/同步与资源核对、政策草稿、Chromium/WebKit 隐私与清除检查，以及 WebKit 模拟原生桥接检查。截图在忽略目录 .sites-runtime/qa/。登录测试使用隔离服务和临时浏览器数据，不发真实邮件，不启用项目登录。CI 使用同一命令，不部署。模拟桥接不等同于 iOS 编译或真机；独立 iOS CI 可做不签名的模拟器编译，真机与 TestFlight 另按 docs/app-store/IOS-DEVICE-QA.md 验收。
+
+iOS 验收同时执行 test:ios:notices：核对实际构建模块的许可证原文、版权、可复现生成与原生复制。Settings.bundle 为构建生成物，需 ios:sync 后才能在 Xcode 使用；声明来源和实际框架在发行前继续复核。
 
 核对清单后，只暂存本功能文件并提交，不把别的对话的未完成修改一起交付。每个功能交接必须包含：
 

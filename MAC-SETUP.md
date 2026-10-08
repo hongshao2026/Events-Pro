@@ -1,0 +1,202 @@
+# 在 Mac 继续开发、测试和上架
+
+这份文档用于接手已合入 main 的 Events Pro。首次目标是在 Mac 编译、安装到真实 iPhone，再上传 TestFlight。工程、离线资源构建、系统分享、备份、简繁隐私与支持草稿已经准备；Windows 上的检查没有验证 Swift 编译、签名、真机或实际上传。
+
+目前主界面为简体中文，政策和帮助可切换繁体；登录默认关闭，没有真实内购、广告或云同步。先沿用当前功能验证，不必为了跑通工程先开通收费或认证服务。
+
+## 1. 安装环境
+
+1. 在 Mac App Store 安装正式版 Xcode，启动一次，按提示接受许可并安装 iOS 平台与模拟器。当前 Capacitor 8 要求 Xcode 26+；所需 macOS 版本取决于具体 Xcode，见 [Apple 系统要求](https://developer.apple.com/xcode/system-requirements) 和 [Capacitor iOS 要求](https://capacitorjs.com/docs/ios)。最终上传时还需满足 [Apple 当前提交要求](https://developer.apple.com/news/upcoming-requirements/)。
+2. 从 [Node.js 官网](https://nodejs.org/en/download) 安装 Node.js 24 的 macOS 安装包，按 Mac 芯片选择 arm64 或 x64。本项目最低 Node.js 22.13，使用 npm 和仓库锁文件。
+3. 准备一台 iPhone 和数据线；签名与 TestFlight 使用你自己的 Apple Developer Program 账号。若选大陆个人账号，按 [大陆个人注册步骤](https://developer.apple.com/cn/help/account/membership/enrolling-in-the-app/) 完成身份及会员注册。
+
+打开“终端”，确认工具：
+
+```sh
+xcode-select -p
+xcodebuild -version
+git --version
+node --version
+npm --version
+```
+
+如果 `xcode-select -p` 指向 `/Library/Developer/CommandLineTools`，在“Xcode → Settings → Locations → Command Line Tools”选中完整 Xcode。默认安装路径也可这样设置，再按提示完成首次启动：
+
+```sh
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+```
+
+Xcode 安装在其他位置时使用它的实际路径。运行 npm 安装和构建不需要 sudo。
+
+## 2. 把这次 main 带到 Mac
+
+此次交接同时提供 `Events-Pro-Mac-handoff` 文件夹，包含 `Events-Pro-main.bundle`、本文副本和 `handoff.json`。交接包保留 main 的提交历史，无需复制 Windows 的 node_modules 或工作目录。Windows worktree 的 `.git` 可能指向 Windows 路径，不能直接作为 Mac 仓库使用。
+
+将整个文件夹放到 Mac 的“下载”目录，然后运行：
+
+```sh
+mkdir -p "$HOME/Developer"
+cd "$HOME/Developer"
+git clone --branch main "$HOME/Downloads/Events-Pro-Mac-handoff/Events-Pro-main.bundle" Events-Pro
+cd Events-Pro
+git bundle verify "$HOME/Downloads/Events-Pro-Mac-handoff/Events-Pro-main.bundle"
+git log -1 --oneline
+git status --short
+```
+
+`git log -1` 应与 `handoff.json` 的 `commit` 对应，且根目录应有 `MAC-SETUP.md`、`capacitor.config.ts` 和 `ios/App/App.xcodeproj`。若用其他传输目录，替换上述交接包路径。可用以下命令对照 handoff.json 中的 SHA-256：
+
+```sh
+shasum -a 256 "$HOME/Downloads/Events-Pro-Mac-handoff/Events-Pro-main.bundle"
+```
+
+克隆后将 origin 改为 GitHub 地址，供后续同步使用：
+
+```sh
+git remote set-url origin https://github.com/hongshao2026/Events-Pro.git
+```
+
+本次交接以 bundle 为准，不把 GitHub 页面默认显示的提交当作本次最新 main。只有确认远端 main 已包含这次集成后，才直接从 GitHub 克隆。个人计划和设置不在 Git 中；若需要 Windows 浏览器中的记录，分别导出参赛 JSON 与设置 JSON，在 iPhone 中分别恢复。
+
+## 3. 安装依赖并做第一轮检查
+
+以下命令都在仓库根目录 `Events-Pro` 中执行：
+
+```sh
+npm ci
+npx playwright install chromium webkit
+npm run verify
+```
+
+`verify` 串行检查网页、数据兼容、预算、图片、默认关闭的模拟登录、iOS 资源、政策和模拟原生桥。全部通过也不代表真机已经通过。其生成的单文件网页在 `release/`，临时报告在忽略目录 `.sites-runtime/qa/`。
+
+打开网页预览可运行 `npm run dev`，使用终端显示的 localhost 地址。它不自动部署，也不是即将上架的 iPhone 包。
+
+正式改配置或修复 Mac 问题前，从接收到的 main 开一个分支：
+
+```sh
+git switch -c codex/mac-ios-validation
+```
+
+后续功能继续遵循 [开发与集成约定](CONTRIBUTING.md)，每项功能使用独立分支/worktree；验证后再合入 main。
+
+## 4. 填入自己的配置并生成 iOS 资源
+
+根目录 `app-release.config.json` 是公开应用信息来源。它会进入应用和政策网页，不放密码、证书私钥或 API 密钥。
+
+| 字段 | 接手时怎么处理 |
+|---|---|
+| bundleId | 改成自己控制的唯一正式标识，并与 Developer Portal、Xcode 和 App Store Connect 一致；当前 com.example.eventspro 只是开发占位 |
+| appName | 核定正式应用名，当前为“赛事自选” |
+| version / buildNumber | 首版当前为 1.0.0 / 1；每次上传递增 buildNumber |
+| operatorName | 真实承担责任的个人法定姓名或组织名称 |
+| operatorCountry | 真实运营所在地；当前台湾是上一条已确认信息，后续询问大陆个人账号尚未作为变更决定；若实际选大陆个人运营，应如实修改，台湾发行另在商店设置 |
+| supportEmail | 可实际收信和回复的公开邮箱 |
+| websiteUrl / privacyUrl / supportUrl | 正式 HTTPS 网站及公开政策、支持页面地址 |
+| policyUpdated | 实际政策更新日期 |
+
+暂未确定的联系信息可继续留空做开发测试，应用会保持政策草稿提示；正式发行检查会拒绝缺项。首次签名安装前尽量确定正式 Bundle ID，后续保持不变；更换 ID 会成为另一个应用，已有本机记录不会自动迁移。
+
+```sh
+npm run ios:sync
+npm run ios:check
+npm run ios:open
+```
+
+`ios:sync` 会重建网页、66 项依赖声明和系统设置资源，执行 Capacitor 同步并把配置写入工程。资源目录在 Git 中忽略，所以换电脑后必须先执行；只打开 Xcode 不会自动生成它们。修改网页、依赖或配置后也要重新 sync。
+
+本项目使用 Swift Package Manager，打开的是 `ios/App/App.xcodeproj`，无需安装 CocoaPods。不要重新执行 `cap add ios`，不要手改 `CapApp-SPM/Package.swift` 的受管理内容。版本号、Bundle ID 应在 JSON 修改后同步，避免被脚本覆盖 Xcode 中的单独修改。
+
+## 5. 模拟器和真实 iPhone
+
+在 Xcode 中选择 Scheme `App`，等待 Swift 包解析完成。当前原生核心固定为 8.5.3，IONFilesystemLib 固定为 2.0.0；解析后的其他原生版本与许可应按 [依赖声明核对](docs/app-store/DEPENDENCY-NOTICES.md) 检查，并保存实际 Package.resolved。
+
+先选择已安装的 iPhone 模拟器，点击运行。也可从根目录执行与 Mac CI 一致的不签名编译：
+
+```sh
+xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/DerivedData CODE_SIGNING_ALLOWED=NO build
+```
+
+模拟器编译通过后，连接 iPhone，信任电脑并按系统提示开启开发者模式（如需要）：
+
+1. “Xcode → Settings → Accounts”登录自己的开发者账号。
+2. App target → Signing & Capabilities → 勾选 Automatically manage signing，选择自己的 Team，核对 Bundle Identifier。
+3. 在设备选择器选择真实 iPhone，点击运行；根据 Xcode 提示完成设备注册、签名或信任步骤。
+4. 按 [真机验收模板](docs/app-store/IOS-DEVICE-QA.md) 逐项测试，特别核对分享取消/重试、保存到文件、备份恢复、飞行模式和更新后记录保留。
+
+把设备型号、OS、Xcode、源码提交、版本/构建号、问题和复验结果写入实际报告。只记录必要验收信息，不提交个人备份或设备序列号。没有执行的项目继续标为未执行，不直接把模板标成通过。
+
+## 6. 第一次上传 TestFlight
+
+先在 [App Store Connect](https://appstoreconnect.apple.com/) 创建应用记录：我的 App → ＋ → 新建 App，选择 iOS，填写名称、真实主要语言、相同 Bundle ID 和内部 SKU。上传前必须先有记录；见 [创建步骤](https://developer.apple.com/help/app-store-connect/create-an-app-record/add-a-new-app/)。
+
+测试阶段用 `ios:sync` 生成资源即可；`ios:release` 还会检查正式网页、素材、截图等全部验收条件，不作为首次 TestFlight 测试的先决命令。
+
+1. 每次上传前在 JSON 中递增 buildNumber，重新 `npm run ios:sync`，核对 Xcode 显示的版本与构建号。
+2. 选择通用 iOS 真机目标，Product → Archive。
+3. Organizer → 选中 Archive → Distribute App → App Store Connect → Upload，按实际加密使用填写出口合规问卷。[上传说明](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/)
+4. 若计划将同一构建用于外部测试和正式审核，不选 `TestFlight Internal Only`；该选项产生的构建仅能内部测试。[内部构建限制](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers/)
+5. 上传处理完成后，在 TestFlight 新建内部测试组，加入自己等有 App Store Connect 权限的成员，并分配构建；手机安装 TestFlight，接受邀请。
+6. 邀请真实用户时使用外部测试组，填写测试说明和联系信息；首个外部构建需要 Beta 审核，后续也可能需要。每份测试构建最多使用 90 天。[TestFlight 流程](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview/)
+
+记录实际安装和更新结果，再补齐真机验收。TestFlight 并不自动替换所有正式用户的版本，也不代替正式 App Review。测试者安装同一 Bundle ID 的测试版会替换手机上的该 App；安装前备份两类个人记录。
+
+## 7. 补齐材料并提交正式审核
+
+按 [台湾上架指南](docs/app-store/TAIWAN-RELEASE.md) 填商店资料，使用 [商店文案](docs/app-store/STORE-METADATA.md)、[审核备注](docs/app-store/REVIEW-NOTES.md) 和 [隐私实践核对](docs/app-store/PRIVACY-AUDIT.md)。发行范围选特定国家或地区，仅勾选台湾；首版免费，语言、年龄、内容、隐私和加密声明按最终实际版本填写。
+
+联系信息确定后生成公开政策并托管至自己选定的 HTTPS 网站：
+
+```sh
+npm run legal:build
+```
+
+输出目录 `legal-site/` 提供简体与繁体隐私、支持、使用说明六个页面；命令本身不会托管。核对线上访问、联系邮箱及托管日志告知，补齐真实 iPhone 截图、素材使用依据和最终 Archive 隐私报告。
+
+`docs/app-store/readiness.json` 的四项只有具备实际证据后才能改为 verified，并指向项目内的真实报告：
+
+| 项目 | 所需证据 |
+|---|---|
+| nativeDeviceQA | 完成真机、文件分享、升级兼容和实际构建验证的报告 |
+| contentRights | 赛事资料、Logo、PDF 等逐项使用依据及处理结论 |
+| publicPolicyAndSupport | 最终线上 URL、联系信息和访问核对记录 |
+| storeScreenshots | 最终 iPhone 截图及对应版本/构建说明 |
+
+```sh
+npm run release:check -- --online
+```
+
+缺项时退出码 1 是预期阻止发行；不要通过填假资料或只改 verified 来绕过。全部齐备后，若已有通过 TestFlight 的同一构建，直接在商店版本关联它，选择手动发布，点击“添加至审核”再“提交审核”，通过后手动发布。[提交](https://developer.apple.com/help/app-store-connect/manage-submissions-to-app-review/submit-an-app/)、[手动发布](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/select-an-app-store-version-release-option/)
+
+若还需生成新的正式候选包，可执行 `npm run ios:release`；它只检查并生成资源，不签名或上传。任何源码、配置或原生依赖改动都会产生需要重新测试的新候选包，不能沿用旧构建的验收结论。
+
+## 8. 上架后的更新和交接
+
+开发分支持续修改 → 本地与真机检查 → TestFlight → 确定候选构建 → 正式审核 → 手动发布。测试期可保持例如 1.1.0，逐次递增构建号 21、22、23；确认 23 后提交该构建，不为正式审核临时重打另一份包。
+
+较大的正式更新可选择 7 天分阶段自动更新，并在发现问题时暂停；用户仍能主动下载。商店不能直接切回旧版本，修复需要提交新版本。[分阶段更新](https://developer.apple.com/help/app-store-connect/update-your-app/release-a-version-update-in-phases/)、[更新版本](https://developer.apple.com/help/app-store-connect/update-your-app/create-a-new-version/)
+
+当前赛程随应用打包，内置赛程变动也需要新版；独立在线赛程更新尚未实现。今后内购需另行接入 StoreKit、协议、银行/税务、恢复购买和权益校验，当前首版不含真实收费功能。
+
+若将来出售整个 App，用双方开发者账号持有人之间的 Transfer App 交接。至少有一个正式上架版本，且满足当时的转移条件；评分、评论、Bundle ID 和原用户更新渠道可保留。转移前关闭 TestFlight，源码、域名、内容权利、订阅/服务迁移另行约定。[App 转移](https://developer.apple.com/help/app-store-connect/transfer-an-app/overview-of-app-transfer/)、[转移条件](https://developer.apple.com/help/app-store-connect/transfer-an-app/app-transfer-criteria/)
+
+在 Mac 保存源码修复、配置和验收记录并提交自己的分支，再按 CONTRIBUTING.md 完整验证后合入 main；不要提交证书、密钥、个人备份、IPA、Archive 或临时日志。
+
+## 常见问题
+
+| 现象 | 处理 |
+|---|---|
+| npm ci 提示 Node 版本不支持 | 安装 Node.js 24，重开终端确认 node --version |
+| Xcode 找不到文件或插件 | 在仓库根目录 npm ci 后执行 ios:sync；不要复用 Windows node_modules |
+| xcodebuild 只看到 CommandLineTools | 按第 1 节选择完整 Xcode，再安装 iOS 平台 |
+| Swift 包解析失败 | 确认首次解析能访问 GitHub，确认 npm 依赖已安装；不要通过随机升级锁定版本解决 |
+| 修改网页后手机仍显示旧界面 | 再执行 ios:sync，重新 Xcode 运行或上传新构建 |
+| No profiles / Team / Signing 错误 | 检查账号会员、自己的 Team、唯一 Bundle ID、自动签名及设备注册 |
+| 上传构建号重复 | 在 app-release.config.json 增加 buildNumber，sync 后重新 Archive |
+| release:check 报缺项 | 开发测试可继续；正式发行需要补真实配置及四项验收证据 |
+| 分享在网页正常但手机失败 | 真机复现，记录设备/OS/构建和取消、文件、照片路径；浏览器模拟桥检查不是原生验收 |
+
+接手与后续进度统一更新 [TASK-STATUS.md](docs/app-store/TASK-STATUS.md)。若继续让 Codex 在 Mac 帮忙，可直接发送：
+
+> 请读取 MAC-SETUP.md、AGENTS.md 和 docs/app-store/TASK-STATUS.md，核对接手的 main 与交接包提交，检查 Mac/Xcode 环境。从当前 main 建立独立 codex 分支，完成真实 iOS 编译、真机及 TestFlight 验收，保留现有赛程、预算、备份和默认关闭的登录。不要把 Windows 模拟桥检查当作真机结果；缺少运营信息先保持真实待定。用户身份验证、账号协议由账号本人操作，未经提交指令不提交正式审核。

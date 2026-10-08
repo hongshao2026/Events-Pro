@@ -108,3 +108,13 @@
 严格 UI 审计为 0 findings；DESIGN.md lint 为 0 errors，保留既有 7 项描述性 token 引用提示；`git diff --check` 通过。构建的现有体积提示来自内嵌离线资料，不影响验收。完整日志在 `.sites-runtime/qa/integrate-compact/verify.log`，各浏览器报告、截图及审计结果均在忽略目录 `.sites-runtime/qa/`，不提交 Git。
 
 `release/WPT赛事自选表.html` 已由本集成目录的最终源码重新生成，随合并提交交付。提交前再次确认 main 仍为 `b24f930`；主目录由集成入口最后快进到验收后的合并提交。功能分支与 worktree 保留，没有推送、部署或启用认证；真实 Google/SMTP 尚未配置或实测。
+
+## 2026-10-08 iOS 准备集成与 Mac 接手
+
+按用户指令将 codex/ios-taiwan 的 6604154、262b45b、6a65d12、2afa32b 集成到 main。独立目录 Events-Pro-integrate-ios-mac-20261008、分支 codex/integrate-ios-mac-20261008，从已验收 main 33472bc 合并；自动合并没有文本冲突，依赖通过本目录 npm ci 独立安装。保留之前紧凑首页/列表/详情/筛选、自选表格、完整 PNG 和五站原始数据，以及预算和两类备份格式。
+
+新增 Capacitor 8 / iPhone / Swift Package Manager 工程，离线构建与原生文件/图片分享、外部浏览器、隐私/支持和选择性本机清除入口。已有登录代码保留并默认关闭，iOS 与单文件构建强制关闭；iOS 隐藏尚未开放的 VIP 和盲注占位，普通网页行为保留。原生资源包含图标、隐私清单、仅添加照片用途说明，以及 66 项完整开源声明和系统设置入口；不将资源登记等同于 Swift 或真机验收。
+
+完整 npm run verify 退出码 0，通过 lint、TypeScript、全部单元、最终离线构建、原有页面与模拟登录，以及 iOS 同步/资源/许可/政策/模拟原生桥回归；17 份浏览器报告共 153 组检查无页面错误。release/WPT赛事自选表.html 由本次最终源码重新生成。Mac 文档链接与命令核对通过，正式发行检查仍阻止 10 项真实缺项。日志和浏览器报告位于忽略目录 .sites-runtime/qa/，不提交临时报告。
+
+新增根目录 MAC-SETUP.md，按本项目实际文件和命令说明 Git bundle 接手、Mac/Xcode/Node 环境、模拟器及真实 iPhone、签名、TestFlight、公开政策和正式提审、稳定更新及 App 转移；README 和上架状态同步。交接包保留 main 历史，供 Mac 独立克隆，清单记录最终提交和 SHA-256。正式资料与四项验收仍真实 pending；本次没有远端推送、真实 Swift 编译、账号签名、TestFlight 上传、商店提交或网站部署。

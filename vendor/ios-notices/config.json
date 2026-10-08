@@ -1,0 +1,21 @@
+{
+  "packageOverrides": {
+    "react-remove-scroll-bar": {
+      "version": "2.3.8",
+      "files": ["vendor/ios-notices/react-remove-scroll-bar-LICENSE.txt"],
+      "source": "https://github.com/theKashey/react-remove-scroll-bar/blob/8ca9ba5ea52de03308fe8ced94f7b159a44d28ff/LICENSE",
+      "note": "npm 2.3.8 declares MIT but contains no license text. This copy is the author's upstream MIT notice, not a license file from the 2.3.8 tarball; that upstream checkout declares 2.3.7. Final distribution review must retain this provenance distinction."
+    }
+  },
+  "nativeFilesystem": {
+    "version": "2.0.0",
+    "url": "https://github.com/ionic-team/ion-ios-filesystem.git",
+    "files": ["vendor/ios-notices/ion-ios-filesystem-LICENSE.txt"],
+    "source": "https://github.com/ionic-team/ion-ios-filesystem/blob/13848aab4f3447ff98dfdbe72ff8ef31bf333db0/LICENSE"
+  },
+  "cordova": {
+    "files": ["vendor/ios-notices/cordova-LICENSE.txt", "vendor/ios-notices/cordova-NOTICE.txt"],
+    "source": "https://github.com/apache/cordova-ios/tree/rel/8.0.1",
+    "note": "Apache notices for Cordova-derived source in @capacitor/ios. The shipped compatibility framework has the Capacitor version; do not describe it as upstream Cordova 8.0.1. Review the final framework and Archive on Mac."
+  }
+}
