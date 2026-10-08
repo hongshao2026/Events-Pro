@@ -1,6 +1,7 @@
 import wptLogo from '../assets/wpt-logo.png?inline';
 import tritonOneLogo from '../assets/triton-one-logo.png?inline';
 import quadsLogo from '../assets/quads-logo.svg?inline';
+import kpcLogo from '../assets/kpc-logo.png?inline';
 import type {Currency} from './money';
 
 export const regions = [
@@ -42,7 +43,7 @@ export const seriesList:Series[] = [
     id:'kpc-jeju-2026',title:'KPC Poker Series Jeju 2026',shortTitle:'KPC · 济州岛 2026',mark:'KPC',brand:'KPC',
     country:'韩国',countryCode:'KR',region:'apac',venue:'LES A Casino',city:'济州岛',
     start:'2026-10-10',end:'2026-10-21',timeZone:'Asia/Seoul',timeLabel:'KST',currency:'KRW',currencies:['KRW','USD'],
-    eventCount:73,entryCount:86,sourceLabel:'官方赛程',sourceUpdated:'2026-10-08（读取官网）',
+    eventCount:73,entryCount:86,logo:{src:kpcLogo,alt:'KPC Poker'},sourceLabel:'官方赛程',sourceUpdated:'2026-10-08（读取官网）',
     sourceUrl:'https://www.kpcpoker.com/seriesTournament.jhtml?leagueId=d3f5de57-34a5-4b16-bfe6-7b44251595f7&lang=en',
   },
 ];

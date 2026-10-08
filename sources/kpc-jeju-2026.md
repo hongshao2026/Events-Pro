@@ -10,7 +10,7 @@
 - 时间：韩国当地时间 KST，IANA `Asia/Seoul`，UTC+9。官网 `config.js` 明示 `SERVER_TZ = "Asia/Seoul"`，系列 API 场地明示 `Korea Standard Time`。
 - 币种：KRW 与 USD 并存；每项赛事内部只有一种币种。官网 API 使用 `₩` 和 `$`；官方 PDF 表头明确 `₩韩币/$美元`，且保底明确标注 KRW/USD。USD 项目仍按美元记录；PDF 的近似韩元价格不是另一个买入。
 - 官方旧版[赛程 PDF](https://www.kpcpoker.com/u/cms/en/202609/23121842exqf.pdf)首页版本为 `09/22/2026 (01)`，正文赛程在第 3–7 页。PDF 已逐页渲染核对，数字字体文本提取损坏，不能用提取结果代替渲染页面。
-- Logo 原图：`https://www.kpcpoker.com/r/cms/en/en/images/top-logo.png?v1`，约 9.3 MB，不建议直接装入离线产品；可采用产品已有品牌文字回退。
+- 官网顶部 Logo 原图约 9.3 MB；产品采用系列 API 的 `venue.logoUrl` 引用的另一份官方原始透明 PNG（约 92 KB）。具体来源、尺寸与 SHA-256 见 [品牌素材记录](../assets/README.md)。首页及赛程页头共用该本地图片，失败时才回退为文字。
 
 官网页面实际调用：
 

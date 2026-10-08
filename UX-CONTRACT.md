@@ -22,7 +22,7 @@ Current user requirements and PRODUCT.md override the earlier event-grouped list
 | Series catalog | lib/series.ts, components/planner/series-home.tsx | PRODUCT.md | chronological month groups, single-choice region chips using shared RadioGroup | region empty state, ordering, keyboard, mobile |
 | Money | lib/money.ts, components/planner/price-amount.tsx, budget-amounts.tsx | PRODUCT.md | original buy-ins plus optional approximate CNY/USD/VND/HKD/KRW, native filters and separate totals | cross-rates, same-currency suppression, missing rates, mixed budgets, 320px |
 | Settings / Management | lib/app-settings.ts, components/planner/settings-context.tsx, profile-page.tsx, admin-page.tsx | PRODUCT.md, PROFILE-ADMIN.md | local profile, Radix Tabs, validated FX and event forms | persistence, dirty drafts, stale revisions, write failure, confirmed restore |
-| Series logo | components/planner/series-home.tsx SeriesLogo, assets/ | local catalog metadata | reserved image dimensions, official WPT/Triton ONE/Quads local assets, source-specific brand-text fallback | bundled offline image and failed-image recovery |
+| Series logo | components/planner/series-home.tsx SeriesLogo, assets/ | local catalog metadata | reserved image dimensions, official WPT/Triton ONE/Quads/KPC local assets, source-specific brand-text fallback | bundled offline image and failed-image recovery |
 
 ## Optional account workflow (disabled by default)
 
