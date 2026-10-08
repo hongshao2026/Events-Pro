@@ -43,8 +43,10 @@ try{
  report.launch=sim('launch','--terminate-running-process',device,config.bundleId);
  await setTimeout(10000);
  const processes=sim('spawn',device,'launchctl','list');
- assert.ok(processes.includes(config.bundleId),'The installed app must remain running after startup');
- report.checks.push('Native app launched and remains registered as running after startup');
+ const appProcess=processes.split('\n').find(line=>line.includes(config.bundleId));
+ report.nativePID=Number(appProcess?.trim().split(/\s+/)[0]);
+ assert.ok(Number.isInteger(report.nativePID)&&report.nativePID>0,'The installed app must retain a live process after startup');
+ report.checks.push('Native app launched and retains a live process after startup');
  sim('io',device,'screenshot',resolve(output,'01-events.png'));
  await copyFile(resolve(projectRoot,'ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'),resolve(output,'Package.resolved'));
  report.checks.push('Real simulator screenshot and actual Swift Package.resolved captured');
