@@ -44,3 +44,34 @@
 ## 后续使用
 
 主目录作为集成入口；各功能对话在各自 worktree 开发并提交。每个功能验收通过即可交接，集成对话逐个合并并验收组合结果。新增 AGENTS.md、CONTRIBUTING.md 任务模板和 `npm run verify`，CI 也使用同一验收入口。完整步骤见 CONTRIBUTING.md。
+
+
+## 2026-10-08：QPC、个人设置与济州站合入 main
+
+用户明确要求将本聊天交付的济州分支合并到 main。本次基线为干净的本地 main `7a30ef9`，在独立目录 `Events-Pro-integrate-jeju`、分支 `codex/integrate-jeju-20261008` 中以保留分支历史的方式接收 `codex/jeju-festival-2026` 的 `c6f5237`。自动合并没有冲突。
+
+一并保留该分支已有的依赖提交：`34d6cff`（QPC 赛程与 VND）、`19c6d00`（官方品牌素材）、`da7c84f`（个人设置、汇率与本地管理）。其他功能目录和未提交预览均未修改。
+
+整合后保留四个赛事系列、每个起始组独立选择、参加/关注个人日历、跨系列分币种预算，以及个人货币偏好和后台汇率/赛事管理。济州站包含 140 项赛事、160 个起始场次和 18 个续赛场次；KRW/USD、未知报名费、跨午夜及离线原件按已验收导入实现保留。共享接口、存储兼容与来源说明见 `sources/jeju-poker-festival-2026.md` 和 `PROFILE-ADMIN.md`，本次集成未再次更改接口或依赖。
+
+在集成目录运行 `npm ci`、`npm run verify` 和 `git diff --check`，全部通过。verify 覆盖 lint、类型检查、全部单元测试、离线构建、WPT/Triton/QPC/JPF/首页/个人设置/管理后台浏览器回归与隔离模拟登录。浏览器覆盖 320/390/1440px、断网、备份恢复、源 PDF 下载一致性及旧记录兼容；没有页面错误或真实第三方请求。证据位于忽略目录 `.sites-runtime/qa/`。
+
+`release/WPT赛事自选表.html` 由整合后的源码重新生成，并随本次集成提交。认证仍默认关闭；真实 Google/SMTP 尚未配置及验证。没有推送或部署。功能分支与 worktree 保留，主目录接收验收后的合并提交。
+
+## 2026-10-08：KPC 赛程与官方 Logo 合入最新 main
+
+用户明确要求“合并 main”。独立目录 `Events-Pro-integrate-kpc-20261008`、分支 `codex/integrate-kpc-20261008` 接收 KPC 功能分支 `4650a9f`（包含赛程提交 `48a7f85`）。初始基线为 `7a30ef9`，第一次整合记录为 `e56ba35`；验收期间 main 已推进到 JPF 集成提交 `ada36b9`，因此继续合入最新 main，按功能语义解决冲突并重新验收。没有覆盖其他功能目录或未提交预览。
+
+组合结果保留五个系列和五个本地 Logo：KPC、QPC、JPF、Triton ONE、WPT，按日期排序，其中亚太三站。KPC 的 73 项赛事、86 个起始/独立场次、15 个续赛及官方 Logo 与 JPF 的 140 项赛事、160 个起始场次、18 个续赛和内嵌源 PDF 分别保存。两个济州站独立使用各自的 ID、日期与 KST 日历；跨站参加记录按原币合并预算，关注和续赛不重复计费。
+
+共享实现决策：
+
+- 金额筛选统一使用 KPC 的 `moneyFilters` / `matchesMoneyFilter` 接口，合并两边全部有效阈值，保留 JPF 未公布金额的 `null` 语义、未知预算数量和旧链接；`seriesMoneyFilters` 仅保留为同一实现的兼容导出。
+- 沿用 main 已记录的 KRW 参考汇率 0.004958 CNY/KRW，管理页按每 1,000 KRW 编辑。精确匹配旧四币种默认表时补参考值；自定义旧表缺失值补空，已有 KRW 值和显式空值均保留。没有重复的设置迁移逻辑。
+- KPC 显式 `stageLabel` 优先，避免卫星目标名称或资格决赛被误当续赛；同时保留 JPF 的 Turbo 阶段解析、未知费用、跨午夜时间、报名说明与按系列下载 PDF。
+- 金额筛选通过共享 `FilterSelect.fitOptions` 变体适应完整金额及币种，修复 320px 下的选项换行；其他下拉继续保持原有宽度行为。未更改视觉 token。
+- KPC 重放脚本明确以 LF 保存 JSON，manifest 使用相同规范字节计算 SHA-256；增加原始快照哈希断言，避免 Windows 换行转换后误报来源不一致。
+
+离线 HTML 从最终组合源码重新生成并随集成提交；无新增依赖或存储版本变化。功能分支和 worktree 保留，没有推送、部署或启用登录。
+
+最终 `npm run verify` 全部通过：ESLint、TypeScript、所有单元测试、离线构建、五站与首页/个人设置/管理页回归、隔离模拟登录。8 份浏览器报告合计 87 组检查，页面错误和真实第三方请求均为 0；覆盖 320/390/1440px、键盘、窄屏打开的金额和系列菜单、失败写入、旧设置与备份、两个济州系列组合预算、续赛去重和离线 PDF 一致性。strict UI audit 为 0 findings；DESIGN.md lint 为 0 errors，保留既有 7 项 token 引用提示；`git diff --check` 通过。报告和截图位于集成目录 `.sites-runtime/qa/`，不提交。真实 Google/SMTP 仍未配置或实测。

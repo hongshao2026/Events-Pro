@@ -3,12 +3,12 @@ import {buildEntries} from './catalog';
 import {displayCurrencies,type CurrencyPreference,type ExchangeRates} from './money';
 
 export const SETTINGS_KEY='events-pro-settings-v1';
-export type EventOverride={title?:string;buyin?:number;guarantee?:number|null;adminNotes?:string;hidden?:boolean};
+export type EventOverride={title?:string;buyin?:number|null;guarantee?:number|null;adminNotes?:string;hidden?:boolean};
 // Reserved contract for the future structure editor; this release does not modify blind schedules.
 export type BlindLevel={level:number;smallBlind:number;bigBlind:number;ante:number;minutes:number;breakAfterMinutes?:number};
 export type AppSettings={version:1;revision:number;profile:{username:string;currency:CurrencyPreference};fx:{rates:ExchangeRates;asOf:string;source:string};eventOverrides:Record<string,EventOverride>};
 export type SettingsBackup={app:'events-pro-settings';schemaVersion:1;savedAt:string;settings:AppSettings};
-export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:null},asOf:'2026-10-06',source:'中国银行折算价'},eventOverrides:{}});
+export const defaultSettings=():AppSettings=>({version:1,revision:0,profile:{username:'',currency:'CNY'},fx:{rates:{CNY:1,USD:6.7351,VND:0.000258,HKD:0.8584,KRW:0.004958},asOf:'2026-10-08',source:'中国银行折算价'},eventOverrides:{}});
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const text=(v:unknown,max:number):v is string=>typeof v==='string'&&v.length<=max;
 const amount=(v:unknown):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0&&v<=1e12;
@@ -19,10 +19,11 @@ export function validateSettings(value:unknown):AppSettings{
  const data=value as Record<string,unknown>,profile=data.profile,fx=data.fx,overrides=data.eventOverrides;
  if(!object(profile)||!text(profile.username,40)||!['original',...displayCurrencies].includes(String(profile.currency)))fail();
  if(!object(fx)||!object(fx.rates)||!text(fx.source,120)||!text(fx.asOf,10)||!/^\d{4}-\d{2}-\d{2}$/.test(fx.asOf as string)||!Number.isFinite(Date.parse(fx.asOf as string)))fail();
- const validProfile=profile as AppSettings['profile'],validFx=fx as AppSettings['fx'];
+ const validProfile=profile as AppSettings['profile'],validFx=structuredClone(fx) as AppSettings['fx'];
+ // The original four-currency v1 store remains valid. Never overwrite a user's custom rates.
+ if(!Object.hasOwn(validFx.rates,'KRW')){const original=validFx.asOf==='2026-10-06'&&validFx.source==='中国银行折算价'&&validFx.rates.USD===6.7351&&validFx.rates.VND===0.000258&&validFx.rates.HKD===0.8584;validFx.rates.KRW=original?0.004958:null;if(original)validFx.asOf='2026-10-08';}
  if(new Date(validFx.asOf).toISOString().slice(0,10)!==validFx.asOf)fail();
- // Existing v1 settings predate KRW. Only an absent key migrates; explicit invalid values still fail.
- const rates={...validFx.rates,KRW:Object.hasOwn(validFx.rates,'KRW')?validFx.rates.KRW:null};
+ const rates=validFx.rates;
  for(const currency of displayCurrencies){const rate=rates[currency];if(rate!==null&&(typeof rate!=='number'||!Number.isFinite(rate)||rate<1e-8||rate>1e8))fail();}
  if(rates.CNY!==1||!object(overrides)||Object.keys(overrides).length>events.length)fail();
  const clean:Record<string,EventOverride>={};
@@ -31,7 +32,7 @@ export function validateSettings(value:unknown):AppSettings{
   const p=patch as Record<string,unknown>;
   if(Object.keys(p).some(k=>!['title','buyin','guarantee','adminNotes','hidden'].includes(k)))fail();
   if(p.title!==undefined&&(!text(p.title,160)||!p.title.trim()))fail();
-  if(p.buyin!==undefined&&!amount(p.buyin))fail();
+  if(p.buyin!==undefined&&p.buyin!==null&&!amount(p.buyin))fail();
   if(p.guarantee!==undefined&&(event!.kind==='satellite'||(p.guarantee!==null&&!amount(p.guarantee))))fail();
   if(p.adminNotes!==undefined&&!text(p.adminNotes,1000))fail();
   if(p.hidden!==undefined&&typeof p.hidden!=='boolean')fail();

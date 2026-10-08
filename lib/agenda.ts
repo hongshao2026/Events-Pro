@@ -12,7 +12,7 @@ export function agendaFromUrl():AgendaRoute{
  const view=requestedView==='profile'||requestedView==='admin'||requestedView==='schedule'?requestedView:requestedView==='discover'||(!requestedView&&(p.has('series')||legacyDiscovery))?'discover':'home';
  return {seriesId:p.get('series')||festival.id,view,region,day:validDate(day,festival)?day:'',statuses:raw==='none'||raw===''?[]:selected.length?selected:[...shortlistStatuses],continuations:p.get('continuations')!=='no',month:/^\d{4}-(0[1-9]|1[0-2])$/.test(month)&&month>=start&&month<=end?month:validDate(day,festival)?day.slice(0,7):start};
 }
-export type AgendaActivity={id:string;date:string;hour:number;status:Status;kind:'start'|'continuation';event:Event;slot:Slot;entry:Entry;buyin:number};
+export type AgendaActivity={id:string;date:string;hour:number;status:Status;kind:'start'|'continuation';event:Event;slot:Slot;entry:Entry;buyin:number|null};
 export function agendaActivities(state:PlannerState,supplement=false,seriesId=series.id,catalog=entries):AgendaActivity[]{
  const source=catalog.filter(e=>e.seriesId===seriesId&&(supplement||!e.event.supplement));
  const result:AgendaActivity[]=source.map(entry=>({id:entry.id,date:entry.date,hour:entry.hour,status:state.selections[entry.id]?.status||'undecided',kind:'start',event:entry.event,slot:entry.slot,entry,buyin:entry.buyin}));

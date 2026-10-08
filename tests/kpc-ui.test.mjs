@@ -42,7 +42,7 @@ try{
  await page.goto(file+'#view=home&region=apac');await page.locator(`.festival-card[data-series-id="${series}"]`).click();
  await row(entry(opening)).waitFor();assert.match(await page.locator('.results-bar').innerText(),/86.*场次.*73.*赛事/s);
  assert.match(await page.locator('.series-header').innerText(),/KST/);assert.match(await row(entry(opening)).innerText(),/#1 ·/);
- assert.match(await row(entry(opening)).innerText(),/₩800,000（汇率未设置）/);await choose(entry(opening),'关注');
+ assert.match(await row(entry(opening)).innerText(),/₩800,000（≈¥3,966.40）/);await choose(entry(opening),'关注');
  await row(entry(opening)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/10 15:25 · KST/);
  assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),opening.starts[0].sourceUrl);
  await search().fill(opening.id);await row(entry(opening,2)).waitFor();assert.match(await row(entry(opening,2)).innerText(),/20:15/);
@@ -89,19 +89,19 @@ try{
  await page.goto(file+`#view=discover&series=${series}`);await search().fill(usdEvent.id);await row(entry(usdEvent)).waitFor();
  assert.match(await row(entry(usdEvent)).innerText(),/\$5,000/);assert.match(await row(entry(usdEvent)).innerText(),/12:30/);await choose(entry(usdEvent),'参加');
  await nav('我的自选');await page.locator('.cart-sheet').waitFor();
- assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩2,600,000（汇率未设置）');
+ assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩2,600,000（≈¥12,890.80）');
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/^\$5,000（≈¥/);
  assert.equal(await page.locator('.cart-entry').count(),4);await fits(page.locator('.cart-sheet'));
  for(const item of await page.locator('.cart-entry').all())await fits(item);
  await page.screenshot({path:resolve(output,'mixed-native-budget-320.png')});
- await select('预算计算方式','同一赛事只算一次');assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（汇率未设置）');
+ await select('预算计算方式','同一赛事只算一次');assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（≈¥6,445.40）');
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/^\$5,000（≈¥/);await closeCart();
  pass('one KPC shortlist keeps KRW and USD budgets separate, excludes watched entries and charges no extra continuation buy-ins');
 
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');const wpt='wpt-wynn-2026/W01/R0';await row(wpt).waitFor();await choose(wpt,'参加');
  await nav('我的自选');assert.equal(await page.locator('.cart-entry').count(),5);
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/^\$5,600（≈¥/);
- assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（汇率未设置）');
+ assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（≈¥6,445.40）');
  await page.setViewportSize({width:390,height:950});await page.screenshot({path:resolve(output,'cross-series-budget-390.png')});await closeCart();
  await nav('我的');const pending=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
  const backup=resolve(output,'mixed-backup.json');await(await pending).saveAs(backup);
@@ -110,7 +110,7 @@ try{
  await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status==='attend',entry(main));
  await search().fill(opening.id);assert.equal(await row(entry(opening)).getAttribute('data-status'),'watch');
  await nav('我的自选');assert.equal(await page.locator('.cart-entry').count(),5);
- assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（汇率未设置）');
+ assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（≈¥6,445.40）');
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/^\$5,600（≈¥/);await closeCart();
  pass('v2 backups restore KPC UUID selections, watch state, budget mode and cross-series USD totals entirely offline');
 
@@ -122,11 +122,15 @@ try{
  assert.match(await page.locator('.event-editor-sheet').innerText(),/赛事保底 · USD/);
  await page.getByRole('button',{name:'关闭赛事编辑',exact:true}).click();await page.locator('.event-editor-sheet').waitFor({state:'hidden'});
  await page.getByRole('tab',{name:'汇率设置',exact:true}).click();
+ assert.equal(await page.getByRole('textbox',{name:'韩元汇率',exact:true}).inputValue(),'4.958');
+ await page.getByRole('textbox',{name:'韩元汇率',exact:true}).fill('');await page.getByRole('button',{name:'保存汇率',exact:true}).click();
+ await page.reload();
  assert.equal(await page.getByRole('textbox',{name:'韩元汇率',exact:true}).inputValue(),'');
- // A deliberately synthetic rate checks editing, not a current market quote.
- await page.getByRole('textbox',{name:'韩元汇率',exact:true}).fill('0.0049');
+ await nav('我的自选');assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（汇率未设置）');await closeCart();
+ // The editor quotes CNY per 1,000 KRW; this synthetic input sets the underlying rate to 0.0049.
+ await page.getByRole('textbox',{name:'韩元汇率',exact:true}).fill('4.9');
  await page.getByRole('button',{name:'保存汇率',exact:true}).click();
- await page.reload();assert.equal(await page.getByRole('textbox',{name:'韩元汇率',exact:true}).inputValue(),'0.0049');
+ await page.reload();assert.equal(await page.getByRole('textbox',{name:'韩元汇率',exact:true}).inputValue(),'4.9');
  await nav('我的自选');assert.equal(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),'₩1,300,000（≈¥6,370.00）');
  await closeCart();await fits(page.locator('html'));
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);

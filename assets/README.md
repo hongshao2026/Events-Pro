@@ -27,3 +27,7 @@ SHA-256：
 `kpc-logo.png` 是 KPC 官方系列 API 中 `venue.logoUrl` 引用的[官方金黑横版 Logo](https://api.pokerlens.net/v1/venue/image/d3c93a96-b9bc-4ad2-b530-805dc52b1abe?ts=8DF206D3960D070)，2692 × 1024 透明 PNG，92,297 字节。保留下载原始字节和透明度，没有重绘、裁剪或改色。它与官网 9.3 MB 的顶部纹理版来自不同的官方资源；采用该较小原件用于赛事卡片及紧凑页头，复用 `SeriesLogo` 的比例缩放和图片失败回退。
 
 SHA-256：`9c1391aa3d616e61e263f9dee2aa1882014a6045a1fbcae738236606ae342c6a`。
+
+## JPF 2026
+
+`jpf-2026-logo.png`（1002×147）：从用户提供的 `sources/jeju-poker-festival-2026.pdf` 页首原有品牌图渲染，保留原色和年份，没有重新设计。原件 PDF 为归档母本；`scripts/import-jeju.py` 复现该素材。采集日期 2026-10-08。随单文件内嵌，网络不可用仍能展示。

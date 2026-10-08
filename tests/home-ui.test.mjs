@@ -17,12 +17,13 @@ const region=name=>page.locator('label.region-option').filter({hasText:new RegEx
 const nav=name=>page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();
 try{
  await page.goto(file);await card(wpt).waitFor();assert.equal(await page.title(),'赛事 · Events Pro');
- assert.deepEqual(await page.locator('.festival-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.seriesId)),[kpc,'qpc-circuit-2026',triton,wpt]);
+ assert.deepEqual(await page.locator('.festival-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.seriesId)),[kpc,'qpc-circuit-2026','jeju-poker-festival-2026',triton,wpt]);
  assert.equal(await page.locator('.mobile-event').count(),0);assert.equal(await page.getByRole('button',{name:'登录',exact:true}).count(),0);
- for(const id of ['qpc-circuit-2026',triton,wpt])assert.equal(await card(id).locator('img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
+ for(const id of [kpc,'qpc-circuit-2026','jeju-poker-festival-2026',triton,wpt])assert.equal(await card(id).locator('img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.src.startsWith('data:')),true);
  assert.match(await card(triton).innerText(),/22 项赛事.*29 个起始场次/s);
  assert.match(await card(kpc).innerText(),/KPC Poker Series Jeju 2026/);assert.match(await card(kpc).innerText(),/济州岛/);
- pass('homepage includes all four festivals in date order with locally bundled brand assets, counts and disabled authentication');
+ assert.match(await card('jeju-poker-festival-2026').innerText(),/Jeju Poker Festival 2026/);
+ pass('homepage includes all five festivals in date order with locally bundled official logos, both Jeju schedules, counts and disabled authentication');
  for(const width of [320,390,1440]){
   await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   const rect=await page.locator('.app-shell').boundingBox();assert.ok(rect.width<=480.1);
@@ -31,8 +32,8 @@ try{
  await page.setViewportSize({width:390,height:900});pass('merged catalog fits phones and centered desktop layout');
  for(const label of ['南美']){await region(label).click();assert.equal(await page.locator('.festival-card').count(),0);await page.getByRole('heading',{name:label+'暂无赛事',exact:true}).waitFor();}
  await page.reload();await page.getByRole('heading',{name:'南美暂无赛事',exact:true}).waitFor();
- await page.screenshot({path:resolve(output,'empty-region.png')});await page.getByRole('button',{name:'显示全部地区',exact:true}).click();assert.equal(await page.locator('.festival-card').count(),4);
- await page.getByRole('radio',{name:'全部地区',exact:true}).focus();await page.keyboard.press('ArrowRight',{delay:50});await card('qpc-circuit-2026').waitFor();assert.deepEqual(await page.locator('.festival-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.seriesId)),[kpc,'qpc-circuit-2026']);
+ await page.screenshot({path:resolve(output,'empty-region.png')});await page.getByRole('button',{name:'显示全部地区',exact:true}).click();assert.equal(await page.locator('.festival-card').count(),5);
+ await page.getByRole('radio',{name:'全部地区',exact:true}).focus();await page.keyboard.press('ArrowRight',{delay:50});await card('qpc-circuit-2026').waitFor();assert.deepEqual(await page.locator('.festival-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.seriesId)),[kpc,'qpc-circuit-2026','jeju-poker-festival-2026']);
  await region('欧洲').click();assert.equal(await card(triton).count(),1);assert.equal(await card(wpt).count(),0);
  pass('region filtering, keyboard selection, empty recovery and reload persistence remain functional');
  const href=await card(triton).getAttribute('href');assert.ok(href.includes('series='+triton)&&href.includes('view=discover'));

@@ -55,12 +55,12 @@ export function downloadBackup(state:PlannerState):void {
 }
 export function budget(state:PlannerState,source=entries,sourceEvents=eventMap){
  const selected=source.filter(entry=>state.selections[entry.id]?.status==='attend');
- const grouped=new Map<string,{buyin:number;currency:Currency}>();
- for(const entry of selected)if(!grouped.has(entry.eventId)||grouped.get(entry.eventId)!.buyin<entry.buyin)grouped.set(entry.eventId,{buyin:entry.buyin,currency:entry.currency});
- const totals:Partial<Record<Currency,number>>={};
- const add=(value:number,currency:Currency)=>{totals[currency]=(totals[currency]||0)+value;};
+ const grouped=new Map<string,{buyin:number|null;currency:Currency}>();
+ for(const entry of selected)if(!grouped.has(entry.eventId)||(grouped.get(entry.eventId)!.buyin??-1)<(entry.buyin??-1))grouped.set(entry.eventId,{buyin:entry.buyin,currency:entry.currency});
+ const totals:Partial<Record<Currency,number>>={};let unknownCount=0;
+ const add=(value:number|null,currency:Currency)=>{if(value===null){unknownCount++;return;}totals[currency]=(totals[currency]||0)+value;};
  for(const item of state.budgetMode==='flights'?selected:grouped.values())add(item.buyin,item.currency);
- for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=sourceEvents.get(id);if(event)add(event.buyin||0,event.currency||'USD');}
+ for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=sourceEvents.get(id);if(event)add(event.buyin,event.currency||'USD');}
  // Preserve the old USD-only numeric field for callers; totals is the full budget.
- return {total:totals.USD||0,totalCurrency:'USD' as const,totals,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
+ return {unknownCount,total:totals.USD||0,totalCurrency:'USD' as const,totals,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
 }

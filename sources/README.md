@@ -20,3 +20,7 @@
 ## KPC 济州岛 2026
 
 2026-10-08 从用户提供的官方系列页导入 101 个场次。字段映射、完整快照及当前官网与旧 PDF 的差异见 [KPC 来源记录](kpc-jeju-2026.md)。
+
+## Jeju Poker Festival 2026
+
+用户提供原件：`jeju-poker-festival-2026.pdf`；178 行字段快照：`jeju-poker-festival-2026.snapshot.json`。日期、韩元/美元、午夜归日、未知报名费和导入交接见 [JPF 来源说明](jeju-poker-festival-2026.md)。可用 `python scripts/import-jeju.py` 复现。
