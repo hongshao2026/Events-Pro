@@ -63,12 +63,13 @@ try{
  await switchTo('WPT · Wynn 2026');assert.equal(await page.locator(`.agenda-row[data-entry-id="${wpt}"]`).count(),1);
  assert.equal(await page.locator(`.agenda-row[data-activity-id^="${series}/"]`).count(),0);
  assert.match(await page.locator('.schedule-calendar-top').innerText(),/11\/27.*12\/21.*PST/);
- await nav('我的自选');assert.equal(await page.locator('.cart-entry').count(),4);assert.match(await page.locator('.cart-budget').innerText(),/\$19,600/);
- assert.match(await page.locator('.cart-scroll').innerText(),/Merit Royal Diamond · EET/);
- assert.match(await page.locator('.cart-scroll').innerText(),/Wynn Las Vegas · PST/);
+ await nav('我的自选');await page.locator('.shortlist-table').waitFor();assert.equal(await page.locator('.shortlist-table tr[data-entry-id]').count(),4);assert.match(await page.locator('.cart-budget').innerText(),/\$19,600/);
+ assert.match(await page.locator('.shortlist-table').innerText(),/Merit Royal Diamond/);
+ assert.match(await page.locator('.shortlist-table').innerText(),/Wynn Las Vegas/);
+ assert.match(await page.locator('.shortlist-table').innerText(),/EET/);assert.match(await page.locator('.shortlist-table').innerText(),/PST/);
  await page.getByRole('combobox',{name:'预算计算方式'}).click();await page.getByRole('option',{name:'同一赛事只算一次',exact:true}).click();
  assert.match(await page.locator('.cart-budget').innerText(),/\$11,600/);
- await page.getByRole('button',{name:'关闭我的自选',exact:true}).click();await page.locator('.cart-sheet').waitFor({state:'hidden'});
+ assert.ok(page.url().includes('view=shortlist'));assert.equal(await page.getByRole('dialog').count(),0);
  pass('main event creates three conditional days; cross-series shortlist and both budget modes retain original WPT selections');
  await nav('赛事发现');await row(wpt).waitFor();assert.equal(await row(wpt).getAttribute('data-status'),'attend');
  await switchTo('Triton ONE · 北塞浦路斯 2026');await row(first).waitFor();assert.equal(await row(first).getAttribute('data-status'),'attend');

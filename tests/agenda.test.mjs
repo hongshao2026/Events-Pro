@@ -54,3 +54,8 @@ window.location.hash='#series=not-found&region=invalid';assert.equal(agendaFromU
 window.location.hash='#q=W01&date=2026-11-27';assert.equal(agendaFromUrl().view,'discover');
 window.location.hash='#view=home&q=W01';assert.equal(agendaFromUrl().view,'home');
 pass('homepage and region routes coexist with legacy detailed-schedule links and unknown-series recovery');
+
+window.location.hash='#view=shortlist&series=triton-one-cyprus-2026&region=europe&day=2026-11-05';
+assert.equal(agendaFromUrl().view,'shortlist');assert.equal(agendaFromUrl().seriesId,triton);assert.equal(agendaFromUrl().region,'europe');assert.equal(agendaFromUrl().day,'2026-11-05');
+window.location.hash='#view=shortlist&series=not-found';assert.equal(agendaFromUrl().view,'shortlist');assert.equal(agendaFromUrl().seriesId,'not-found');
+pass('standalone shortlist links restore without discarding the saved calendar or series route');
