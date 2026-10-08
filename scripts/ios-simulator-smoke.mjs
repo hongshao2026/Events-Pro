@@ -7,7 +7,8 @@ import {relative,resolve} from 'node:path';
 import {setTimeout} from 'node:timers/promises';
 import {projectRoot,readReleaseConfig} from './release-config.mjs';
 
-// Run against a fresh simulator only. This checks native startup, not device QA.
+// Run against a fresh simulator only. Optional XCTest is limited functional QA,
+// not physical-device or upgrade acceptance.
 function run(command,args,timeout=60000,log){
  const result=spawnSync(command,args,{cwd:projectRoot,encoding:'utf8',timeout,maxBuffer:16*1024*1024});
  if(log)writeFileSync(log,`${result.stdout||''}\n${result.stderr||''}`);
@@ -39,7 +40,9 @@ assert.ok(type,`Install the ${model} simulator device type`);
 const report={sourceCommit:run('git',['rev-parse','HEAD']),environment:process.env.GITHUB_ACTIONS==='true'?'GitHub Actions':'local Mac',xcode:run('xcodebuild',['-version']),
  bundleId:config.bundleId,version:config.version,buildNumber:config.buildNumber,
  sdk:plist('DTSDKName'),device:type.name,runtime:runtime.name,checkedAt:new Date().toISOString(),
- checks:[],note:'Real remote/local iOS Simulator startup only. Screenshots require visual review; not physical-device, signing, TestFlight or complete functional acceptance.'};
+ checks:[],note:process.env.EVENTS_PRO_UI_TESTS==='true'
+  ?'Real iOS Simulator startup and limited native UI flow. Read success/uiSummary and visually review screenshots; not physical-device, signing, upgrade, TestFlight or complete acceptance.'
+  :'Real iOS Simulator startup only. Screenshots require visual review; not physical-device, signing, TestFlight or complete functional acceptance.'};
 let device;
 try{
  device=sim('create',`Events Pro QA ${Date.now()}`,type.identifier,runtime.identifier);

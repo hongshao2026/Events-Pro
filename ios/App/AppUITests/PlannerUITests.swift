@@ -31,7 +31,7 @@ final class PlannerUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "取消关注 KPC BANKROLL BUILDER · Day 1C")).firstMatch.waitForExistence(timeout: 10))
 
         openShortlist(app)
-        XCTAssertTrue(app.staticTexts["3 条自选"].waitForExistence(timeout: 20))
+        assertShortlist(app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists, "Two attending flights count; the watched flight adds no budget")
         capture("04-shortlist", app)
 
@@ -54,7 +54,7 @@ final class PlannerUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["返回赛事首页"].waitForExistence(timeout: 30))
         openShortlist(app)
-        XCTAssertTrue(app.staticTexts["3 条自选"].waitForExistence(timeout: 20))
+        assertShortlist(app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("06-relaunch-retains-plan", app)
     }
@@ -65,17 +65,42 @@ final class PlannerUITests: XCTestCase {
     }
 
     @MainActor
+    private func assertShortlist(_ app: XCUIApplication) {
+        // WKWebView exposes the bold count and its trailing text separately.
+        // Check the complete accessible category labels and their actual counts.
+        for label in ["全部自选 3", "计划参加 2", "正在关注 1"] {
+            let category = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
+            if !category.waitForExistence(timeout: 20) {
+                capture("failure-shortlist", app)
+                XCTFail("Missing shortlist category: \(label)\n\(app.debugDescription)")
+                return
+            }
+        }
+    }
+
+    @MainActor
     private func tap(_ element: XCUIElement, _ app: XCUIApplication) {
         XCTAssertTrue(element.waitForExistence(timeout: 20), "Missing native accessibility element: \(element)\n\(app.debugDescription)")
         for _ in 0..<6 {
-            if element.isHittable { element.tap(); return }
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: element)
+            if XCTWaiter.wait(for: [ready], timeout: 5) == .completed {
+                element.tap()
+                // XCTest's app-idle check can finish before WKWebView paints its
+                // updated accessibility tree. Allow that frame to be presented
+                // before the next native tap, including modal open/close.
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
+                return
+            }
+            if element.frame.minY >= 0 && element.frame.maxY < app.frame.maxY - 90 { break }
             app.swipeUp()
         }
-        XCTFail("Native element is not tappable: \(element)")
+        capture("failure-not-tappable", app)
+        XCTFail("Native element is not tappable: \(element)\n\(app.debugDescription)")
     }
 
     @MainActor
     private func capture(_ name: String, _ app: XCUIApplication) {
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
         attachment.lifetime = .keepAlways
