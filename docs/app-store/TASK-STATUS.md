@@ -12,7 +12,7 @@
 | 本机完整检查 | 修复 Mac 修饰键测试后 `npm run verify` 退出码 0；17 份浏览器报告共 153 项检查通过 |
 | 单独 iOS 资源检查 | `ios:sync`、`ios:check` 通过，四份原生 plist 解析 OK；`ios:open` 已派发打开请求，不代表已安装或启动 Xcode |
 | 真实 Swift 编译/远程模拟器 | [基线编译](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340) 在 `f380631` / Xcode 26.3 下通过；[分支启动检查](https://github.com/hongshao2026/Events-Pro/actions/runs/37792355643) 在 `3cc35fa` 完成真实 iPhone 16 Pro / iOS 26.2 安装、启动、首页原图与 Swift 锁捕获，已人工查看；仅启动，不是完整功能验收 |
-| 原生 UI 测试 | `61a4ea1` JPEG 启动复验通过；`945761f` 与 `59fb4f3` 实际 XCTest 分别因详情/关注控件类型查询失败，已定位为原生 Other/Switch；已正常保存两项参加并导出原生页面。`6857b09` 第三轮两种型号复验运行中，完整功能未记为通过 |
+| 原生 UI 测试 | `61a4ea1` JPEG 启动复验通过；三轮实际 XCTest 失败已有附件。大屏第三轮已确认 2 项参加、1 项关注、预算 ₩1,600,000，自选数量被错误查询为组合文本；标准尺寸出现 AX 与画面不一致及不可点击。`cc213e7` 修正断言与原生切页等待，真实复验待完成；完整功能未记为通过 |
 | 本机 Xcode/模拟器 | 当前只有 CommandLineTools，本机 xcodebuild 前置失败，Swift 未启动；Mac App Store 当前 Xcode 要求 macOS 26.6，已打开兼容版本的官方历史下载，等待本人登录、安装、接受许可 |
 | 真机与 TestFlight | 未执行。可先用本人 Apple 账号的 Personal Team 直装；TestFlight 待付费会员就绪 |
 | 材料 | 简繁政策预览、真机矩阵与截图执行单已准备，远程首页原图已捕获；正式 URL、完整商店组图和最终审核联系信息尚未完成 |
