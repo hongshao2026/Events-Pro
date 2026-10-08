@@ -23,11 +23,11 @@ const fits=async()=>assert.equal(await page.evaluate(()=>document.documentElemen
 try{
  await page.goto(file+'#view=discover&series=qpc-circuit-2026');await row().waitFor();
  assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000\s*（≈¥232.20）/);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
- assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('button',{name:'赛程筛选',exact:true}).count(),1);assert.equal(await page.locator('.discovery-filter-sheet').count(),0);
- await openDiscoveryFilters(page);const filterText=await page.locator('.discovery-filter-sheet').innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);await finishDiscoveryFilters(page);
+ assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('button',{name:'赛程筛选',exact:true}).count(),1);assert.equal(await page.locator('.discovery-filter-popover').count(),0);
+ await openDiscoveryFilters(page);const filterText=await page.locator('.discovery-filter-popover').innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);await finishDiscoveryFilters(page);
  assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),0);assert.doesNotMatch(await page.locator('.schedule-panel').innerText(),/个可报名场次/);
  await chooseDiscoveryStatus(page,row(),'参加');await openDiscoveryFilters(page);await page.screenshot({path:resolve(out,'filters-390.png')});await finishDiscoveryFilters(page);
- pass('four navigation items, on-demand filter sheet, removed helper copy and native price with parenthesized conversion');
+ pass('four navigation items, on-demand filter dropdown, removed helper copy and native price with parenthesized conversion');
  await nav('我的');await page.getByLabel('用户名',{exact:true}).fill('小邵');await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionstart');await page.locator('.profile-name-form').dispatchEvent('submit');assert.doesNotMatch(await page.locator('.profile-identity').innerText(),/小邵/);await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionend');await page.getByRole('button',{name:'保存',exact:true}).click();
  assert.match(await page.locator('.profile-identity').innerText(),/小邵.*VIP 0/s);assert.match(await page.locator('.settings-facts').innerText(),/未登录/);
  await select('显示货币','越南盾 · VND');await page.reload();assert.equal(await page.getByLabel('用户名',{exact:true}).inputValue(),'小邵');

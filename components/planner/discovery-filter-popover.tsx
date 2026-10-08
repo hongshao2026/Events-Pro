@@ -1,12 +1,14 @@
 import {RotateCcw,X} from 'lucide-react';
+import {useEffect,type ReactElement} from 'react';
 import {Checkbox} from '@/components/ui/checkbox';
-import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription,SheetClose,SheetFooter} from '@/components/ui/sheet';
+import {Popover,PopoverAnchor,PopoverContent} from '@/components/ui/popover';
 import {eventGameOptions} from '@/lib/event-tags';
 import type {Status} from '@/lib/schedule';
 import {FilterSelect,StatusFilter} from './controls';
 
 export type DiscoveryFilterValue={statuses:Status[];buyin:string;gtd:string;game:string;sort:string;supp:boolean};
-type DiscoveryFilterSheetProps={
+type DiscoveryFilterPopoverProps={
+ children:ReactElement;
  value:DiscoveryFilterValue;
  counts:Record<Status,number>;
  amountFilters:{buyin:[string,string][];gtd:[string,string][]};
@@ -17,18 +19,25 @@ type DiscoveryFilterSheetProps={
  onOpenChange:(open:boolean)=>void;
  onChange:(patch:Partial<DiscoveryFilterValue>)=>void;
  onReset:()=>void;
- onReturnFocus:()=>void;
 };
 
-export function DiscoveryFilterSheet({value,counts,amountFilters,mixedCurrency,supplementCount,resultCount,open,onOpenChange,onChange,onReset,onReturnFocus}:DiscoveryFilterSheetProps){
- return <Sheet open={open} onOpenChange={onOpenChange}>
-  <SheetContent className="cart-sheet discovery-filter-sheet" showCloseButton={false} onCloseAutoFocus={event=>{event.preventDefault();onReturnFocus();}}>
-   <SheetHeader className="cart-heading discovery-filter-heading">
-    <SheetTitle>赛程筛选</SheetTitle>
-    <SheetDescription>调整即时生效，完成后返回赛程。</SheetDescription>
-    <SheetClose className="cart-close" aria-label="关闭赛程筛选"><X size={20} aria-hidden="true"/></SheetClose>
-   </SheetHeader>
-   <div className="cart-scroll discovery-filter-scroll">
+export function DiscoveryFilterPopover({children,value,counts,amountFilters,mixedCurrency,supplementCount,resultCount,open,onOpenChange,onChange,onReset}:DiscoveryFilterPopoverProps){
+ useEffect(()=>{
+  if(!open)return;
+  const openedX=window.scrollX,openedY=window.scrollY;
+  // A scroll queued before the trigger was clicked must not dismiss the new popover.
+  const close=()=>{if(window.scrollX!==openedX||window.scrollY!==openedY)onOpenChange(false);};
+  window.addEventListener('scroll',close,{passive:true});
+  return()=>window.removeEventListener('scroll',close);
+ },[open,onOpenChange]);
+ return <Popover modal={false} open={open} onOpenChange={onOpenChange}>
+  <PopoverAnchor asChild>{children}</PopoverAnchor>
+  <PopoverContent className="discovery-filter-popover" aria-label="赛程筛选" side="bottom" align="start" sideOffset={8} collisionPadding={{top:12,right:12,bottom:80,left:12}}>
+   <div className="discovery-filter-topbar">
+    <h2>筛选条件</h2>
+    <button type="button" className="text-button discovery-filter-close" aria-label="收起赛程筛选" onClick={()=>onOpenChange(false)}><span>收起</span><X size={15} aria-hidden="true"/></button>
+   </div>
+   <div className="discovery-filter-scroll">
     <section className="discovery-filter-section">
      <h3>个人分类</h3>
      <StatusFilter compact value={value.statuses} onChange={statuses=>onChange({statuses})} counts={counts}/>
@@ -45,10 +54,10 @@ export function DiscoveryFilterSheet({value,counts,amountFilters,mixedCurrency,s
      {supplementCount>0&&<label className="supplement-toggle"><Checkbox aria-label="显示官方补充卫星" checked={value.supp} onCheckedChange={checked=>onChange({supp:checked===true})}/>官方补充卫星 <b>+{supplementCount}</b></label>}
     </section>
    </div>
-   <SheetFooter className="discovery-filter-footer">
+   <div className="discovery-filter-footer">
     <button type="button" className="text-button discovery-filter-reset" onClick={onReset}><RotateCcw size={15} aria-hidden="true"/>重置筛选</button>
     <button type="button" className="primary-button discovery-filter-done" aria-label={`完成筛选，显示 ${resultCount} 个场次`} onClick={()=>onOpenChange(false)}>显示 {resultCount} 个场次</button>
-   </SheetFooter>
-  </SheetContent>
- </Sheet>;
+   </div>
+  </PopoverContent>
+ </Popover>;
 }
