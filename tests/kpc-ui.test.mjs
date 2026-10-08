@@ -40,8 +40,8 @@ const checkFilter=async expected=>{
 try{
  await page.goto(file+'#view=home&region=apac');await page.locator(`.festival-card[data-series-id="${series}"]`).click();
  await row(entry(opening)).waitFor();assert.match(await page.locator('.results-bar').innerText(),/86.*场次.*73.*赛事/s);
- assert.match(await page.locator('.series-header').innerText(),/KST/);assert.match(await row(entry(opening)).innerText(),/#1 ·/);
- assert.match(await row(entry(opening)).innerText(),/₩800,000（≈¥3,966.40）/);await choose(entry(opening),'关注');
+ assert.match(await page.locator('.series-header').innerText(),/KST/);assert.match(await row(entry(opening)).locator('.mobile-event-top').innerText(),/#1\b/);
+ assert.match(await row(entry(opening)).innerText(),/₩800,000\s*（≈¥3,966.40）/);await choose(entry(opening),'关注');
  await row(entry(opening)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/10 15:25 · KST/);
  assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),opening.starts[0].sourceUrl);
  await search().fill(opening.id);await row(entry(opening,2)).waitFor();assert.match(await row(entry(opening,2)).innerText(),/20:15/);
@@ -80,7 +80,7 @@ try{
  assert.equal(await calendar.getByRole('button',{name:/^2026年10月22日/}).isDisabled(),true);
  await calendar.getByRole('button',{name:/^2026年10月16日/}).click();assert.equal(await page.locator('.agenda-row').count(),1);
  await page.reload();await finals.waitFor();assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/10.*10\/21.*KST/);
- await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级后/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/10\/16 13:00 · KST/);
+ await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/以晋级为前提/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级续赛不增加买入/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/10\/16 13:00 · KST/);
  assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);await fits(page.locator('.agenda-detail-sheet'));
  await page.screenshot({path:resolve(output,'main-final-320.png')});await page.keyboard.press('Escape');await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  pass('two main-event flights produce only two conditional continuations, with KST calendar bounds and persistent final-day details');

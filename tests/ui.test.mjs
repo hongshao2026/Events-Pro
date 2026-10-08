@@ -66,3 +66,4 @@ await import('./kpc-ui.test.mjs');
 await import('./jeju-ui.test.mjs');
 await import('./shortlist-ui.test.mjs');
 await import('./shortlist-image-ui.test.mjs');
+await import('./compact-events-ui.test.mjs');

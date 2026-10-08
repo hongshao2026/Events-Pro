@@ -21,7 +21,7 @@ const allowWrites=()=>page.evaluate(()=>{Storage.prototype.setItem=window.origin
 const fits=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
 try{
  await page.goto(file+'#view=discover&series=qpc-circuit-2026');await row().waitFor();
- assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000（≈¥232.20）/);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
+ assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000\s*（≈¥232.20）/);assert.match(await page.locator('.mobile-event').first().innerText(),/15 席/);
  assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('region',{name:'赛程筛选',exact:true}).count(),1);
  const filterText=await page.getByRole('region',{name:'赛程筛选',exact:true}).innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);
  assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),0);assert.doesNotMatch(await page.locator('.schedule-panel').innerText(),/个可报名场次/);
@@ -45,8 +45,8 @@ try{
  assert.equal(await page.getByRole('textbox',{name:'美元汇率',exact:true}).evaluate(e=>e===document.activeElement),true);
  await page.getByRole('textbox',{name:'美元汇率',exact:true}).fill('7');await page.getByRole('textbox',{name:'越南盾汇率',exact:true}).fill('0.25');await page.getByRole('textbox',{name:'港币汇率',exact:true}).fill('0.875');await page.getByLabel('来源或备注',{exact:true}).fill('测试规划汇率');
  await page.getByRole('button',{name:'保存汇率',exact:true}).click();assert.match(await page.locator('.source-caption').innerText(),/测试规划汇率/);await page.screenshot({path:resolve(out,'rates-390.png')});
- await discover();assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000（≈\$32.14）/);
- await nav('我的');await select('显示货币','人民币 · CNY');await discover();assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000（≈¥225.00）/);
+ await discover();assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000\s*（≈\$32.14）/);
+ await nav('我的');await select('显示货币','人民币 · CNY');await discover();assert.match(await page.locator('.mobile-event').first().innerText(),/₫900,000\s*（≈¥225.00）/);
  pass('manual rate validation, 1000-VND unit normalization and cross-rate calculation update all entry displays immediately');
  await manage();await page.getByRole('tab',{name:'赛事管理',exact:true}).click();await page.getByRole('textbox',{name:'搜索管理赛事',exact:true}).fill('QPC01');await page.locator('.admin-event-row').click();
  await page.getByLabel('赛事名称',{exact:true}).fill('QPC BLASTOFF · 本机编辑');await page.getByLabel('赛事报名费',{exact:true}).fill('5000000');await page.getByLabel('赛事保底金额',{exact:true}).fill('8000000000');await page.getByLabel('管理备注',{exact:true}).fill('核对后的本机备注');
@@ -61,7 +61,7 @@ try{
  assert.match(await page.locator('.structure-placeholder').innerText(),/级别.*小盲.*前注.*时长/s);await page.screenshot({path:resolve(out,'event-editor-390.png')});
  await page.getByRole('button',{name:'恢复官方数据',exact:true}).click();await page.getByRole('alertdialog').getByRole('button',{name:'取消',exact:true}).click();assert.equal(await page.getByLabel('赛事名称',{exact:true}).inputValue(),'QPC BLASTOFF · 本机编辑');
  await page.getByRole('button',{name:'恢复官方数据',exact:true}).click();await page.getByRole('alertdialog').getByRole('button',{name:'恢复官方数据',exact:true}).click();await page.locator('.event-editor-sheet').waitFor({state:'hidden'});
- await discover();await row().waitFor();assert.equal(await row().getAttribute('data-status'),'attend');assert.match(await row().innerText(),/₫4,500,000（≈¥1,125.00）/);
+ await discover();await row().waitFor();assert.equal(await row().getAttribute('data-status'),'attend');assert.match(await row().innerText(),/₫4,500,000\s*（≈¥1,125.00）/);
  pass('official-data restore is confirmed and reversible up to confirmation, retains selections, and exposes an honest future blind-structure frame');
  await nav('我的');const download=page.waitForEvent('download');await page.getByRole('button',{name:'导出设置备份',exact:true}).click();const backupPath=resolve(out,'settings-backup.json');await(await download).saveAs(backupPath);
  await select('显示货币','仅显示原币');await page.getByLabel('选择设置备份文件').setInputFiles(backupPath);await page.getByRole('button',{name:'确认恢复设置',exact:true}).click();assert.match(await page.getByRole('combobox',{name:'显示货币',exact:true}).innerText(),/人民币/);

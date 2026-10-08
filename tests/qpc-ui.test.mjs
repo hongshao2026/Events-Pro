@@ -48,7 +48,7 @@ try{
  assert.equal(await cal.getByRole('button',{name:/^2026年10月22日/}).isDisabled(),true);
  await cal.getByRole('button',{name:/^2026年10月21日/}).click();assert.equal(await page.locator('.agenda-row').count(),1);
  await page.reload();await finals.waitFor();assert.match(await page.locator('.schedule-calendar-top').innerText(),/10\/12.*10\/21.*ICT/);
- await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级后/);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
+ await finals.click();assert.match(await page.locator('.agenda-detail-sheet').innerText(),/以晋级为前提/);assert.match(await page.locator('.agenda-detail-sheet').innerText(),/晋级续赛不增加买入/);assert.equal(await page.locator('.agenda-detail-actions .classification').count(),0);
  await fits(page.locator('.agenda-detail-sheet'));await page.screenshot({path:resolve(output,'main-final-320.png')});await page.keyboard.press('Escape');
  await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  pass('selected flights create deduplicated conditional finals, bounded QPC calendar and persistent final-day detail');

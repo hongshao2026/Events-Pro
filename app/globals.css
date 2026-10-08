@@ -94,15 +94,27 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .results-bar small{font-size:11px}
 .quick-filter,.clear-filters{font-size:12px;padding:6px 4px}
 .mobile-events{display:block}
-.mobile-event{border-top:1px solid var(--border);padding:17px 14px}
-.mobile-event-top{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted-foreground);margin-bottom:10px;flex-wrap:wrap}
-.mobile-event-top>.status-badge{margin-left:auto}
-.mobile-event .event-title{font-size:15px;display:flex;align-items:center;gap:10px;width:100%;justify-content:space-between}
+.mobile-event{border-top:1px solid var(--border);padding:12px 14px}
+.mobile-event-top{display:flex;align-items:center;justify-content:flex-start;gap:7px;font-size:11px;color:var(--muted-foreground);margin-bottom:3px;flex-wrap:wrap}
+.mobile-event-top time{font-variant-numeric:tabular-nums}
+.mobile-event-top .event-number{margin-left:auto;font:11px var(--font-data);overflow-wrap:anywhere}
+.mobile-event .event-title{font-size:15px;display:flex;align-items:center;gap:10px;width:100%;min-height:36px;justify-content:space-between;padding:3px 0}
+.mobile-event .event-title>span{min-width:0;overflow-wrap:anywhere}
 .mobile-event .event-title svg{flex-shrink:0}
-.mobile-event-meta{font-size:12px;color:var(--muted-foreground);margin:7px 0}
-.mobile-money{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted-foreground);margin:12px 0}
-.mobile-money b{color:var(--foreground);font:600 16px var(--font-display);margin-left:4px}
-.shared-guarantee{font-size:11px;color:var(--muted-foreground);margin:-4px 0 12px}
+.mobile-event .event-title[aria-expanded=true]>svg{transform:rotate(180deg)}
+.mobile-event-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;color:var(--muted-foreground);margin:1px 0 5px}
+.mobile-event-meta .event-restriction{color:var(--watch);font-weight:600}
+.mobile-money{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;font-size:11px;color:var(--muted-foreground);margin:6px 0 8px}
+.mobile-money>span{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.mobile-money b{display:block;max-width:100%;color:var(--foreground);font:600 16px/1.45 var(--font-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;margin-left:0}
+.mobile-money .money-label{font-size:11px;line-height:1.5}
+.registration-summary{display:flex;align-items:baseline;gap:5px;font-size:11px;line-height:1.6;color:var(--muted-foreground);margin:0 0 8px;overflow-wrap:anywhere}
+.registration-summary>svg{flex-shrink:0;align-self:center}
+.registration-summary>span>span{color:var(--foreground);font-variant-numeric:tabular-nums}
+.mobile-event>.classification{background:transparent;gap:0}
+.mobile-event>.classification .class-option{min-height:44px;padding:8px 3px;font-size:12px}
+.mobile-event>.classification .class-option:not(.selected){border-color:transparent}
+.mobile-event>.classification .class-option.selected{font-weight:600;background:var(--card)}
 .class-option{font-size:13px;min-height:42px;padding:9px 4px;gap:4px}
 .class-option svg{width:13px}
 .detail{margin-top:16px;grid-template-columns:1fr;gap:16px;padding:16px}
@@ -233,6 +245,8 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .price-amount{font-variant-numeric:tabular-nums}
 .price-amount>span{white-space:nowrap}
 .converted-price{font:400 12px/1.5 var(--font-body);color:var(--muted-foreground);white-space:nowrap}
+.mobile-money .price-amount>span,.mobile-money .converted-price{display:block;white-space:normal;overflow-wrap:anywhere}
+.mobile-money .converted-price{font-size:11px;margin-top:1px}
 .cart-budget .converted-price{font-size:13px;margin:0}
 .cart-entry-money{flex-wrap:wrap}
 .discovery-filter-bar{display:flex;flex-direction:column;gap:11px;padding:0 14px 15px;background:var(--card)}
@@ -381,3 +395,20 @@ html{scroll-padding-bottom:110px}
 .shortlist-image-actions p{font-size:12px;line-height:1.7;color:var(--muted-foreground);margin:0 0 10px}
 .shortlist-image-actions .shortlist-export-error{color:var(--destructive)}
 .shortlist-image-actions .primary-button{width:100%;min-height:44px;justify-content:center}
+
+/* The same source-backed detail sections serve discovery, calendar and shortlist. */
+.detail{gap:0;min-width:0}
+.detail .detail-section{min-width:0;padding:13px 0;border-bottom:1px solid var(--border)}
+.detail .detail-section:first-child{padding-top:0}
+.detail .detail-section:last-child{padding-bottom:0;border-bottom:0}
+.detail .detail-section h3{font-size:13px;line-height:1.5;margin-bottom:10px}
+.detail .detail-section dl{font-size:12px;line-height:1.75}
+.detail .detail-section dl>div{grid-template-columns:76px minmax(0,1fr);gap:10px;margin-bottom:7px}
+.detail .detail-section dl>div:last-child{margin-bottom:0}
+.detail .detail-section dd{min-width:0;overflow-wrap:anywhere}
+.detail .detail-section p{font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.detail .detail-section p:last-child{margin-bottom:0}
+.detail .price-amount>span,.detail .converted-price{white-space:normal;overflow-wrap:anywhere}
+.detail .detail-deadline dd{font-weight:500}
+.detail .detail-source p{font-size:11px}
+.detail .text-button{min-height:44px;max-width:100%;white-space:normal;text-align:left}

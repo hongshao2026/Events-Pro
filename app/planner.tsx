@@ -1,25 +1,23 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
-import {ArrowLeft,CalendarDays,ChevronDown,Compass,Download,ExternalLink,HardDrive,MapPin,Search,Table2,Spade,Upload,X,RotateCcw,UserRound} from 'lucide-react';
+import {ArrowLeft,CalendarDays,Compass,Download,ExternalLink,HardDrive,MapPin,Search,Table2,Spade,Upload,X,RotateCcw,UserRound} from 'lucide-react';
 import {Checkbox} from '@/components/ui/checkbox';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {Toaster} from '@/components/ui/sonner';
 import {toast} from 'sonner';
-import {EntryActions,FilterSelect,StatusFilter} from '@/components/planner/controls';
+import {FilterSelect,StatusFilter} from '@/components/planner/controls';
 import {MySchedule} from '@/components/planner/my-schedule';
 import {MyShortlist} from '@/components/planner/my-shortlist';
 import {SeriesHome,SeriesLogo} from '@/components/planner/series-home';
 import {seriesCatalog} from '@/lib/series';
-import {StatusBadge} from '@/components/planner/status';
 import {moneyFilters,matchesMoneyFilter} from '@/lib/money';
-import {PriceAmount} from '@/components/planner/price-amount';
 import {SettingsProvider,useAppSettings} from '@/components/planner/settings-context';
 import {ProfilePage,type AccountInfo} from '@/components/planner/profile-page';
 import {AdminPage} from '@/components/planner/admin-page';
-import {EntryDetails} from '@/components/planner/entry-details';
+import {EventCard} from '@/components/planner/event-card';
 import {agendaFromUrl,type AgendaRoute} from '@/lib/agenda';
 import {FestivalCalendar} from '@/components/planner/festival-calendar';
-import {statuses,shortDate,clock,guarantee,eventNumber,isNlh,type Status} from '@/lib/schedule';
+import {statuses,isNlh,type Status} from '@/lib/schedule';
 import {seriesList,getSeries,entryName,validDate,type Entry} from '@/lib/catalog';
 import {STORAGE_KEY,LEGACY_KEY,readState,writeState,emptyState,downloadBackup,parseBackup,budget,type Backup,type PlannerState} from '@/lib/local-store';
 
@@ -137,8 +135,6 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   {name:'set_poker_entry_classification',title:'设置单个起始组分类',description:'仅保存个人自选，不向赌场报名。',inputSchema:{type:'object',properties:{id:{type:'string'},status:{type:'string',enum:statuses}},required:['id','status'],additionalProperties:false},annotations:{readOnlyHint:false},execute:(input:unknown)=>{const x=input as {id?:string;status?:Status},entry=entries.find(e=>e.id===x?.id);if(!entry||!statuses.includes(x.status!)||blocked)throw new Error('场次、分类或本地记录无效');if(!choose(entry,x.status!))throw new Error('分类未保存');return stateRef.current.selections[entry.id];}}];
   for(const tool of tools){try{void Promise.resolve(ctx.registerTool(tool,{signal:controller.signal})).catch(()=>{});}catch{/* Optional browser capability. */}}return()=>controller.abort();
  },[choose,blocked,entries,eventMap]);
- const detail=(entry:Entry,scope:string)=><EntryDetails entry={entry} scope={scope} onShowFlights={lookAtEvent}/>;
- const actions=(entry:Entry)=><EntryActions entry={entry} value={state.selections[entry.id]?.status||'undecided'} disabled={blocked} onChange={status=>choose(entry,status)}/>;
  const error=snapshot.error||saveError||importError;
  const localTools=<div className="backup-actions"><button disabled={blocked} onClick={()=>downloadBackup(stateRef.current)}><Download size={14}/>导出备份</button><button ref={importButtonRef} onClick={()=>importRef.current?.click()}><Upload size={14}/>恢复备份</button></div>;
  const seriesView=route.view==='discover'||route.view==='schedule';
@@ -157,7 +153,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
     <StatusFilter compact value={filters.statuses} onChange={value=>update({statuses:value})} counts={counts}/>
     <div className="toolbar"><div className="search"><Search size={18}/><input ref={searchRef} aria-label="搜索赛事" placeholder="搜索赛事、Day 1A、编号或报名费…" value={draft} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={e=>{composing.current=false;update({q:e.currentTarget.value});}} onChange={e=>{setDraft(e.target.value);if(!composing.current)update({q:e.target.value});}}/>{draft&&<button aria-label="清空搜索" onClick={()=>{setDraft('');update({q:''});searchRef.current?.focus();}}><X size={16}/></button>}</div><FilterSelect fitOptions={(series.currencies?.length||0)>1} label="报名费筛选" value={filters.buyin} onChange={buyin=>update({buyin})} options={amountFilters.buyin}/><FilterSelect fitOptions={(series.currencies?.length||0)>1} label="保底筛选" value={filters.gtd} onChange={gtd=>update({gtd})} options={amountFilters.gtd}/><FilterSelect label="赛事类型" value={filters.game} onChange={game=>update({game})} options={[["all","全部类型"],["nlh","德州扑克正赛"],["satellite","卫星赛"],["mixed","PLO / 混合游戏"]]}/></div>
     <div className="results-bar"><span aria-live="polite">找到 <b>{filtered.length}</b> 个场次 <small>· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span><div><button className="clear-filters" onClick={reset}><RotateCcw size={13}/>重置筛选</button><FilterSelect label="排序" value={filters.sort} onChange={sort=>update({sort})} options={[["date","日期顺序"],["buyin",series.currencies?.length?"按币种 · 报名费升序":"报名费从低到高"],["gtd",series.currencies?.length?"按币种 · 保底降序":"保底从高到低"]]}/></div></div>
-    </div><div className="mobile-events">{shown.map(entry=>{const e=entry.event;return <article data-entry-id={entry.id} data-status={state.selections[entry.id]?.status||'undecided'} className={`mobile-event status-surface row-${state.selections[entry.id]?.status||'undecided'}`} key={entry.id}><div className="mobile-event-top"><span>{shortDate(entry.date)} · {clock(entry.hour)}</span><span className="flight-tag">{entry.flightLabel}</span><StatusBadge status={state.selections[entry.id]?.status||'undecided'}/></div><button className="event-title" aria-expanded={expanded===entry.id} aria-controls={`detail-${entry.slot.id}-mobile`} onClick={()=>setExpanded(expanded===entry.id?null:entry.id)}>{e.title}<ChevronDown size={16}/></button><div className="mobile-event-meta">{eventNumber(e)} · {e.kind==='satellite'?'卫星赛':e.group}{e.restricted?' · 资格限制':''}{e.supplement?' · 官方补充':''}</div><div className="mobile-money"><span>报名 <b><PriceAmount value={entry.buyin} currency={entry.currency}/></b></span><span>{e.kind==='satellite'?'席位':'赛事保底'} <b>{guarantee(e)}</b></span></div>{e.starts.length>1&&e.guarantee&&<p className="shared-guarantee">保底由各起始组共享</p>}{actions(entry)}{expanded===entry.id&&detail(entry,'mobile')}</article>;})}</div>
+    </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} expanded={expanded===entry.id} onToggle={()=>setExpanded(expanded===entry.id?null:entry.id)} onChoose={status=>choose(entry,status)} onShowFlights={lookAtEvent}/>)}</div>
     {!shown.length&&<div className="empty-state"><Search size={26}/><h3>没有符合条件的场次</h3><p>{filters.statuses.length?'调整日期、分类或报名费，再找一场想打的。':'当前没有勾选任何分类，请选择至少一种。'}</p><button onClick={reset}>查看全部赛事</button></div>}
     <div className="pagination"><span>{filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)}`:'0'} / {filtered.length} 场次</span><div><button disabled={page===1} onClick={()=>update({page:page-1})}>上一页</button><span>{page} / {pages}</span><button disabled={page===pages} onClick={()=>update({page:page+1})}>下一页</button></div></div>
    </section>}{(route.view==='home'||route.view==='shortlist'||seriesView)&&<footer className="page-foot"><span>{route.view==='home'?'赛程按赛事当地时间显示。':'保底为整项赛事共享；续赛日见详情。移动文件、换浏览器或清理数据前，请导出备份。'}</span>{seriesView&&selectedSeries&&<><a href={series.sourcePdf?.src||series.sourceUrl} download={series.sourcePdf?.filename} target={series.sourcePdf?undefined:'_blank'} rel="noreferrer">{series.sourceLabel} <ExternalLink size={12}/></a>{series.sourceUpdated&&<span>赛程版本：{series.sourceUpdated}</span>}</>}</footer>}
