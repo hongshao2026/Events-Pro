@@ -7,8 +7,8 @@ import {relative,resolve} from 'node:path';
 import {setTimeout} from 'node:timers/promises';
 import {projectRoot,readReleaseConfig} from './release-config.mjs';
 
-// Run against a fresh simulator only. Optional XCTest is limited functional QA,
-// not physical-device or upgrade acceptance.
+// Run against a fresh simulator only. Optional XCTest and a higher native build
+// check are limited simulator QA, not physical-device or TestFlight acceptance.
 function run(command,args,timeout=60000,log){
  const result=spawnSync(command,args,{cwd:projectRoot,encoding:'utf8',timeout,maxBuffer:16*1024*1024});
  if(log)writeFileSync(log,`${result.stdout||''}\n${result.stderr||''}`);
@@ -18,6 +18,9 @@ function run(command,args,timeout=60000,log){
 }
 const sim=(...args)=>run('xcrun',['simctl',...args],300000);
 const model=process.env.EVENTS_PRO_SIMULATOR_MODEL||'iPhone-16-Pro';
+const uiTests=process.env.EVENTS_PRO_UI_TESTS==='true';
+const upgradeTests=process.env.EVENTS_PRO_UPGRADE_TESTS==='true';
+assert.ok(!upgradeTests||uiTests,'Upgrade checks require the normal UI baseline');
 const sizes={'iPhone-16-Pro':[1206,2622],'iPhone-16-Pro-Max':[1320,2868]};
 assert.ok(sizes[model],'Choose a supported iPhone simulator model');
 const app=resolve(projectRoot,'ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app');
@@ -37,15 +40,19 @@ assert.ok(runtime,'An available iOS simulator runtime is required');
 const types=JSON.parse(sim('list','devicetypes','--json')).devicetypes;
 const type=types.find(item=>item.identifier===`com.apple.CoreSimulator.SimDeviceType.${model}`);
 assert.ok(type,`Install the ${model} simulator device type`);
+const resultBundles=[];
 const report={sourceCommit:run('git',['rev-parse','HEAD']),environment:process.env.GITHUB_ACTIONS==='true'?'GitHub Actions':'local Mac',xcode:run('xcodebuild',['-version']),
  bundleId:config.bundleId,version:config.version,buildNumber:config.buildNumber,
  sdk:plist('DTSDKName'),device:type.name,runtime:runtime.name,checkedAt:new Date().toISOString(),
- checks:[],note:process.env.EVENTS_PRO_UI_TESTS==='true'
+ checks:[],note:uiTests
   ?'Real iOS Simulator startup and limited native UI flow. Read success/uiSummary and visually review screenshots; not physical-device, signing, upgrade, TestFlight or complete acceptance.'
   :'Real iOS Simulator startup only. Screenshots require visual review; not physical-device, signing, TestFlight or complete functional acceptance.'};
 let device;
 try{
  device=sim('create',`Events Pro QA ${Date.now()}`,type.identifier,runtime.identifier);
+ const buildArgs=['-project','ios/App/App.xcodeproj','-scheme','App','-configuration','Debug',
+  '-destination',`platform=iOS Simulator,id=${device}`,'-derivedDataPath','ios/DerivedData',
+  '-parallel-testing-enabled','NO','CODE_SIGNING_ALLOWED=NO'];
  sim('boot',device);sim('bootstatus',device,'-b');
  sim('status_bar',device,'override','--time','9:41','--dataNetwork','wifi','--wifiMode','active','--wifiBars','3','--batteryState','charged','--batteryLevel','100');
  sim('install',device,app);report.checks.push('Compiled native app and expected bundled resources installed on a fresh iPhone simulator');
@@ -67,17 +74,49 @@ try{
  assert.equal(report.screenshot.hasAlpha,'no','Store screenshot evidence must not contain an alpha channel');
  await copyFile(resolve(projectRoot,'ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'),resolve(output,'Package.resolved'));
  report.checks.push('Real simulator PNG and opaque JPEG captured with actual Swift Package.resolved');
- if(process.env.EVENTS_PRO_UI_TESTS==='true'){
+ if(uiTests){
   const resultBundle=resolve(output,'PlannerUI.xcresult');
-  run('xcodebuild',['-project','ios/App/App.xcodeproj','-scheme','App','-configuration','Debug',
-   '-destination',`platform=iOS Simulator,id=${device}`,'-derivedDataPath','ios/DerivedData',
-   '-resultBundlePath',resultBundle,'-parallel-testing-enabled','NO',
-   'CODE_SIGNING_ALLOWED=NO','test'],600000,resolve(output,'xcodebuild-test.log'));
+  resultBundles.push({path:resultBundle,summary:'uiSummary',attachments:'attachments'});
+  run('xcodebuild',[...buildArgs,'-resultBundlePath',resultBundle,
+   '-only-testing:AppUITests/PlannerUITests/testPlannerSelectionAndImagePreview','test'],600000,resolve(output,'xcodebuild-test.log'));
   report.uiSummary=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
   assert.ok(report.uiSummary.passedTests>=1,'The result bundle must contain executed passing UI tests');
   assert.equal(report.uiSummary.failedTests,0);
   report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview and same-installation relaunch persistence');
   report.uiTests=true;
+ }
+ if(upgradeTests){
+  const previous=Number(config.buildNumber);
+  assert.ok(Number.isSafeInteger(previous)&&previous>0&&previous<Number.MAX_SAFE_INTEGER);
+  const next=String(previous+1);
+  const container=sim('get_app_container',device,config.bundleId,'data');
+  report.upgrade={fromBuild:config.buildNumber,toBuild:next,version:config.version,bundleId:config.bundleId,
+   scope:'Same source and bundled assets; only native CFBundleVersion incremented via Xcode build setting. Not settings-backup, changed-code migration, physical-device or TestFlight upgrade QA.'};
+  // Recompile the actual app without editing the public release configuration.
+  // This is a development packaging probe, not an uploadable release candidate.
+  run('xcodebuild',[...buildArgs,`CURRENT_PROJECT_VERSION=${next}`,'build'],600000,resolve(output,'xcodebuild-upgrade.log'));
+  assert.equal(plist('CFBundleIdentifier'),config.bundleId);
+  assert.equal(plist('CFBundleShortVersionString'),config.version);
+  assert.equal(plist('CFBundleVersion'),next);
+  sim('install',device,app);
+  assert.equal(sim('get_app_container',device,config.bundleId,'data'),container,'Cover installation must retain the existing simulator data container');
+  const installed=sim('get_app_container',device,config.bundleId,'app');
+  assert.equal(run('plutil',['-extract','CFBundleVersion','raw','-o','-',resolve(installed,'Info.plist')]),next);
+  const resultBundle=resolve(output,'PlannerUpgrade.xcresult');
+  resultBundles.push({path:resultBundle,summary:'upgradeSummary',attachments:'upgrade-attachments'});
+  run('xcodebuild',[...buildArgs,'-resultBundlePath',resultBundle,
+   '-only-testing:AppUITests/PlannerUITests/testRetainedPlanAfterInstall','test-without-building'],600000,resolve(output,'xcodebuild-upgrade-test.log'));
+  report.upgradeSummary=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
+  assert.equal(report.upgradeSummary.passedTests,1);
+  assert.equal(report.upgradeSummary.failedTests,0);
+  assert.equal(sim('get_app_container',device,config.bundleId,'data'),container,'XCTest must use the existing installation without resetting its data');
+  const testedApp=sim('get_app_container',device,config.bundleId,'app');
+  assert.equal(run('plutil',['-extract','CFBundleVersion','raw','-o','-',resolve(testedApp,'Info.plist')]),next,'XCTest must verify the higher installed native build');
+  report.upgrade.sameDataContainer=true;
+  report.upgrade.installedNativeBuild=next;
+  report.upgrade.success=true;
+  report.note='Real iOS Simulator startup, limited UI flow, and same-source higher native-build cover-install retention. Read both summaries and review screenshots; not full upgrade migration, settings/backup restore, signing, physical-device or TestFlight acceptance.';
+  report.checks.push('Same-ID higher native build cover-installed without uninstalling; existing KPC plan, KRW budget and conditional calendar retained through real XCTest');
  }
  report.success=true;
  console.log('PASS real iOS Simulator installation, startup and evidence capture; visual and device acceptance still required');
@@ -87,13 +126,12 @@ try{
  throw error;
 }
 finally{
- if(process.env.EVENTS_PRO_UI_TESTS==='true'){
+ for(const bundle of resultBundles){
   try{
-   const resultBundle=resolve(output,'PlannerUI.xcresult');
-   await access(resultBundle);
-   report.uiSummary??=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',resultBundle]));
-   run('xcrun',['xcresulttool','export','attachments','--path',resultBundle,'--output-path',resolve(output,'attachments')]);
-  }catch(error){report.evidenceError=error.message;}
+   await access(bundle.path);
+   report[bundle.summary]??=JSON.parse(run('xcrun',['xcresulttool','get','test-results','summary','--path',bundle.path]));
+   run('xcrun',['xcresulttool','export','attachments','--path',bundle.path,'--output-path',resolve(output,bundle.attachments)]);
+  }catch(error){(report.evidenceErrors??=[]).push({bundle:bundle.summary,error:error.message});}
  }
  report.completedAt=new Date().toISOString();
  await writeFile(resolve(output,'results.json'),JSON.stringify(report,null,2)+'\n');

@@ -155,6 +155,14 @@ EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
 EVENTS_PRO_SIMULATOR_MODEL=iPhone-16-Pro-Max EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
 ```
 
+可再加 `EVENTS_PRO_UPGRADE_TESTS=true`：先正常创建 KPC 参加/关注记录，随后以 `CURRENT_PROJECT_VERSION` 递增原生包构建号并实际重新构建，同一 Bundle ID 覆盖安装；检查数据容器未重置，以及新构建中的自选、预算、条件日历。此探针使用相同源码和网页资源，只增加原生 CFBundleVersion；公开配置与系统许可页仍是基线版本，不能作为正式上传包，也不等同变更代码后的迁移、设置备份、真机或 TestFlight 更新验收。CI 已启用，实际结果另登记。
+
+```sh
+EVENTS_PRO_UI_TESTS=true EVENTS_PRO_UPGRADE_TESTS=true node scripts/ios-simulator-smoke.mjs
+```
+
+两个阶段分别保留 `PlannerUI.xcresult`、`PlannerUpgrade.xcresult` 与附件。探针运行后的 DerivedData App 是临时高构建号；再次做基线检查前，按前述普通 `xcodebuild ... build` 重建，恢复配置中的构建号。探针不修改仓库的运营配置或应用数据格式。
+
 默认中屏为 1206 × 2622，大屏为 1320 × 2868；XCTest 结果、PNG/JPEG 附件和摘要也保存在对应目录。截图需人工查看，当前场景只覆盖 KPC 三项计划与单币预算，不验证所有系列/预算模式、系统分享、文件导入、升级或 TestFlight。预算断言使用两项参加的合计，区别于单行报名费，并核对关注不增加预算。仓库 Mac CI 使用两种型号执行同一命令，证据附件保留 14 天；最终结果按 [实际记录](docs/app-store/MAC-VALIDATION-2026-10-08.md) 核对，不因存在测试代码就记为通过。
 
 模拟器编译通过后，连接 iPhone，信任电脑并按系统提示开启开发者模式（如需要）：

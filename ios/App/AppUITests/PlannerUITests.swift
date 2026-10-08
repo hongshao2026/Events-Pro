@@ -37,8 +37,7 @@ final class PlannerUITests: XCTestCase {
 
         tap(app.buttons["我的日程"], app)
         XCTAssertTrue(app.staticTexts["仅显示参加和关注的比赛，点击日期查看当天。"].waitForExistence(timeout: 20))
-        let activities = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@ AND (label CONTAINS %@ OR label CONTAINS %@)", "KPC BANKROLL BUILDER", "，参加", "，关注"))
-        XCTAssertEqual(activities.count, 4, "Three selected starts and one conditional final day; no duplicate continuation")
+        assertCalendar(app)
         capture("03-calendar", app)
 
         openShortlist(app)
@@ -57,6 +56,32 @@ final class PlannerUITests: XCTestCase {
         assertShortlist(app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("06-relaunch-retains-plan", app)
+    }
+
+    // The harness invokes this separately after a real same-ID installation of
+    // a higher native build. This method only reads the existing plan; it never
+    // creates selections or restores a backup that could mask lost data.
+    @MainActor
+    func testRetainedPlanAfterInstall() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.buttons["返回赛事首页"].waitForExistence(timeout: 30))
+        openShortlist(app)
+        assertShortlist(app)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
+        capture("07-installed-build-retains-shortlist", app)
+        tap(app.buttons["我的日程"], app)
+        XCTAssertTrue(app.staticTexts["仅显示参加和关注的比赛，点击日期查看当天。"].waitForExistence(timeout: 20))
+        assertCalendar(app)
+        capture("08-installed-build-retains-calendar", app)
+    }
+
+    @MainActor
+    private func assertCalendar(_ app: XCUIApplication) {
+        let activities = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@ AND (label CONTAINS %@ OR label CONTAINS %@)", "KPC BANKROLL BUILDER", "，参加", "，关注"))
+        XCTAssertEqual(activities.count, 4, "Three selected starts and one conditional final day; no duplicate continuation")
     }
 
     @MainActor

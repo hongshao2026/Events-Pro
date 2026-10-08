@@ -43,6 +43,7 @@ jobs:
       - name: Install and launch on a fresh iPhone simulator
         env:
           EVENTS_PRO_UI_TESTS: 'true'
+          EVENTS_PRO_UPGRADE_TESTS: 'true'
         run: node scripts/ios-simulator-smoke.mjs
       - name: Save simulator evidence
         if: always()
