@@ -13,11 +13,7 @@ final class PlannerUITests: XCTestCase {
         XCTAssertTrue(app.buttons["返回赛事首页"].waitForExistence(timeout: 30))
         capture("01-events", app)
 
-        let kpc = app.links.matching(NSPredicate(format: "label CONTAINS %@", "KPC Poker Series Jeju 2026")).firstMatch
-        if !kpc.exists {
-            tap(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "已结束")).firstMatch, app)
-        }
-        tap(kpc, app)
+        openKPC(app)
         capture("02-schedule", app)
         let first = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "查看 #1 KPC BANKROLL BUILDER · Day 1A 详情")).firstMatch
         XCTAssertTrue(first.waitForExistence(timeout: 20))
@@ -72,10 +68,23 @@ final class PlannerUITests: XCTestCase {
         assertShortlist(app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("07-installed-build-retains-shortlist", app)
+        // A new app launch can start on the default festival. Choose KPC via
+        // normal navigation before checking its calendar, without editing data.
+        openKPC(app)
         tap(app.buttons["我的日程"], app)
         XCTAssertTrue(app.staticTexts["仅显示参加和关注的比赛，点击日期查看当天。"].waitForExistence(timeout: 20))
         assertCalendar(app)
         capture("08-installed-build-retains-calendar", app)
+    }
+
+    @MainActor
+    private func openKPC(_ app: XCUIApplication) {
+        tap(app.buttons["返回赛事首页"], app)
+        let kpc = app.links.matching(NSPredicate(format: "label CONTAINS %@", "KPC Poker Series Jeju 2026")).firstMatch
+        if !kpc.exists {
+            tap(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "已结束")).firstMatch, app)
+        }
+        tap(kpc, app)
     }
 
     @MainActor

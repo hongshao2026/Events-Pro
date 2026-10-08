@@ -155,7 +155,7 @@ EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
 EVENTS_PRO_SIMULATOR_MODEL=iPhone-16-Pro-Max EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
 ```
 
-可再加 `EVENTS_PRO_UPGRADE_TESTS=true`：先正常创建 KPC 参加/关注记录，随后以 `CURRENT_PROJECT_VERSION` 递增原生包构建号并实际重新构建，同一 Bundle ID 覆盖安装；检查数据容器未重置，以及新构建中的自选、预算、条件日历。此探针使用相同源码和网页资源，只增加原生 CFBundleVersion；公开配置与系统许可页仍是基线版本，不能作为正式上传包，也不等同变更代码后的迁移、设置备份、真机或 TestFlight 更新验收。CI 已启用，实际结果另登记。
+可再加 `EVENTS_PRO_UPGRADE_TESTS=true`：先正常创建 KPC 参加/关注记录，随后以 `CURRENT_PROJECT_VERSION` 递增原生包构建号并实际重新构建，同一 Bundle ID 覆盖安装；不卸载、不恢复备份，通过独立 XCTest 读取新构建中的既有自选、预算、条件日历。iOS 更新可改变数据容器绝对路径，不能把路径相同作为数据保留标准，见 [Apple TN2285](https://developer.apple.com/library/archive/technotes/tn2285/)。此探针使用相同源码和网页资源，只增加原生 CFBundleVersion；公开配置与系统许可页仍是基线版本，不能作为正式上传包，也不等同变更代码后的迁移、设置备份、真机或 TestFlight 更新验收。CI 已启用，实际结果另登记。
 
 ```sh
 EVENTS_PRO_UI_TESTS=true EVENTS_PRO_UPGRADE_TESTS=true node scripts/ios-simulator-smoke.mjs

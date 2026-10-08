@@ -85,7 +85,9 @@
 
 2026-10-09 草稿 PR #2 的最终检查已成功：[网页检查 Run 37810081999](https://github.com/hongshao2026/Events-Pro/actions/runs/37810081999)、[两型号原生检查 Run 37810082036](https://github.com/hongshao2026/Events-Pro/actions/runs/37810082036)。PR head 为 `410f6fc9390ae590ffef1cebb375f94fecc6ff59`，实际测试 GitHub 合成提交 `691a06a18f6f26c0ae1be23cf7dc30bd988fa39a`；已核对其父提交包含 main 与 head，源码树完全一致。两个实际 XCTest 各通过 1 项、0 失败，Swift 锁一致，附件已下载至 `.sites-runtime/qa/remote-ios-ui-37810082036/`。结果摘要 SHA-256：标准尺寸 `e79406fd4f74eaa4528d8a807dbf412d7f8aeb751d79589fa1935cadeca3680d`，大屏 `fdf4842b33faf94beef1e755e1e24ddf122bffa5742af796198dfa0ab44780dc`。仍是原有限范围，不包含覆盖安装。
 
-随后新增可选的同源码高原生构建号覆盖安装探针：先执行原有正常界面流程保存三条计划，实际重新编译并将原生 CFBundleVersion 从 1 递增为 2，检查安装前后数据容器相同，再独立 XCTest 读取既有自选、韩元预算与条件日历，不重新创建选择或恢复备份。公开配置仍为构建 1，探针包不是正式候选；设置恢复、变更代码迁移、真机与 TestFlight 不在其范围。当前仅测试代码就绪，真实执行结果待下文补充，不据此更新 readiness。
+随后新增可选的同源码高原生构建号覆盖安装探针：先执行原有正常界面流程保存三条计划，实际重新编译并将原生 CFBundleVersion 从 1 递增为 2，同 ID 覆盖安装，再独立 XCTest 读取既有自选、韩元预算与条件日历，不重新创建选择或恢复备份。公开配置仍为构建 1，探针包不是正式候选；设置恢复、变更代码迁移、真机与 TestFlight 不在其范围。实际结果继续单独登记，不据此更新 readiness。
+
+首次探针 [Run 37812989864](https://github.com/hongshao2026/Events-Pro/actions/runs/37812989864)，PR head `2b77d84a1efc777e3d49c7efe863c0f693cec441`、合成源码 `2795577f8d542b84239a3a5547629746e0fb3238`，两组原有功能 XCTest 均 1 项通过、0 失败，更高构建号重新编译及覆盖安装命令完成；随后错误地要求新旧数据容器绝对路径相同，两组均在该断言失败。新构建的数据 UI 测试尚未启动，不能判断数据保留或丢失。原件保存在 `.sites-runtime/qa/remote-ios-upgrade-37812989864/`，完整错误日志另存 `.sites-runtime/qa/mac-handoff/native-upgrade-37812989864-failed.log`。按 [Apple TN2285](https://developer.apple.com/library/archive/technotes/tn2285/) 修正为记录路径是否改变并实际读取既有计划，保留全部数量、金额、日历及实际安装构建号断言；日历复验通过正常导航显式选择 KPC，不编辑存储。复验待执行。
 
 [Run 37795839177](https://github.com/hongshao2026/Events-Pro/actions/runs/37795839177)，源码 `945761f8fdd138463ba8ff556fae2e1bb72d69b6`：App 编译/启动通过，UITests-Runner 实际编译并执行 1 项 XCTest，结论为失败。原生首页控件与 KPC 链接点击成功，随后只以 Button 类型查询首场赛程未找到目标，58 秒后断言失败；不是编译或签名失败，也不能写成原生功能通过。完整错误与 xcresult 保存至 `.sites-runtime/qa/remote-ios-ui-37795839177/`，初始测试日志另在 `.sites-runtime/qa/mac-handoff/native-uitest-37795839177.log`。测试退出后的 `failure.png` 是模拟器主屏幕，不能替代失败现场图片。
 
