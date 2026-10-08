@@ -1,0 +1,94 @@
+{
+  "run": "https://github.com/hongshao2026/Events-Pro/actions/runs/37815336608",
+  "headCommit": "fa8546983c745785df22803a2a1146a898353d3d",
+  "testedCommit": "4f44383689f2ee31366c0b87d029280fbf416f66",
+  "version": "1.0.0",
+  "fromBuild": "1",
+  "toBuild": "2",
+  "bundleId": "com.example.eventspro",
+  "xcode": "26.3 (17C529)",
+  "runtime": "iOS 26.2",
+  "scope": "Same-source native CFBundleVersion probe only; public release config remains build 1. Limited KPC plan/budget/calendar preservation, not physical-device, settings/backup restore, code migration or TestFlight acceptance.",
+  "devices": [
+    {
+      "device": "iPhone 16 Pro",
+      "completedAt": "2026-10-08T17:28:52.291Z",
+      "baseline": {
+        "passed": 1,
+        "failed": 0
+      },
+      "upgrade": {
+        "passed": 1,
+        "failed": 0,
+        "installedNativeBuild": "2",
+        "dataContainerPathChanged": true,
+        "dataContainerPathChangedDuringTest": true
+      },
+      "resultsSha256": "b4261bfc915184bf4f8715821aec99384fbab20e439aadd7a202246201379daa",
+      "captures": [
+        {
+          "scene": "shortlist",
+          "file": "medium-shortlist.jpg",
+          "nativeAttachment": "07-installed-build-retains-shortlist-jpeg_0_37BBAC04-E574-4C06-9413-5D37BF244799.jpeg",
+          "capturedAt": "2026-10-08T17:28:24.321Z",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": "no",
+          "sha256": "3b7a653a17184483536e78c83f018dbe7c8247c914bae83fa1318085c481fa8a",
+          "visualReview": "Plan counts/budget/calendar verified; final framing and safe-area acceptance pending."
+        },
+        {
+          "scene": "calendar",
+          "file": "medium-calendar.jpg",
+          "nativeAttachment": "08-installed-build-retains-calendar-jpeg_0_E93760F7-1CFB-4683-957F-C46A72B6BDF8.jpeg",
+          "capturedAt": "2026-10-08T17:28:43.906Z",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": "no",
+          "sha256": "3d31bc9dae0d6c2e2c18a5448fe733fc6153e45a0a51d634623f8c5071c9a5d7",
+          "visualReview": "Plan counts/budget/calendar verified; final framing and safe-area acceptance pending."
+        }
+      ]
+    },
+    {
+      "device": "iPhone 16 Pro Max",
+      "completedAt": "2026-10-08T17:29:45.612Z",
+      "baseline": {
+        "passed": 1,
+        "failed": 0
+      },
+      "upgrade": {
+        "passed": 1,
+        "failed": 0,
+        "installedNativeBuild": "2",
+        "dataContainerPathChanged": true,
+        "dataContainerPathChangedDuringTest": true
+      },
+      "resultsSha256": "4131a0417337abea0100a3e212d9d65f11224b42a04701833c3a742e043cfe89",
+      "captures": [
+        {
+          "scene": "shortlist",
+          "file": "large-shortlist.jpg",
+          "nativeAttachment": "07-installed-build-retains-shortlist-jpeg_0_99FF3880-4DF9-4DAE-B0C7-025DE8D9B3A9.jpeg",
+          "capturedAt": "2026-10-08T17:29:19.588Z",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": "no",
+          "sha256": "8137435967a05e24c545b669a6b917058061dbd212f1fcaa8618df82a4b1a351",
+          "visualReview": "Plan counts/budget/calendar verified; final framing and safe-area acceptance pending."
+        },
+        {
+          "scene": "calendar",
+          "file": "large-calendar.jpg",
+          "nativeAttachment": "08-installed-build-retains-calendar-jpeg_0_F84D8092-D57E-49E1-B9EA-2612DF9CF318.jpeg",
+          "capturedAt": "2026-10-08T17:29:39.533Z",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": "no",
+          "sha256": "e4b74aeb481c83f219260c25c28ce21fde9c61f1de7c5f677fdcb636e5eeaccb",
+          "visualReview": "Plan counts/budget/calendar verified; final framing and safe-area acceptance pending."
+        }
+      ]
+    }
+  ]
+}
