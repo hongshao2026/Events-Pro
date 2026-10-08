@@ -19,7 +19,7 @@ export const cny=(v:number)=>'¥'+Math.round(v*6.7).toLocaleString('zh-CN');
 export const shortDate=(s:string)=>s.slice(5).replace('-','/');
 export const clock=(hour:number)=>{const minutes=Math.round(hour*60);return String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');};
 export function slotName(s:Slot){return s.stageLabel||s.name.replace(/[（(]TURBO[）)]/gi,' Turbo').match(/Day\s+\d(?:\/?[A-F])?(?:\s+Turbo)?|Final(?: Table)?/i)?.[0].replace(/(\d)\//,'$1')||'首轮';}
-export function guarantee(e:Event){if(e.kind==='satellite')return e.count?`${e.count} ${e.unit==='席位'?'席':e.unit||'席'}`:'未列保底';return e.guarantee?money(e.guarantee,e.currency):'未列保底';}
+export function guarantee(e:Event,emptyLabel='未列保底'){if(e.kind==='satellite')return e.count?`${e.count} ${e.unit==='席位'?'席':e.unit||'席'}`:emptyLabel;return e.guarantee?money(e.guarantee,e.currency):emptyLabel;}
 export function eventNumber(e:Event){return e.officialNumber?'#'+e.officialNumber:e.displayNumber||e.id;}
 export const emptySelection:Selection={status:'undecided',flight:'',version:0};
 export function isNlh(e:Event){return e.kind==='regular'&&!['混合/限注','奥马哈','混合游戏'].includes(e.group)&&(e.group==='德州扑克'||/NLH|No Limit Hold|WPT|Super Gold|Seniors High Roller/i.test(e.title));}

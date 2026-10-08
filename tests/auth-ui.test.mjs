@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createServer } from 'vite';
@@ -112,7 +113,7 @@ try {
   await page.goBack();await page.locator('.mobile-event').first().waitFor();
   pass('profile projects the authenticated email and account state');
   // Seed a real planner selection through its UI before testing account boundaries.
-  await page.locator('.mobile-event').first().locator('label.class-option').filter({ hasText: /^参加$/ }).click();
+  await chooseDiscoveryStatus(page,page.locator('.mobile-event').first(),'参加');
   const saved = await page.evaluate(() => localStorage.getItem('poker-planner-local-v2'));
   const other = await context.newPage(); await other.goto(base); await other.getByRole('button', { name: '我的账户', exact: true }).waitFor();
   await page.getByRole('button', { name: '我的账户', exact: true }).click();
@@ -154,6 +155,7 @@ try {
   // Separate profiles ensure rate limit and network tests do not inherit sessions.
   const failureContext = await browser.newContext({ viewport: { width: 320, height: 700 }, reducedMotion: 'reduce' });
   const failurePage = await failureContext.newPage(); failurePage.on('pageerror', error => errors.push(error.message));
+  await failurePage.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
   let rateLimit = true;
   await failureContext.route(`${provider}/**`, route => rateLimit
     ? route.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ code: 'over_email_send_rate_limit' }) })
@@ -183,6 +185,7 @@ try {
     };
   });
   const blockedPage = await blockedContext.newPage();
+  await blockedPage.clock.setFixedTime(new Date('2026-10-08T04:00:00Z'));
   await blockedPage.goto(base); await blockedPage.getByRole('button', { name: '登录', exact: true }).click();
   await blockedPage.getByText('浏览器禁止了登录所需的存储', { exact: false }).waitFor();
   assert.equal(await blockedPage.getByLabel('邮箱地址', { exact: true }).count(), 0);

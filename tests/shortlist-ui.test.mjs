@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -108,10 +109,10 @@ try{
  const pending=page.locator('.shortlist-pending[data-event-id="W05"]');await pending.waitFor();
  assert.equal(await rows().count(),0);assert.match(await page.locator('.cart-budget').innerText(),/\$800/);assert.match(await pending.innerText(),/待安排/);
  await filter('正在关注').click();assert.equal(await pending.count(),0);assert.match(await page.locator('.cart-budget').innerText(),/\$800/);await filter('计划参加').click();await pending.waitFor();
- await pending.getByRole('button',{name:'选择起始组 →',exact:true}).click();await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();
+ await pending.getByRole('button',{name:'选择起始组 →',exact:true}).click();await page.getByRole('heading',{name:/完整赛程$/}).waitFor();
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'W05');
  const planned=page.locator('.mobile-event').first(),plannedId=await planned.getAttribute('data-entry-id');
- await planned.locator('label.class-option').filter({hasText:/^参加$/}).click();await nav('我的自选');await row(plannedId).waitFor();
+ await chooseDiscoveryStatus(page,planned,'参加');await nav('我的自选');await row(plannedId).waitFor();
  assert.equal(await pending.count(),0);assert.equal(await rows().count(),1);assert.match(await page.locator('.cart-budget').innerText(),/\$800/);assert.equal(Object.keys((await savedState()).pending).length,0);
  assert.equal(await page.evaluate(legacyKey=>localStorage.getItem(legacyKey)!==null,legacyKey),true);
  await page.screenshot({path:resolve(output,'legacy-assigned.png')});

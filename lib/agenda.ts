@@ -8,7 +8,7 @@ export function agendaFromUrl():AgendaRoute{
  const festival=getSeries(p.get('series')),month=p.get('month')||'',start=festival.start.slice(0,7),end=festival.end.slice(0,7);
  const selected=shortlistStatuses.filter(s=>raw?.split(',').includes(s));
  const requestedView=p.get('view'),region=regions.find(item=>item.id===p.get('region'))?.id||'all';
- const legacyDiscovery=['q','statuses','status','from','to','date','buyin','gtd','game','sort','supp','page'].some(key=>p.has(key));
+ const legacyDiscovery=['q','statuses','status','from','to','date','buyin','buyinMin','buyinMax','buyinCurrency','gtd','game','sort','supp','page'].some(key=>p.has(key));
  const view=requestedView==='shortlist'||requestedView==='profile'||requestedView==='admin'||requestedView==='schedule'?requestedView:requestedView==='discover'||(!requestedView&&(p.has('series')||legacyDiscovery))?'discover':'home';
  return {seriesId:p.get('series')||festival.id,view,region,day:validDate(day,festival)?day:'',statuses:raw==='none'||raw===''?[]:selected.length?selected:[...shortlistStatuses],continuations:p.get('continuations')!=='no',month:/^\d{4}-(0[1-9]|1[0-2])$/.test(month)&&month>=start&&month<=end?month:validDate(day,festival)?day.slice(0,7):start};
 }
