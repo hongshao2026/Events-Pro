@@ -32,7 +32,7 @@ const showDetail=async id=>{await entryButton(id).click();await detail().waitFor
 try{
  await page.goto(file+'#view=shortlist');await page.getByRole('heading',{name:'我的自选',exact:true}).waitFor();
  assert.equal(await rows().count(),0);assert.equal(await page.getByRole('dialog').count(),0);
- assert.equal(await page.getByRole('button',{name:/分享/}).count(),0);
+ assert.equal(await page.getByRole('button',{name:'导出图片',exact:true}).isDisabled(),true);
  const state={selections:{[first]:{status:'attend',version:1},[second]:{status:'attend',version:1},[watch]:{status:'watch',version:1},[triton]:{status:'watch',version:1}},pending:{},revision:1,budgetMode:'flights'};
  await page.evaluate(([key,state])=>localStorage.setItem(key,JSON.stringify({app:'wpt-planner',schemaVersion:2,savedAt:'2026-10-08T00:00:00Z',state})),[key,state]);
  await page.reload();await row(first).waitFor();

@@ -298,3 +298,19 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .shortlist-error.cart-error{padding:0 0 15px}
 .shortlist-col-name{width:154px}.shortlist-col-date{width:106px}.shortlist-col-buyin{width:96px}.shortlist-col-status{width:84px}.shortlist-col-budget{width:120px}.shortlist-col-guarantee{width:132px}.shortlist-col-series{width:132px}
 @media(max-width:359px){.shortlist-summary>span{font-size:10px}.shortlist-tabs{gap:7px}.shortlist-tabs button{font-size:11px}.shortlist-tabs button span{font-size:10px}.shortlist-scroll-hint{font-size:10px;gap:4px}}
+
+/* Export owns a complete image; the interactive table keeps its narrow layout. */
+.shortlist-budget-top{display:flex;align-items:center;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;min-height:36px}
+.shortlist-budget-top>span{font-size:12px;color:var(--muted-foreground)}
+.shortlist-export-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:104px;min-height:36px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;background:var(--card);color:var(--primary);font-size:12px}
+.shortlist-export-button:hover:not(:disabled){background:var(--secondary);border-color:var(--primary)}
+.shortlist-budget-top .shortlist-export-error{flex-basis:100%;margin:7px 0 0;padding:0;font-size:12px;color:var(--destructive)}
+.shortlist-export-spinner{animation:shortlist-export-spin 1s linear infinite}
+@keyframes shortlist-export-spin{to{transform:rotate(360deg)}}
+.shortlist-image-sheet .cart-heading{padding-right:52px}
+.shortlist-image-scroll{flex:1;min-height:0;overflow:auto;padding:0 16px 16px;scrollbar-gutter:stable}
+.shortlist-export-image{display:block;width:100%;height:auto;background:var(--card);border:1px solid var(--border);border-radius:4px;user-select:auto;-webkit-touch-callout:default}
+.shortlist-image-actions{border-top:1px solid var(--border);padding:14px 16px calc(16px + env(safe-area-inset-bottom));background:var(--card)}
+.shortlist-image-actions p{font-size:12px;line-height:1.7;color:var(--muted-foreground);margin:0 0 10px}
+.shortlist-image-actions .shortlist-export-error{color:var(--destructive)}
+.shortlist-image-actions .primary-button{width:100%;min-height:44px;justify-content:center}

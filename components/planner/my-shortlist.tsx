@@ -4,6 +4,7 @@ import {Sheet,SheetContent,SheetHeader,SheetTitle,SheetDescription,SheetClose} f
 import {EntryActions,FilterSelect} from './controls';
 import {StatusBadge} from './status';
 import {EntryDetails} from './entry-details';
+import {ShortlistExport} from './shortlist-export';
 import {entryMap,entryName,eventMap,getSeries,type Entry} from '@/lib/catalog';
 import {budget,type PlannerState} from '@/lib/local-store';
 import {shortlistBudget,shortlistEntries} from '@/lib/shortlist';
@@ -44,7 +45,7 @@ export function MyShortlist({state,blocked,error,onChoose,onBudgetModeChange,onS
   requestAnimationFrame(()=>{if(!button.isConnected)summaryRef.current?.focus({preventScroll:true});});
  };
  return <section className="my-shortlist" aria-label="我的自选表格">
-  <div className="cart-budget shortlist-budget"><div><span>计划参加预算</span><strong>{usd(cost.total)} <small>{cny(cost.total)}</small></strong><p>{cost.flightCount} 个起始组 · {cost.eventCount} 项赛事{cost.pendingCount?` · ${cost.pendingCount} 项待安排`:''}，关注不计入预算</p></div><FilterSelect label="预算计算方式" value={state.budgetMode} disabled={blocked} onChange={value=>onBudgetModeChange(value as PlannerState['budgetMode'])} options={[["flights","每个起始组各算一次"],["events","同一赛事只算一次"]]}/></div>
+  <div className="cart-budget shortlist-budget"><div><div className="shortlist-budget-top"><span>计划参加预算</span><ShortlistExport state={state} count={count} blocked={blocked}/></div><strong>{usd(cost.total)} <small>{cny(cost.total)}</small></strong><p>{cost.flightCount} 个起始组 · {cost.eventCount} 项赛事{cost.pendingCount?` · ${cost.pendingCount} 项待安排`:''}，关注不计入预算</p></div><FilterSelect label="预算计算方式" value={state.budgetMode} disabled={blocked} onChange={value=>onBudgetModeChange(value as PlannerState['budgetMode'])} options={[["flights","每个起始组各算一次"],["events","同一赛事只算一次"]]}/></div>
   <div className="shortlist-tabs" role="group" aria-label="自选分类">{(['all','attend','watch'] as const).map(tab=><button key={tab} className={filter===tab?'active':''} aria-pressed={filter===tab} onClick={()=>setFilter(tab)}>{tab==='all'?'全部自选':tab==='attend'?'计划参加':'正在关注'} <span>{tab==='all'?count:tab==='attend'?attending+pending.length:watching}</span></button>)}</div>
   <div className="shortlist-summary" aria-live="polite" ref={summaryRef} tabIndex={-1}><strong>{rows.length} 条自选</strong><span>按开赛时间排列 · 各赛事当地时间</span></div>
   {rows.length>0?<>

@@ -61,3 +61,4 @@ try{
 await import('./triton-ui.test.mjs');
 await import('./home-ui.test.mjs');
 await import('./shortlist-ui.test.mjs');
+await import('./shortlist-image-ui.test.mjs');
