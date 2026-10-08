@@ -15,13 +15,12 @@ const select=async(label,value)=>{await page.getByRole('combobox',{name:label,ex
 const nav=name=>page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();
 const search=text=>page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill(text);
 const choose=(n,i=0)=>row(n,i).locator('.class-option').filter({hasText:/^参加$/}).click();
-const closeCart=async()=>{await page.getByRole('button',{name:'关闭我的自选',exact:true}).click();await page.locator('.cart-sheet').waitFor({state:'hidden'});};
 const discover=async()=>{await nav('赛事');await page.getByRole('link',{name:'查看 Jeju Poker Festival 2026 完整赛程',exact:true}).click();};
 try{
  await page.goto(file+'#view=home&region=apac');assert.equal(await page.locator('.festival-card').count(),2);const card=page.locator(`[data-series-id="${series}"]`);await card.click();
  assert.match(await page.locator('.results-bar').innerText(),/160.*140/s);assert.match(await page.locator('.series-header').innerText(),/韩国.*KST/s);assert.equal(await page.locator('.series-header img').evaluate(e=>e.complete&&e.naturalWidth>0),true);
  assert.match(await row(3).innerText(),/₩1,300,000（≈¥6,445.40）/);assert.match(await row(1).innerText(),/报名\s+未公布/);assert.doesNotMatch(await row(1).innerText(),/₩0/);
- await choose(1);await nav('我的自选');assert.match(await page.locator('.cart-budget').innerText(),/1 个买入报名费未公布/);assert.equal(await page.locator('.cart-budget [data-currency]').count(),0);await closeCart();
+ await choose(1);await nav('我的自选');assert.match(await page.locator('.cart-budget').innerText(),/1 个买入报名费未公布/);assert.equal(await page.locator('.cart-budget [data-currency]').count(),0);const unknown=page.locator(`.shortlist-table tr[data-entry-id="${id(1)}"]`);assert.match(await unknown.locator('[data-column="buyin"]').innerText(),/未公布/);assert.match(await unknown.locator('[data-column="budget"]').innerText(),/未公布|待公布/);assert.doesNotMatch(await unknown.innerText(),/₩0/);await discover();
  await search('KPC MAIN EVENT');await choose(3);await choose(3,1);await search('JPF-79');await choose(79);await row(79).locator('.event-title').click();assert.match(await row(79).innerText(),/Day 2 第 14 级/);assert.match(await row(79).innerText(),/\$8,000/);
  pass('Jeju APAC card opens 160 starts, original KRW/USD prices, real local branding and honest unknown buy-in without a zero budget');
  await search('');await select('报名费筛选','$8,000 及以下');assert.equal(await page.locator('.mobile-event').count(),1);assert.ok(page.url().includes('USD%3A8000'));await page.reload();await row(79).waitFor();
@@ -35,7 +34,7 @@ try{
  await page.screenshot({path:resolve(out,'agenda-390.png')});
  await discover();await select('赛事系列','WPT · Wynn 2026');await page.locator('.mobile-event').first().locator('.class-option').filter({hasText:/^参加$/}).click();await nav('我的自选');
  assert.match(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),/₩2,600,000/);assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/\$8,600/);assert.match(await page.locator('.cart-budget').innerText(),/1 个买入报名费未公布/);
- await select('预算计算方式','同一赛事只算一次');assert.match(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),/₩1,300,000/);await closeCart();
+ await select('预算计算方式','同一赛事只算一次');assert.match(await page.locator('.cart-budget [data-currency="KRW"]').innerText(),/₩1,300,000/);
  pass('cross-month selected-only agenda deduplicates continuations and mixed-series budgets keep USD/KRW separate in both modes');
  await nav('我的');await select('显示货币','韩元 · KRW');await discover();await search('KPC MAIN EVENT');assert.equal(await row(3).locator('.converted-price').count(),0);
  await nav('我的');await page.getByRole('button',{name:/管理后台/}).click();assert.equal(await page.getByRole('textbox',{name:'韩元汇率',exact:true}).inputValue(),'4.958');await page.getByRole('textbox',{name:'韩元汇率',exact:true}).fill('5');await page.getByRole('button',{name:'保存汇率',exact:true}).click();

@@ -17,7 +17,6 @@ const search=()=>page.getByRole('textbox',{name:'搜索赛事',exact:true});
 const choose=async(id,status)=>{await row(id).locator('.class-option').filter({hasText:new RegExp('^'+status+'$')}).click();};
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();};
 const select=async(label,name)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name,exact:true}).click();};
-const closeCart=async()=>{await page.getByRole('button',{name:'关闭我的自选',exact:true}).click();await page.locator('.cart-sheet').waitFor({state:'hidden'});};
 const fits=async locator=>{assert.equal(await locator.evaluate(e=>e.scrollWidth>e.clientWidth+1),false);};
 try{
  await page.goto(file+'#view=home&region=apac');await page.locator(`.festival-card[data-series-id="${series}"]`).click();
@@ -54,15 +53,15 @@ try{
  await page.locator('.agenda-detail-sheet').waitFor({state:'hidden'});
  pass('selected flights create deduplicated conditional finals, bounded QPC calendar and persistent final-day detail');
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');const wpt='wpt-wynn-2026/W01/R0';await row(wpt).waitFor();await choose(wpt,'参加');
- await nav('我的自选');await page.locator('.cart-sheet').waitFor();
+ await nav('我的自选');await page.getByRole('heading',{name:'我的自选',exact:true}).waitFor();
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/\$600.*¥4,041.06/);
  assert.equal(await page.locator('.cart-budget [data-currency="VND"]').innerText(),'₫22,000,000（≈¥5,676.00）');
- assert.equal(await page.locator('.cart-entry').count(),4);await fits(page.locator('.cart-sheet'));
- for(const item of await page.locator('.cart-entry').all())await fits(item);
+ assert.equal(await page.locator('.shortlist-table tr[data-entry-id]').count(),4);await fits(page.locator('.my-shortlist'));
+ assert.ok(await page.locator('.shortlist-table-scroll').evaluate(e=>e.scrollWidth>e.clientWidth),'The complete table scrolls within the phone viewport');
  await page.screenshot({path:resolve(output,'mixed-budget-320.png')});
  await select('预算计算方式','同一赛事只算一次');assert.equal(await page.locator('.cart-budget [data-currency="VND"]').innerText(),'₫11,000,000（≈¥2,838.00）');
  assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/\$600/);
- await page.setViewportSize({width:390,height:950});await page.screenshot({path:resolve(output,'mixed-budget-390.png')});await closeCart();
+ await page.setViewportSize({width:390,height:950});await page.screenshot({path:resolve(output,'mixed-budget-390.png')});
  pass('mixed WPT/QPC shortlist shows separate USD and VND totals, excludes watched flights and applies both budget modes');
  await nav('我的');const pending=page.waitForEvent('download');await page.getByRole('button',{name:'导出备份',exact:true}).click();
  const backup=resolve(output,'mixed-backup.json');await(await pending).saveAs(backup);await nav('赛事');await page.getByRole('link',{name:'查看 WPT World Championship 2026 完整赛程',exact:true}).click();await choose(wpt,'不考虑');
@@ -70,7 +69,7 @@ try{
  await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status==='attend',wpt);
  await select('赛事系列','QPC Circuit · 河内 2026');await row(entry('QPC01')).waitFor();assert.equal(await row(entry('QPC01')).getAttribute('data-status'),'watch');
  await nav('我的自选');assert.equal(await page.locator('.cart-budget [data-currency="VND"]').innerText(),'₫11,000,000（≈¥2,838.00）');
- assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/\$600/);await closeCart();
+ assert.match(await page.locator('.cart-budget [data-currency="USD"]').innerText(),/\$600/);
  assert.equal(errors.length,0,errors.join('\n'));assert.equal(requests.length,0,requests.join('\n'));
  pass('mixed-series v2 backup restores original selections and budget mode, entirely offline without browser errors');
 }finally{await page.screenshot({path:resolve(output,'last-state.png')});await fs.writeFile(resolve(output,'results.json'),JSON.stringify({checks,errors,requests},null,2));await browser.close();}
