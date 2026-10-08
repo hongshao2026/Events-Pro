@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createServer } from 'vite';
@@ -112,7 +113,7 @@ try {
   await page.goBack();await page.locator('.mobile-event').first().waitFor();
   pass('profile projects the authenticated email and account state');
   // Seed a real planner selection through its UI before testing account boundaries.
-  await page.locator('.mobile-event').first().locator('label.class-option').filter({ hasText: /^参加$/ }).click();
+  await chooseDiscoveryStatus(page,page.locator('.mobile-event').first(),'参加');
   const saved = await page.evaluate(() => localStorage.getItem('poker-planner-local-v2'));
   const other = await context.newPage(); await other.goto(base); await other.getByRole('button', { name: '我的账户', exact: true }).waitFor();
   await page.getByRole('button', { name: '我的账户', exact: true }).click();

@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus,closeDiscoveryDetails} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -14,7 +15,7 @@ const file=pathToFileURL(resolve('release/WPT赛事自选表.html')).href,series
 const entry=(event,index=0)=>`${series}/${event}/${data.find(e=>e.id===event).starts[index].id}`;
 const row=id=>page.locator(`.mobile-event[data-entry-id="${id}"]`);
 const search=()=>page.getByRole('textbox',{name:'搜索赛事',exact:true});
-const choose=async(id,status)=>{await row(id).locator('.class-option').filter({hasText:new RegExp('^'+status+'$')}).click();};
+const choose=async(id,status)=>{await chooseDiscoveryStatus(page,row(id),status);};
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name,exact:true}).click();};
 const select=async(label,name)=>{await page.getByRole('combobox',{name:label,exact:true}).click();await page.getByRole('option',{name,exact:true}).click();};
 const fits=async locator=>{assert.equal(await locator.evaluate(e=>e.scrollWidth>e.clientWidth+1),false);};
@@ -24,7 +25,7 @@ try{
  assert.match(await page.locator('.series-header').innerText(),/ICT/);assert.match(await row(entry('QPC01')).innerText(),/10:30/);
  assert.match(await row(entry('QPC01')).innerText(),/₫4,500,000/);await choose(entry('QPC01'),'关注');
  await row(entry('QPC01')).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/12 16:35 · ICT/);
- assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),data.find(e=>e.id==='QPC01').starts[0].sourceUrl);
+ assert.equal(await page.getByRole('link',{name:'官网本场赛程 ↗'}).getAttribute('href'),data.find(e=>e.id==='QPC01').starts[0].sourceUrl);await closeDiscoveryDetails(page);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  pass('APAC card opens all QPC flights with VND amounts, half-hour starts, ICT deadlines and the exact source link');
  await select('报名费筛选','450万₫及以下');assert.ok(page.url().includes('buyin=4500000'));await page.reload();
@@ -36,8 +37,8 @@ try{
  await page.setViewportSize({width:320,height:900});await fits(page.locator('.mobile-event').first());await fits(page.locator('html'));
  await page.getByRole('button',{name:'重置筛选',exact:true}).click();await search().fill('#31');
  await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/未标日期/);
- await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'ambiguous-deadline-320.png')});
- await search().fill('QPC47');await row(entry('QPC47',2)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/21 00:40 · ICT/);
+ await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'ambiguous-deadline-320.png')});await closeDiscoveryDetails(page);
+ await search().fill('QPC47');await row(entry('QPC47',2)).locator('.event-title').click();assert.match(await page.locator('.detail').innerText(),/10\/21 00:40 · ICT/);await closeDiscoveryDetails(page);
  pass('native VND filters persist on reload; satellites retain ticket guarantees and deadline anomalies remain visible');
  await search().fill('QPC30');assert.equal(await page.locator('.mobile-event').count(),5);
  await choose(entry('QPC30'),'参加');await choose(entry('QPC30',1),'参加');await nav('我的日程');

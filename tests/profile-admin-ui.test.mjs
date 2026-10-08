@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -25,7 +26,7 @@ try{
  assert.equal(await page.locator('.bottom-nav button').count(),4);assert.equal(await page.getByRole('region',{name:'赛程筛选',exact:true}).count(),1);
  const filterText=await page.getByRole('region',{name:'赛程筛选',exact:true}).innerText();assert.doesNotMatch(filterText,/显示分类|可多选|低买入/);
  assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),0);assert.doesNotMatch(await page.locator('.schedule-panel').innerText(),/个可报名场次/);
- await row().locator('.class-option').filter({hasText:/^参加$/}).click();await page.locator('.discovery-filter-bar').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(out,'filters-390.png')});
+ await chooseDiscoveryStatus(page,row(),'参加');await page.locator('.discovery-filter-bar').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(out,'filters-390.png')});
  pass('four navigation items, consolidated filter bar, removed helper copy and native price with parenthesized conversion');
  await nav('我的');await page.getByLabel('用户名',{exact:true}).fill('小邵');await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionstart');await page.locator('.profile-name-form').dispatchEvent('submit');assert.doesNotMatch(await page.locator('.profile-identity').innerText(),/小邵/);await page.getByLabel('用户名',{exact:true}).dispatchEvent('compositionend');await page.getByRole('button',{name:'保存',exact:true}).click();
  assert.match(await page.locator('.profile-identity').innerText(),/小邵.*VIP 0/s);assert.match(await page.locator('.settings-facts').innerText(),/未登录/);

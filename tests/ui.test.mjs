@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -16,11 +17,11 @@ const id=(event,slot)=>`wpt-wynn-2026/${event}/${slot}`;
 const row=(event,slot)=>page.locator(`.mobile-event[data-entry-id="${id(event,slot)}"]`);
 const agendaRow=(event,slot)=>page.locator(`.agenda-row[data-entry-id="${id(event,slot)}"]`);
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name==='赛事发现'?'赛事':name,exact:true}).click();if(name==='赛事发现')await page.getByRole('link',{name:'查看 WPT World Championship 2026 完整赛程',exact:true}).click();};
-const choose=async(event,slot,status)=>{await row(event,slot).locator('label.class-option').filter({hasText:new RegExp('^'+status+'$')}).click();await page.waitForFunction(([id,status])=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status===status,[id(event,slot),{参加:'attend',关注:'watch',待定:'undecided',不考虑:'skip'}[status]]);};
+const choose=async(event,slot,status)=>{await chooseDiscoveryStatus(page,row(event,slot),status);await page.waitForFunction(([id,status])=>document.querySelector(`.mobile-event[data-entry-id="${id}"]`)?.dataset.status===status,[id(event,slot),{参加:'attend',关注:'watch',待定:'undecided',不考虑:'skip'}[status]]);};
 const all=()=>page.getByRole('checkbox',{name:'参加与关注',exact:true});
 const cal=()=>page.locator('.schedule-calendar-panel');
 const day=(month,date)=>cal().getByRole('button',{name:new RegExp(`^2026年${month}月${date}日`)});
-const palette=locator=>locator.evaluate(e=>({background:getComputedStyle(e).backgroundColor,border:getComputedStyle(e).borderLeftColor}));
+const palette=locator=>locator.evaluate(e=>{const surface=e.querySelector('.event-date')||e,style=getComputedStyle(surface);return {background:style.backgroundColor,border:surface===e?style.borderLeftColor:style.color};});
 const settle=()=>page.waitForTimeout(150);
 try{
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row('W01','R0').waitFor();assert.equal(await page.locator('.mobile-event').count(),15);pass('phone discovery renders 15 independently selectable flights');

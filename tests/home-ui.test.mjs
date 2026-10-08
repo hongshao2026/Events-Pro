@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
@@ -39,7 +40,7 @@ try{
  const href=await card(triton).getAttribute('href');assert.ok(href.includes('series='+triton)&&href.includes('view=discover'));
  await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
  const first=page.locator(`.mobile-event[data-entry-id="${triton}/T01/T01-D1A"]`);
- await first.locator('.class-option').filter({hasText:/^参加$/}).click();
+ await chooseDiscoveryStatus(page,first,'参加');
  await page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill('T12');
  await page.getByRole('link',{name:'返回赛事列表',exact:true}).click();assert.equal(await page.getByRole('radio',{name:'欧洲',exact:true}).getAttribute('aria-checked'),'true');
  await page.reload();await card(triton).waitFor();assert.equal(await page.locator('.festival-card').count(),1);
@@ -49,7 +50,7 @@ try{
  pass('Triton card, home/back/reload and personal calendar preserve the chosen series and latest attend/watch rule');
  await nav('赛事');await region('北美').click();await card(wpt).click();
  assert.equal(await page.getByRole('textbox',{name:'搜索赛事',exact:true}).inputValue(),'');assert.match(await page.locator('.series-header').innerText(),/PST/);
- await page.locator(`.mobile-event[data-entry-id="${wpt}/W01/R0"]`).locator('.class-option').filter({hasText:/^关注$/}).click();
+ await chooseDiscoveryStatus(page,page.locator(`.mobile-event[data-entry-id="${wpt}/W01/R0"]`),'关注');
  await nav('我的自选');await page.locator('.shortlist-table').waitFor();assert.equal(await page.locator('.shortlist-table tr[data-entry-id]').count(),2);assert.match(await page.locator('.shortlist-table').innerText(),/Merit Royal Diamond.*Wynn Las Vegas/s);
  await page.goBack();await page.getByRole('heading',{name:'完整赛程',exact:true}).waitFor();
  pass('opening another festival resets incompatible filters and retains selections across both series');

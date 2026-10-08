@@ -15,6 +15,7 @@ import {SettingsProvider,useAppSettings} from '@/components/planner/settings-con
 import {ProfilePage,type AccountInfo} from '@/components/planner/profile-page';
 import {AdminPage} from '@/components/planner/admin-page';
 import {EventCard} from '@/components/planner/event-card';
+import {EventDetailSheet} from '@/components/planner/event-detail-sheet';
 import {agendaFromUrl,type AgendaRoute} from '@/lib/agenda';
 import {FestivalCalendar} from '@/components/planner/festival-calendar';
 import {statuses,isNlh,type Status} from '@/lib/schedule';
@@ -61,7 +62,11 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const selectedSeries=seriesCatalog.find(item=>item.id===route.seriesId);
  const [filters,setFilters]=useState<Filters>(fromUrl),[draft,setDraft]=useState(()=>fromUrl().q);
  const [snapshot,setSnapshot]=useState(initialData),[saveError,setSaveError]=useState('');
- const [expanded,setExpanded]=useState<string|null>(null);
+ const [openEntryId,setOpenEntryId]=useState<string|null>(null);
+ const detailTriggerRef=useRef<HTMLElement|null>(null),resultsRef=useRef<HTMLSpanElement>(null);
+ const openEntry=route.view==='discover'?entries.find(entry=>entry.id===openEntryId&&!entry.event.hidden)??null:null;
+ const openDetail=(entry:Entry,trigger:HTMLButtonElement)=>{detailTriggerRef.current=trigger;setOpenEntryId(entry.id);};
+ const returnFromDetail=()=>{const target=detailTriggerRef.current?.isConnected?detailTriggerRef.current:resultsRef.current;target?.focus({preventScroll:true});};
  const [pendingBackup,setPendingBackup]=useState<Backup|null>(null),[importError,setImportError]=useState('');
  const stateRef=useRef(snapshot.data),searchRef=useRef<HTMLInputElement>(null),importRef=useRef<HTMLInputElement>(null),importButtonRef=useRef<HTMLButtonElement>(null),composing=useRef(false);
  const state=snapshot.data,blocked=!!snapshot.error;
@@ -89,7 +94,8 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   scrolls.current[route.view]=window.scrollY;
   const changed=seriesId!==route.seriesId,next=nextRoute(view,seriesId);
   window.history.pushState(null,'',plannerHash(changed?defaults:{...filters,page},next));
-  if(changed){setFilters(defaults);setDraft('');setExpanded(null);scrolls.current.discover=0;scrolls.current.schedule=0;}
+  setOpenEntryId(null);
+  if(changed){setFilters(defaults);setDraft('');scrolls.current.discover=0;scrolls.current.schedule=0;}
   setRoute(next);
   requestAnimationFrame(()=>{window.scrollTo(0,scrolls.current[view]);document.querySelector<HTMLHeadingElement>('main h1')?.focus({preventScroll:true});});
  });
@@ -115,7 +121,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   const pop=()=>{
    if(window.location.hash===currentHash)return;
    const nextFilters=fromUrl(),nextRoute=agendaFromUrl();let deferred=false;
-   const applied=navigateSafely(()=>{if(deferred){window.history.back();return;}setFilters(nextFilters);setDraft(nextFilters.q);setRoute(nextRoute);});
+   const applied=navigateSafely(()=>{if(deferred){window.history.back();return;}setOpenEntryId(null);setFilters(nextFilters);setDraft(nextFilters.q);setRoute(nextRoute);});
    if(!applied){deferred=true;window.history.pushState(null,'',currentHash);}
   };
   window.addEventListener('popstate',pop);window.addEventListener('hashchange',pop);
@@ -152,12 +158,13 @@ function PlannerContent({account,accountInfo}:PlannerProps){
     <div className="discovery-filter-bar" role="region" aria-label="赛程筛选"><FestivalCalendar compact key={series.id} series={series} from={filters.from} to={filters.to} onChange={(from,to)=>update({from,to})} plannedDates={attending.filter(entry=>entry.seriesId===series.id).map(e=>e.date)}/>
     <StatusFilter compact value={filters.statuses} onChange={value=>update({statuses:value})} counts={counts}/>
     <div className="toolbar"><div className="search"><Search size={18}/><input ref={searchRef} aria-label="搜索赛事" placeholder="搜索赛事、Day 1A、编号或报名费…" value={draft} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={e=>{composing.current=false;update({q:e.currentTarget.value});}} onChange={e=>{setDraft(e.target.value);if(!composing.current)update({q:e.target.value});}}/>{draft&&<button aria-label="清空搜索" onClick={()=>{setDraft('');update({q:''});searchRef.current?.focus();}}><X size={16}/></button>}</div><FilterSelect fitOptions={(series.currencies?.length||0)>1} label="报名费筛选" value={filters.buyin} onChange={buyin=>update({buyin})} options={amountFilters.buyin}/><FilterSelect fitOptions={(series.currencies?.length||0)>1} label="保底筛选" value={filters.gtd} onChange={gtd=>update({gtd})} options={amountFilters.gtd}/><FilterSelect label="赛事类型" value={filters.game} onChange={game=>update({game})} options={[["all","全部类型"],["nlh","德州扑克正赛"],["satellite","卫星赛"],["mixed","PLO / 混合游戏"]]}/></div>
-    <div className="results-bar"><span aria-live="polite">找到 <b>{filtered.length}</b> 个场次 <small>· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span><div><button className="clear-filters" onClick={reset}><RotateCcw size={13}/>重置筛选</button><FilterSelect label="排序" value={filters.sort} onChange={sort=>update({sort})} options={[["date","日期顺序"],["buyin",series.currencies?.length?"按币种 · 报名费升序":"报名费从低到高"],["gtd",series.currencies?.length?"按币种 · 保底降序":"保底从高到低"]]}/></div></div>
-    </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} expanded={expanded===entry.id} onToggle={()=>setExpanded(expanded===entry.id?null:entry.id)} onChoose={status=>choose(entry,status)} onShowFlights={lookAtEvent}/>)}</div>
+    <div className="results-bar"><span ref={resultsRef} tabIndex={-1} aria-live="polite">找到 <b>{filtered.length}</b> 个场次 <small>· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span><div><button className="clear-filters" onClick={reset}><RotateCcw size={13}/>重置筛选</button><FilterSelect label="排序" value={filters.sort} onChange={sort=>update({sort})} options={[["date","日期顺序"],["buyin",series.currencies?.length?"按币种 · 报名费升序":"报名费从低到高"],["gtd",series.currencies?.length?"按币种 · 保底降序":"保底从高到低"]]}/></div></div>
+    </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} onOpen={trigger=>openDetail(entry,trigger)} onChoose={status=>{const trigger=document.activeElement;if(choose(entry,status))requestAnimationFrame(()=>{if(trigger&&!trigger.isConnected)resultsRef.current?.focus({preventScroll:true});});}}/>)}</div>
     {!shown.length&&<div className="empty-state"><Search size={26}/><h3>没有符合条件的场次</h3><p>{filters.statuses.length?'调整日期、分类或报名费，再找一场想打的。':'当前没有勾选任何分类，请选择至少一种。'}</p><button onClick={reset}>查看全部赛事</button></div>}
     <div className="pagination"><span>{filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)}`:'0'} / {filtered.length} 场次</span><div><button disabled={page===1} onClick={()=>update({page:page-1})}>上一页</button><span>{page} / {pages}</span><button disabled={page===pages} onClick={()=>update({page:page+1})}>下一页</button></div></div>
    </section>}{(route.view==='home'||route.view==='shortlist'||seriesView)&&<footer className="page-foot"><span>{route.view==='home'?'赛程按赛事当地时间显示。':'保底为整项赛事共享；续赛日见详情。移动文件、换浏览器或清理数据前，请导出备份。'}</span>{seriesView&&selectedSeries&&<><a href={series.sourcePdf?.src||series.sourceUrl} download={series.sourcePdf?.filename} target={series.sourcePdf?undefined:'_blank'} rel="noreferrer">{series.sourceLabel} <ExternalLink size={12}/></a>{series.sourceUpdated&&<span>赛程版本：{series.sourceUpdated}</span>}</>}</footer>}
   </main><input ref={importRef} type="file" accept=".json,application/json" aria-label="选择备份文件" className="sr-only" tabIndex={-1} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void importFile(file);}}/><nav className="bottom-nav" aria-label="应用导航"><button className={(route.view==='home'||route.view==='discover')?'active':''} aria-current={(route.view==='home'||route.view==='discover')?'page':undefined} onClick={()=>navigate('home')}><Compass size={21}/><span>赛事</span></button><button className={route.view==='schedule'?'active':''} aria-current={route.view==='schedule'?'page':undefined} onClick={()=>navigate('schedule')}><CalendarDays size={21}/><span>我的日程</span></button><button className={route.view==='shortlist'?'active':''} aria-current={route.view==='shortlist'?'page':undefined} onClick={()=>navigate('shortlist')}><span className="nav-shortlist-icon"><Table2 size={21}/>{shortlistCount>0&&<b>{shortlistCount}</b>}</span><span>我的自选</span></button><button className={(route.view==='profile'||route.view==='admin')?'active':''} aria-current={(route.view==='profile'||route.view==='admin')?'page':undefined} onClick={()=>navigate('profile')}><UserRound size={21}/><span>我的</span></button></nav>
   <AlertDialog open={!!pendingBackup} onOpenChange={open=>{if(!open)setPendingBackup(null);}}><AlertDialogContent onCloseAutoFocus={e=>{e.preventDefault();importButtonRef.current?.focus();}}><AlertDialogHeader><AlertDialogTitle>恢复这份自选备份？</AlertDialogTitle><AlertDialogDescription>备份时间：{pendingBackup?new Date(pendingBackup.savedAt).toLocaleString('zh-CN'):''}。含 {pendingBackup?Object.values(pendingBackup.state.selections).filter(s=>s.status==='attend').length:0} 个参加起始组、{pendingBackup?Object.values(pendingBackup.state.selections).filter(s=>s.status==='watch').length:0} 个关注起始组、{pendingBackup?Object.keys(pendingBackup.state.pending).length:0} 项待安排赛事。恢复将替换当前全部分类和预算设置；未列入备份的场次恢复为待定。建议先导出当前备份。</AlertDialogDescription></AlertDialogHeader>{saveError&&<p className="restore-error" role="alert">{saveError}</p>}<AlertDialogFooter><AlertDialogCancel>取消</AlertDialogCancel><AlertDialogAction onClick={e=>{e.preventDefault();restore();}}>确认恢复</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog><Toaster position="bottom-center" offset={{bottom:90}} mobileOffset={{bottom:90,left:16,right:16}} richColors theme="light"/>
+  <EventDetailSheet entry={openEntry} status={openEntry?state.selections[openEntry.id]?.status||'undecided':'undecided'} blocked={blocked} error={error} onClose={()=>setOpenEntryId(null)} onChoose={status=>{if(openEntry)choose(openEntry,status);}} onShowFlights={lookAtEvent} onReturnFocus={returnFromDetail}/>
  </div>;
 }

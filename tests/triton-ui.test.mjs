@@ -1,3 +1,4 @@
+import {chooseDiscoveryStatus,closeDiscoveryDetails} from './discovery-actions.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -15,7 +16,7 @@ const selector=()=>page.getByRole('combobox',{name:'赛事系列',exact:true});
 const switchTo=async name=>{await selector().click();await page.getByRole('option',{name,exact:true}).click();};
 const nav=async name=>{await page.locator('.bottom-nav').getByRole('button',{name:name==='我的自选'?/我的自选/:name==='赛事发现'?'赛事':name,exact:true}).click();if(name==='赛事发现')await page.getByRole('link',{name:'查看 WPT World Championship 2026 完整赛程',exact:true}).click();};
 const row=id=>page.locator(`.mobile-event[data-entry-id="${id}"]`);
-const select=async(id,status)=>{await row(id).locator('.class-option').filter({hasText:new RegExp('^'+status+'$')}).click();};
+const select=async(id,status)=>{await chooseDiscoveryStatus(page,row(id),status);};
 const first=`${series}/T01/T01-D1A`,wpt='wpt-wynn-2026/W01/R0';
 try{
  await page.goto(file+'#view=discover&series=wpt-wynn-2026');await row(wpt).waitFor();await select(wpt,'参加');
@@ -26,9 +27,9 @@ try{
  assert.match(await page.locator('.results-bar').innerText(),/29.*场次.*22.*赛事/s);
  assert.equal(await page.getByRole('checkbox',{name:'显示官方补充卫星',exact:true}).count(),0);
  await select(first,'参加');pass('keyboard series switch clears incompatible discovery filters and shows all 29 original flights');
- await page.locator('.mobile-event').first().getByRole('button',{name:'QQPK Genesis'}).click();
+ await page.locator('.mobile-event').first().locator('.event-row-open').click();
  assert.match(await page.locator('.detail').innerText(),/11\/05 19:25 · EET/);
- assert.match(await page.locator('.detail').innerText(),/250,000/);
+ assert.match(await page.locator('.detail').innerText(),/250,000/);await closeDiscoveryDetails(page);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:resolve(output,'discovery-390.png')});
  await page.setViewportSize({width:320,height:900});const trigger=await selector().boundingBox();await selector().click();
  await page.getByRole('listbox').evaluate(async element=>{await Promise.all(element.getAnimations().map(animation=>animation.finished));});
@@ -38,12 +39,12 @@ try{
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await page.setViewportSize({width:390,height:950});pass('shared series popup supports keyboard and fits a 320px phone; details show local deadlines');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('T06');
- await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/仅限女性参赛/);
+ await page.locator('.mobile-event .event-title').click();assert.match(await page.locator('.detail').innerText(),/仅限女性参赛/);await closeDiscoveryDetails(page);
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('T21');
  await page.locator('.mobile-event .event-title').click();
  assert.match(await page.locator('.detail').innerText(),/1,352.*500.*111.*37/s);
  assert.match(await page.locator('.detail').innerText(),/11\/13 00:30/);
- await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'derived-buyin-detail.png')});
+ await page.locator('.detail').scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,'derived-buyin-detail.png')});await closeDiscoveryDetails(page);
  pass('shared details preserve women-only eligibility, derived buy-in evidence, and next-day registration');
  await page.getByRole('textbox',{name:'搜索赛事'}).fill('#12');
  assert.equal(await page.locator('.mobile-event').count(),3);await select(`${series}/T12/T12-D1A`,'参加');await select(`${series}/T12/T12-D1B`,'参加');
