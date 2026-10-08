@@ -1,0 +1,117 @@
+{
+  "runUrl": "https://github.com/hongshao2026/Events-Pro/actions/runs/37827535968",
+  "headCommit": "ce61fc38dc2d25f506c024f2eb3efcfb7fbeb194",
+  "sourceCommit": "127883909292a4d009b160f9f62d2883b46fc331",
+  "sourceTree": "e187428f241dc516e7e3e608b769f07c70883385",
+  "scope": "Fresh simulator sample plans; native system menu readiness and cancellation, observed status-bar overlap fix; no file delivery, save or restore. Same-source native build 1-to-2 probe, not a release candidate.",
+  "models": [
+    {
+      "model": "iPhone 16 Pro",
+      "xcode": "Xcode 26.3\nBuild version 17C529",
+      "sdk": "iphonesimulator26.2",
+      "runtime": "iOS 26.2",
+      "version": "1.0.0",
+      "baselineNativeBuild": "1",
+      "installedProbeNativeBuild": "2",
+      "completedAtUtc": "2026-10-08T19:09:11.932Z",
+      "resultsSha256": "3449725ed54bf866e59793ad9e9e28dce144f4f68f513a1f99b3a2c7802ed12f",
+      "testResults": {
+        "uiSummary": {
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "totalTestCount": 1
+        },
+        "upgradeSummary": {
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "totalTestCount": 1
+        }
+      },
+      "captures": [
+        {
+          "file": "medium-settings-backup.jpg",
+          "scene": "settings-backup",
+          "sourceAttachment": "4CC09691-543C-4E37-8DC2-EDCB93A6CB5E.jpeg",
+          "sha256": "c49aee90243fa57b7f65fd8895c113a0ddcf17f572a2e9558fbb125efdbe47a7",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false
+        },
+        {
+          "file": "medium-plan-backup.jpg",
+          "scene": "plan-backup",
+          "sourceAttachment": "D6EC93CC-9264-492B-86E6-3E413DD39DC6.jpeg",
+          "sha256": "782a3b0c42e945f5723054dba5805f0d80b94ef830aa127cce6453fca654b622",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false
+        },
+        {
+          "file": "medium-image-retry.jpg",
+          "scene": "image-retry",
+          "sourceAttachment": "D0ABB90F-71CE-4BA0-9696-238CB17D8C7D.jpeg",
+          "sha256": "e64e964a8d6d9f76bf39a5ba73419dc52e65de01a1ab61ba8febc09c5588fc09",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false
+        }
+      ]
+    },
+    {
+      "model": "iPhone 16 Pro Max",
+      "xcode": "Xcode 26.3\nBuild version 17C529",
+      "sdk": "iphonesimulator26.2",
+      "runtime": "iOS 26.2",
+      "version": "1.0.0",
+      "baselineNativeBuild": "1",
+      "installedProbeNativeBuild": "2",
+      "completedAtUtc": "2026-10-08T19:10:05.948Z",
+      "resultsSha256": "3681b87b95bbd63a2067a6afe1d78a3430e76a3cdc87c6575a3ece28e64a130e",
+      "testResults": {
+        "uiSummary": {
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "totalTestCount": 1
+        },
+        "upgradeSummary": {
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "totalTestCount": 1
+        }
+      },
+      "captures": [
+        {
+          "file": "large-settings-backup.jpg",
+          "scene": "settings-backup",
+          "sourceAttachment": "84E26D8A-CC20-46D8-9007-3AD21B8F44BE.jpeg",
+          "sha256": "eb3cdcb5a8f533140cdad20f4ed55a51f208bc545fbb991c57efab2db261c7cc",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false
+        },
+        {
+          "file": "large-plan-backup.jpg",
+          "scene": "plan-backup",
+          "sourceAttachment": "27D39E57-780F-4BB5-812F-88B96A527F78.jpeg",
+          "sha256": "0ac408fabf4a1ea44528c94d62cf41b35d9fe314a96dd63c35c4d74175bf5b67",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false
+        },
+        {
+          "file": "large-image-retry.jpg",
+          "scene": "image-retry",
+          "sourceAttachment": "AF8723B5-D815-436C-850B-30606D57E9B3.jpeg",
+          "sha256": "fc204b2c7abaf816bf43e18bca403adcb0c3411e1656eb314057e18f4d69368b",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false
+        }
+      ]
+    }
+  ]
+}

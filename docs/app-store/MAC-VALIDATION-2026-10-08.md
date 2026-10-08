@@ -83,7 +83,9 @@
 
 ## 原生 XCTest 实际执行与复验
 
-2026-10-09 原生分享附件还确认滚动“我的”页面时货币文字进入状态栏，与系统时间重叠（`37823004699` 两型号 JSON 分享原图）。追加 scoped `native-ios` 固定顶部安全区背景，复用 `--background`、不接收点击，保留文档滚动和现有布局；设计约定同步更新。完整本机 `npm run verify` 退出码 0，日志 `.sites-runtime/qa/mac-handoff/native-safe-area-verify.log`；这是浏览器、资源与模拟桥回归，真实滚动截图复验待执行，Q10 仍未完整验收。功能分支不提交生成的单文件 HTML。
+最新 [Run 37827535968](https://github.com/hongshao2026/Events-Pro/actions/runs/37827535968)，head `ce61fc38dc2d25f506c024f2eb3efcfb7fbeb194`、合成源码 `127883909292a4d009b160f9f62d2883b46fc331`，源码树一致：两型号首次和同源码原生构建 1→2 后 XCTest 各 1 项通过、0 失败、0 跳过，最终实际安装构建号 2，Swift 锁一致、附件无错误。PNG 和两类 JSON 文件预览/系统操作、取消与图片重试通过；六张原生原图逐图确认菜单内容及滚动状态栏不再文字重叠，原样保存。完整网页 CI Run 37827536045 也通过。正式发行配置仍为构建 1，此探针不是上传候选；文件保存/恢复、完整可用性、真机/TestFlight 仍未验收，见 [实际系统分享报告](SIMULATOR-SHARING-2026-10-09.md)。
+
+2026-10-09 原生分享附件还确认滚动“我的”页面时货币文字进入状态栏，与系统时间重叠（`37823004699` 两型号 JSON 分享原图）。追加 scoped `native-ios` 固定顶部安全区背景，复用 `--background`、不接收点击，保留文档滚动和现有布局；设计约定同步更新。完整本机 `npm run verify` 退出码 0，日志 `.sites-runtime/qa/mac-handoff/native-safe-area-verify.log`；这是浏览器、资源与模拟桥回归，随后真实滚动截图复验已通过（见上述最新记录），Q10 仍未完整验收。功能分支不提交生成的单文件 HTML。
 
 `0d25c8c` 的 [Project checks 37825629628](https://github.com/hongshao2026/Events-Pro/actions/runs/37825629628) 首次在汇率筛选测试清空韩元输入后的保存按钮处超时（按钮仍禁用）。保留失败日志 `.sites-runtime/qa/mac-handoff/project-37825629628-failed.log`；同源码本机 `buyin-range-ui` 七项全部通过，CI attempt 2 的完整 verify 随后也通过。未复现该失败，原因未确认；没有修改汇率应用逻辑、放宽或删除断言。
 
