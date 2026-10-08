@@ -27,8 +27,8 @@ final class PlannerUITests: XCTestCase {
         tap(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "查看 #1 KPC BANKROLL BUILDER · Day 1B 详情")).firstMatch, app)
         tap(app.staticTexts["参加"].firstMatch, app)
         tap(app.buttons["返回赛程"], app)
-        tap(app.buttons["关注 KPC BANKROLL BUILDER · Day 1C"], app)
-        XCTAssertTrue(app.buttons["取消关注 KPC BANKROLL BUILDER · Day 1C"].waitForExistence(timeout: 10))
+        tap(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "关注 KPC BANKROLL BUILDER · Day 1C")).firstMatch, app)
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "取消关注 KPC BANKROLL BUILDER · Day 1C")).firstMatch.waitForExistence(timeout: 10))
 
         openShortlist(app)
         XCTAssertTrue(app.staticTexts["3 条自选"].waitForExistence(timeout: 20))
@@ -37,7 +37,7 @@ final class PlannerUITests: XCTestCase {
 
         tap(app.buttons["我的日程"], app)
         XCTAssertTrue(app.staticTexts["仅显示参加和关注的比赛，点击日期查看当天。"].waitForExistence(timeout: 20))
-        let activities = app.buttons.matching(NSPredicate(format: "label CONTAINS %@ AND (label CONTAINS %@ OR label CONTAINS %@)", "KPC BANKROLL BUILDER", "，参加", "，关注"))
+        let activities = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@ AND (label CONTAINS %@ OR label CONTAINS %@)", "KPC BANKROLL BUILDER", "，参加", "，关注"))
         XCTAssertEqual(activities.count, 4, "Three selected starts and one conditional final day; no duplicate continuation")
         capture("03-calendar", app)
 
