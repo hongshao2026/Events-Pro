@@ -8,7 +8,7 @@
 
 1. 安装与本机 macOS 兼容的正式版 Xcode，启动一次，由账号本人接受许可并安装 iOS 平台与模拟器。当前 Capacitor 8 要求 Xcode 26+；所需 macOS 版本取决于具体 Xcode，见 [Apple 系统要求](https://developer.apple.com/xcode/system-requirements) 和 [Capacitor iOS 要求](https://capacitorjs.com/docs/ios)。2026-10-08 本机为 macOS 26.4，而 Mac App Store 的当前 Xcode 要求 macOS 26.6；可由本人登录 [Apple 官方历史下载](https://developer.apple.com/download/all/?q=Xcode)，选择兼容 macOS 26.2–26.x 的正式版 Xcode 26.6。不要因安装入口显示“获取”就认定下载已开始。最终上传时再次核对 [Apple 当前提交要求](https://developer.apple.com/news/upcoming-requirements/)。
 2. 从 [Node.js 官网](https://nodejs.org/en/download) 安装 Node.js 24 的 macOS 安装包，按 Mac 芯片选择 arm64 或 x64。本项目最低 Node.js 22.13，使用 npm 和仓库锁文件。
-3. 准备一台 iPhone 和数据线；签名与 TestFlight 使用你自己的 Apple Developer Program 账号。若选大陆个人账号，按 [大陆个人注册步骤](https://developer.apple.com/cn/help/account/membership/enrolling-in-the-app/) 完成身份及会员注册。
+3. 本地模拟器验证无需付费会员或签名。真实 iPhone 可先用本人 Apple 账号在 Xcode 中的免费 Personal Team 直装；其签名会定期失效，见 [Apple 账号说明](https://developer.apple.com/help/account/basics/about-your-developer-account/)。准备 iPhone 与数据线后再做此阶段。TestFlight 和商店分发需要本人 Apple Developer Program 会员；用户当前选择先做本地验证，注册、身份和协议以后由本人完成。若选大陆个人会员，按 [大陆个人注册步骤](https://developer.apple.com/cn/help/account/membership/enrolling-in-the-app/) 操作。
 
 打开“终端”，确认工具：
 
@@ -148,7 +148,7 @@ xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -dest
 
 编译成功后，可执行 `node scripts/ios-simulator-smoke.mjs`：创建独立 iPhone 16 Pro 模拟器，安装并启动真实 App，检查启动后仍有有效进程，保存 PNG 和直接采集的无透明 JPEG、环境与版本记录以及实际 Package.resolved，再清理它自己创建的模拟器。JPEG 的实际像素、无透明通道与 SHA-256 会写入报告。输出位于 `.sites-runtime/qa/ios-simulator/` 下每次新建的时间戳/型号目录，避免复验覆盖历史；不操作已有模拟器或真机。
 
-可继续执行原生 UI 测试，采集赛事、赛程、自选、日历、图片预览和同次安装重启后的画面。此流程通过正常 iOS 界面操作，不注入记录或模拟插件，测试目标不参与 Archive：
+可继续执行原生 UI 测试，采集赛事、赛程、自选、日历、图片预览和同次安装重启后的画面；另检查系统图片分享菜单的打开、取消与重试，以及参赛/设置备份导出菜单的取消。此流程通过正常 iOS 界面操作，不注入记录或模拟插件，不选择收件人或外部应用，测试目标不参与 Archive：
 
 ```sh
 EVENTS_PRO_UI_TESTS=true node scripts/ios-simulator-smoke.mjs
@@ -163,7 +163,7 @@ EVENTS_PRO_UI_TESTS=true EVENTS_PRO_UPGRADE_TESTS=true node scripts/ios-simulato
 
 两个阶段分别保留 `PlannerUI.xcresult`、`PlannerUpgrade.xcresult` 与附件。探针运行后的 DerivedData App 是临时高构建号；再次做基线检查前，按前述普通 `xcodebuild ... build` 重建，恢复配置中的构建号。探针不修改仓库的运营配置或应用数据格式。
 
-默认中屏为 1206 × 2622，大屏为 1320 × 2868；XCTest 结果、PNG/JPEG 附件和摘要也保存在对应目录。截图需人工查看，当前场景只覆盖 KPC 三项计划与单币预算，不验证所有系列/预算模式、系统分享、文件导入、升级或 TestFlight。预算断言使用两项参加的合计，区别于单行报名费，并核对关注不增加预算。仓库 Mac CI 使用两种型号执行同一命令，证据附件保留 14 天；最终结果按 [实际记录](docs/app-store/MAC-VALIDATION-2026-10-08.md) 核对，不因存在测试代码就记为通过。
+默认中屏为 1206 × 2622，大屏为 1320 × 2868；XCTest 结果、PNG/JPEG 附件和摘要也保存在对应目录。截图需人工查看，默认场景仅覆盖 KPC 三项计划、单币预算与上述分享菜单取消，不能证明文件已保存/发送/恢复、所有系列/预算模式或 TestFlight；可选覆盖安装的有限范围另按前文记录。预算断言使用两项参加的合计，区别于单行报名费，并核对关注不增加预算。仓库 Mac CI 使用两种型号执行同一命令，证据附件保留 14 天；最终结果按 [实际记录](docs/app-store/MAC-VALIDATION-2026-10-08.md) 核对，不因存在测试代码就记为通过。
 
 模拟器编译通过后，连接 iPhone，信任电脑并按系统提示开启开发者模式（如需要）：
 

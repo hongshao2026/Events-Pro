@@ -44,7 +44,7 @@ final class PlannerUITests: XCTestCase {
         capture("05-image", app)
         for attempt in 1...2 {
             tap(app.buttons["分享或存储图片"], app)
-            dismissNativeShareSheet("09-image-share-\(attempt)", app)
+            dismissNativeShareSheet("09-image-share-\(attempt)", app, titlePrefix: "我的自选-", fileKind: "PNG", actionLabels: ["保存图像", "Save Image"])
             XCTAssertTrue(app.buttons["关闭图片预览"].exists)
             XCTAssertTrue(app.images["完整自选表格"].exists)
             XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "未能打开系统分享")).firstMatch.exists)
@@ -55,10 +55,10 @@ final class PlannerUITests: XCTestCase {
 
         tap(app.buttons["我的"], app)
         tap(app.buttons["导出备份"], app)
-        dismissNativeShareSheet("10-plan-backup-share", app)
+        dismissNativeShareSheet("10-plan-backup-share", app, titlePrefix: "赛事自选备份-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案"])
         XCTAssertFalse(app.staticTexts["未能导出参赛自选备份，请重试。"].exists)
         tap(app.buttons["导出设置备份"], app)
-        dismissNativeShareSheet("11-settings-backup-share", app)
+        dismissNativeShareSheet("11-settings-backup-share", app, titlePrefix: "Events-Pro设置-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案"])
         XCTAssertFalse(app.staticTexts["未能导出设置备份，请重试。"].exists)
         openShortlist(app)
         assertShortlist(app)
@@ -75,13 +75,28 @@ final class PlannerUITests: XCTestCase {
     }
 
     @MainActor
-    private func dismissNativeShareSheet(_ name: String, _ app: XCUIApplication) {
+    private func dismissNativeShareSheet(_ name: String, _ app: XCUIApplication, titlePrefix: String, fileKind: String, actionLabels: [String]) {
         let activity = app.otherElements["ActivityListView"]
         if !activity.waitForExistence(timeout: 30) {
             capture("failure-" + name, app)
             XCTFail("Native activity controller did not open\n\(app.debugDescription)")
             return
         }
+        // The activity container can exist while its remote content is blank.
+        // Wait for the actual file preview and a usable system action before
+        // cancelling, including the second image-share attempt.
+        let title = app.otherElements["LP.CaptionBar.TopCaption"]
+        guard title.waitForExistence(timeout: 60) else {
+            capture("failure-empty-" + name, app)
+            XCTFail("Native share file preview did not become ready\n\(app.debugDescription)")
+            return
+        }
+        XCTAssertTrue(title.label.hasPrefix(titlePrefix), "Native menu must preview the current export")
+        let details = app.otherElements["LP.CaptionBar.BottomCaption"]
+        XCTAssertTrue(details.waitForExistence(timeout: 10))
+        XCTAssertTrue(details.label.contains(fileKind), "Native preview must recognize the exported file type")
+        let action = app.cells.matching(NSPredicate(format: "identifier == %@ AND label IN %@", "actionGroupCell", actionLabels)).firstMatch
+        XCTAssertTrue(action.waitForExistence(timeout: 20), "Native share file action did not become ready\n\(app.debugDescription)")
         let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "关闭")).firstMatch
         capture(name, app)
         // Only dismiss the native controller. No recipient or external app is
