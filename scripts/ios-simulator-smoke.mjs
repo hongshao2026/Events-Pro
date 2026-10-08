@@ -59,6 +59,14 @@ try{
  assert.equal(report.screenshot.hasAlpha,'no','Store screenshot evidence must not contain an alpha channel');
  await copyFile(resolve(projectRoot,'ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'),resolve(output,'Package.resolved'));
  report.checks.push('Real simulator PNG and opaque 1206x2622 JPEG captured with actual Swift Package.resolved');
+ if(process.env.EVENTS_PRO_UI_TESTS==='true'){
+  run('xcodebuild',['-project','ios/App/App.xcodeproj','-scheme','App','-configuration','Debug',
+   '-destination',`platform=iOS Simulator,id=${device}`,'-derivedDataPath','ios/DerivedData',
+   '-resultBundlePath',resolve(output,'PlannerUI.xcresult'),'-parallel-testing-enabled','NO',
+   'CODE_SIGNING_ALLOWED=NO','test'],600000);
+  report.checks.push('Real native XCTest: KPC attend/watch, KRW budget, conditional calendar, image preview and same-installation relaunch persistence');
+  report.uiTests=true;
+ }
  report.success=true;
  console.log('PASS real iOS Simulator installation, startup and evidence capture; visual and device acceptance still required');
 }catch(error){
