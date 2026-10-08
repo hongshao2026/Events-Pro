@@ -24,18 +24,21 @@ final class PlannerUITests: XCTestCase {
         tap(first, app)
         tap(app.staticTexts["参加"].firstMatch, app)
         tap(app.buttons["返回赛程"], app)
-        tap(app.buttons["关注 KPC BANKROLL BUILDER · Day 1B"], app)
-        XCTAssertTrue(app.buttons["取消关注 KPC BANKROLL BUILDER · Day 1B"].waitForExistence(timeout: 10))
+        tap(app.buttons["查看 #1 KPC BANKROLL BUILDER · Day 1B 详情"], app)
+        tap(app.staticTexts["参加"].firstMatch, app)
+        tap(app.buttons["返回赛程"], app)
+        tap(app.buttons["关注 KPC BANKROLL BUILDER · Day 1C"], app)
+        XCTAssertTrue(app.buttons["取消关注 KPC BANKROLL BUILDER · Day 1C"].waitForExistence(timeout: 10))
 
         openShortlist(app)
-        XCTAssertTrue(app.staticTexts["2 条自选"].waitForExistence(timeout: 20))
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "800,000")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["3 条自选"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists, "Two attending flights count; the watched flight adds no budget")
         capture("04-shortlist", app)
 
         tap(app.buttons["我的日程"], app)
         XCTAssertTrue(app.staticTexts["仅显示参加和关注的比赛，点击日期查看当天。"].waitForExistence(timeout: 20))
         let activities = app.buttons.matching(NSPredicate(format: "label CONTAINS %@ AND (label CONTAINS %@ OR label CONTAINS %@)", "KPC BANKROLL BUILDER", "，参加", "，关注"))
-        XCTAssertEqual(activities.count, 3, "Two selected starts and one conditional final day; no duplicate continuation")
+        XCTAssertEqual(activities.count, 4, "Three selected starts and one conditional final day; no duplicate continuation")
         capture("03-calendar", app)
 
         openShortlist(app)
@@ -51,8 +54,8 @@ final class PlannerUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["返回赛事首页"].waitForExistence(timeout: 30))
         openShortlist(app)
-        XCTAssertTrue(app.staticTexts["2 条自选"].waitForExistence(timeout: 20))
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "800,000")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["3 条自选"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("06-relaunch-retains-plan", app)
     }
 

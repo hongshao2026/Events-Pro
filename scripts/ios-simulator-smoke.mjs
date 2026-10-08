@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {access,copyFile,mkdir,readFile,writeFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
+import {relative,resolve} from 'node:path';
 import {setTimeout} from 'node:timers/promises';
 import {projectRoot,readReleaseConfig} from './release-config.mjs';
 
@@ -14,8 +14,11 @@ function run(command,args,timeout=60000){
  return result.stdout.trim();
 }
 const sim=(...args)=>run('xcrun',['simctl',...args],300000);
+const model=process.env.EVENTS_PRO_SIMULATOR_MODEL||'iPhone-16-Pro';
+const sizes={'iPhone-16-Pro':[1206,2622],'iPhone-16-Pro-Max':[1320,2868]};
+assert.ok(sizes[model],'Choose a supported iPhone simulator model');
 const app=resolve(projectRoot,'ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app');
-const output=resolve(projectRoot,'.sites-runtime/qa/ios-simulator');
+const output=resolve(projectRoot,'.sites-runtime/qa/ios-simulator',`${Date.now()}-${model}`);
 await mkdir(output,{recursive:true});
 const config=await readReleaseConfig();
 await access(app);
@@ -29,9 +32,6 @@ const runtime=runtimes.filter(item=>item.isAvailable&&item.identifier.includes('
  .sort((a,b)=>b.version.localeCompare(a.version,'en',{numeric:true}))[0];
 assert.ok(runtime,'An available iOS simulator runtime is required');
 const types=JSON.parse(sim('list','devicetypes','--json')).devicetypes;
-const model=process.env.EVENTS_PRO_SIMULATOR_MODEL||'iPhone-16-Pro';
-const sizes={'iPhone-16-Pro':[1206,2622],'iPhone-16-Pro-Max':[1320,2868]};
-assert.ok(sizes[model],'Choose a supported iPhone simulator model');
 const type=types.find(item=>item.identifier===`com.apple.CoreSimulator.SimDeviceType.${model}`);
 assert.ok(type,`Install the ${model} simulator device type`);
 const report={sourceCommit:run('git',['rev-parse','HEAD']),environment:process.env.GITHUB_ACTIONS==='true'?'GitHub Actions':'local Mac',xcode:run('xcodebuild',['-version']),
@@ -83,6 +83,8 @@ try{
  throw error;
 }
 finally{
+ report.completedAt=new Date().toISOString();
  await writeFile(resolve(output,'results.json'),JSON.stringify(report,null,2)+'\n');
+ console.log(`Native evidence: ${relative(projectRoot,output)}`);
  if(device){for(const command of ['shutdown','delete'])spawnSync('xcrun',['simctl',command,device],{encoding:'utf8',timeout:30000});}
 }
