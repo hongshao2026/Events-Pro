@@ -1,5 +1,6 @@
 import {statuses,type Status} from './schedule';
 import {entries,entryMap,eventMap} from './catalog';
+import type {Currency} from './money';
 
 export const LEGACY_KEY='wpt-2026-local-selections-v1';
 export const STORAGE_KEY='poker-planner-local-v2';
@@ -52,10 +53,14 @@ export function downloadBackup(state:PlannerState):void {
  const backup=makeBackup(state),url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}));
  const a=document.createElement('a');a.href=url;a.download=`赛事自选备份-${backup.savedAt.replace(/[:.]/g,'-')}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-export function budget(state:PlannerState){
- const selected=entries.filter(entry=>state.selections[entry.id]?.status==='attend');
- const grouped=new Map<string,number>();for(const entry of selected)grouped.set(entry.eventId,Math.max(grouped.get(entry.eventId)||0,entry.buyin));
- let total=state.budgetMode==='flights'?selected.reduce((sum,e)=>sum+e.buyin,0):[...grouped.values()].reduce((a,b)=>a+b,0);
- for(const id of Object.keys(state.pending))if(!grouped.has(id))total+=eventMap.get(id)?.buyin||0;
- return {total,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
+export function budget(state:PlannerState,source=entries,sourceEvents=eventMap){
+ const selected=source.filter(entry=>state.selections[entry.id]?.status==='attend');
+ const grouped=new Map<string,{buyin:number|null;currency:Currency}>();
+ for(const entry of selected)if(!grouped.has(entry.eventId)||(grouped.get(entry.eventId)!.buyin??-1)<(entry.buyin??-1))grouped.set(entry.eventId,{buyin:entry.buyin,currency:entry.currency});
+ const totals:Partial<Record<Currency,number>>={};let unknownCount=0;
+ const add=(value:number|null,currency:Currency)=>{if(value===null){unknownCount++;return;}totals[currency]=(totals[currency]||0)+value;};
+ for(const item of state.budgetMode==='flights'?selected:grouped.values())add(item.buyin,item.currency);
+ for(const id of Object.keys(state.pending))if(!grouped.has(id)){const event=sourceEvents.get(id);if(event)add(event.buyin,event.currency||'USD');}
+ // Preserve the old USD-only numeric field for callers; totals is the full budget.
+ return {unknownCount,total:totals.USD||0,totalCurrency:'USD' as const,totals,flightCount:selected.length,eventCount:new Set([...grouped.keys(),...Object.keys(state.pending)]).size,pendingCount:Object.keys(state.pending).length};
 }

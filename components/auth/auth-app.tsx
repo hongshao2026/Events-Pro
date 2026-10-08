@@ -17,5 +17,5 @@ export default function AuthApp({ runtime }: { runtime: AuthRuntime }) {
     });
     return () => data.subscription.unsubscribe();
   }, [runtime.client]);
-  return <Planner account={<AccountControl runtime={runtime} session={session} expired={expired} onSignedOut={() => setExpired(false)} />} />;
+  return <Planner accountInfo={session?{id:session.user.id,email:session.user.email,displayName:typeof session.user.user_metadata?.name==='string'?session.user.user_metadata.name.slice(0,80):undefined,provider:session.user.app_metadata?.provider}:undefined} account={<AccountControl runtime={runtime} session={session} expired={expired} onSignedOut={() => setExpired(false)} />} />;
 }
