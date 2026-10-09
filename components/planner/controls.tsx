@@ -1,4 +1,4 @@
-import {Check,Star,Minus,X} from 'lucide-react';
+import {Check,Star,StarOff,Minus,X} from 'lucide-react';
 import {Select as ChoiceRoot,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {RadioGroup,RadioGroupItem} from '@/components/ui/radio-group';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -11,6 +11,10 @@ export function FilterSelect({label,value,onChange,options,disabled=false,id,fit
 }
 export function EntryActions({entry,value,disabled,onChange}:{entry:Entry;value:Status;disabled:boolean;onChange:(s:Status)=>void}){
  return <RadioGroup className="classification" value={value} onValueChange={v=>onChange(v as Status)} disabled={disabled} aria-label={`${entryName(entry)} 的分类`}>{statuses.map(s=>{const Icon=icons[s];return <label key={s} data-status={s} className={`class-option ${s} ${value===s?'selected':''}`}><RadioGroupItem value={s} className="sr-only" aria-label={statusLabels[s]}/><Icon size={14}/><span>{statusLabels[s]}</span></label>;})}</RadioGroup>;
+}
+export function RemoveSelectionButton({entry,status,disabled,onRemove,className=''}:{entry:Entry;status:'attend'|'watch';disabled:boolean;onRemove:()=>void;className?:string}){
+ const label=status==='watch'?'不关注':'移出自选',Icon=status==='watch'?StarOff:X;
+ return <button type="button" className={`remove-selection ${className}`} disabled={disabled} aria-label={`${label} ${entryName(entry)}`} onClick={onRemove}><Icon size={14} aria-hidden="true"/><span>{label}</span></button>;
 }
 export function StatusFilter({value,onChange,counts,variant='discovery',compact=false}:{value:Status[];onChange:(v:Status[])=>void;counts:Record<Status,number>;variant?:'discovery'|'shortlist';compact?:boolean}){
  const options=variant==='shortlist'?shortlistStatuses:statuses,allLabel=variant==='shortlist'?'参加与关注':'全部赛事';

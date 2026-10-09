@@ -132,7 +132,7 @@ button,a,label:has([role=checkbox]),.class-option,[role=option]{cursor:pointer}b
 .mobile-money .event-guarantee[data-long=true]{grid-column:1/-1;grid-row:2;margin-bottom:44px}
 .quick-watch,.event-planned{position:absolute;right:8px;bottom:6px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;width:58px;min-height:44px;font-size:10px;color:var(--muted-foreground);border:0;border-radius:5px;background:transparent}
 .quick-watch:hover{background:var(--secondary);color:var(--primary)}
-.quick-watch[aria-pressed=true]{color:var(--watch)}
+.quick-watch.remove-selection{color:var(--watch);padding:0}
 .event-planned{color:var(--attend);pointer-events:none}
 .class-option{font-size:13px;min-height:42px;padding:9px 4px;gap:4px}
 .class-option svg{width:13px}
@@ -470,6 +470,10 @@ html{scroll-padding-bottom:110px}
 .shortlist-scroll-hint svg{flex-shrink:0;color:var(--primary)}
 .shortlist-entry-button{display:block;width:100%;min-height:44px;border:0;background:transparent;padding:0;text-align:left;border-radius:3px}
 .shortlist-entry-button:hover .shortlist-entry-name{color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.remove-selection{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:44px;min-height:44px;padding:0 7px;border:0;border-radius:5px;background:transparent;color:var(--muted-foreground);font-size:11px;white-space:nowrap}
+.remove-selection:hover{background:var(--secondary);color:var(--primary)}
+.remove-selection:active{background:var(--muted)}
+.shortlist-table .remove-selection{margin-top:3px}
 .shortlist-entry-name,.shortlist-pending-name{display:block;font-size:12px;line-height:1.6;font-weight:600;overflow-wrap:anywhere}
 .shortlist-entry-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:10px;color:var(--muted-foreground);margin-top:7px}
 .shortlist-entry-meta .flight-tag{font-size:10px;max-width:100%;white-space:normal}
@@ -565,6 +569,9 @@ html{scroll-padding-bottom:110px}
 @media(max-height:550px){.event-detail-heading{max-height:30dvh;overflow-y:auto}.event-detail-actions{max-height:35dvh;overflow-y:auto}}
 
 /* iOS owns the status bar; the document still owns vertical scrolling. */
+/* The document scrolls behind UIKit's status bar. Keep scrolled text below
+   readable system chrome without changing the page's scroll container. */
+.native-ios::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--background);z-index:1000;pointer-events:none}
 .native-ios .app-bar{padding-top:calc(14px + env(safe-area-inset-top))}
 .native-ios .cart-heading{padding-top:calc(24px + env(safe-area-inset-top))}
 .native-ios .cart-close{top:calc(20px + env(safe-area-inset-top))}

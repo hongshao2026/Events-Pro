@@ -21,6 +21,6 @@ Apple 的“收集”通常涉及将数据发送到设备外，并由开发者�
 
 PrivacyInfo.xcprivacy 已登记为 Xcode 资源：NSPrivacyTracking=false，收集类别为空，Filesystem 文件时间戳 API 使用理由 C617.1（应用沙盒内用户文件）。这是原生 API 使用说明，不等同于商店隐私标签或法律合规证明。[Filesystem 官方清单要求](https://capacitorjs.com/docs/apis/filesystem)
 
-在 Mac Archive 后用 Organizer 生成/查看完整 Privacy Report，确认所有 SDK 的合并声明、签名及所用 API。当前 Windows 只能做资源登记和静态核对，不能声称已经看过最终报告。
+在 Mac Archive 后用 Organizer 生成/查看完整 Privacy Report，确认所有 SDK 的合并声明、签名及所用 API。2026-10-08 已接手 Mac，并在远程 Mac 完成实际不签名 Swift 编译与模拟器启动、保存实际 SPM 锁；本机完整 Xcode 和签名尚未就绪，尚无正式 Archive 或最终 Privacy Report。不能把资源登记、静态检查或模拟器包当作已复核发行报告，证据见 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md)。
 
 数据导出不加密；系统备份可能保存本机数据；清除按钮不能删除已分享文件、系统备份和其他设备副本。这些限制已写进政策和确认文案。用户已确认运营所在地台湾并写入共享配置；真实主体名称、支持邮箱及网站仍待定，政策继续明确显示测试状态。

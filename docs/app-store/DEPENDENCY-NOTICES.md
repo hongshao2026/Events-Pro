@@ -17,7 +17,7 @@
 | 项目 | 依据与边界 |
 |---|---|
 | react-remove-scroll-bar 2.3.8 | npm 元数据声明 MIT，发布包缺少许可证正文。补入作者仓库固定提交 8ca9ba5 的 MIT 原文；该仓库当时 package.json 为 2.3.7，并非取得 2.3.8 tarball 中不存在的 LICENSE。config.json 明确保留这一来源差异，正式分发复核不能将其误记为发布包原文。 |
-| IONFilesystemLib 2.0.0 | Filesystem 插件 Package.swift 引入 ion-ios-filesystem。App 的 Swift 根依赖精确固定 2.0.0，许可原文来自对应固定 tag 的提交 13848aa。Mac 首次解析后仍检查并保存 Package.resolved。 |
+| IONFilesystemLib 2.0.0 | Filesystem 插件 Package.swift 引入 ion-ios-filesystem。App 的 Swift 根依赖精确固定 2.0.0，许可原文来自对应固定 tag 的提交 13848aa。远程实际 Package.resolved 确认同一完整提交 `13848aab4f3447ff98dfdbe72ff8ef31bf333db0`，已保存至工程；本机首次解析仍须核对。 |
 | Cordova 衍生兼容源码 | @capacitor/ios 中 CDVPlugin 等源文件声明 Apache-2.0 与 ASF NOTICE。补入 ASF 的许可证及 NOTICE，保留其中其他署名；声明里的版本是 Capacitor 兼容层版本，不宣称安装了上游 Cordova 8.0.1。最终二进制框架及 Archive 的原文覆盖仍需 Mac 检查。 |
 | Lucide 与 Feather | 复制 lucide-react/LICENSE 全文，包括 ISC 与衍生 Feather 图标的 MIT 版权信息，未只保留第一段。 |
 | shadcn 样式 | 沿用项目已有 vendor/shadcn-tailwind-4.13.0.LICENSE.md，未改变样式来源或声明。 |
@@ -28,4 +28,4 @@
 
 `npm run ios:check` 核对原生资源登记和版本固定。`npm run test:ios:notices` 核对所有记录的原文、摘要、原生复制、图标衍生声明、可复现生成，以及缺失/未核定许可的拒绝行为。plist 的 XML 结构另在本地使用标准 plistlib 解析。
 
-此阶段未运行 iOS 系统设置页面、Swift 编译或 Archive。真机验收检查入口、版本、长文滚动及最终安装包资源，并核对所有解析后的原生框架。contentRights 仍为 pending；本记录不会自动把运营或赛事资料使用权改成已核定。
+Windows 交接阶段未运行 iOS 系统设置页面、Swift 编译或 Archive。本次 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md) 已记录远程真实 Swift 编译和模拟器启动通过，实际解析 capacitor-swift-pm 8.5.3（`4c7f346d16196e21fbe23d4a7a6fc7af62af6742`）和 IONFilesystemLib 2.0.0（`13848aab4f3447ff98dfdbe72ff8ef31bf333db0`）。远程 Xcode 生成的锁文件已保留在 `ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`；本机解析、系统设置显示与最终 Archive 尚待执行。真机验收检查入口、版本、长文滚动及最终安装包资源，并核对所有解析后的原生框架。contentRights 仍为 pending；本记录不会自动把运营或赛事资料使用权改成已核定。

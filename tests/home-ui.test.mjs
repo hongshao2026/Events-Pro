@@ -60,8 +60,8 @@ try{
  await page.evaluate(()=>{Storage.prototype.setItem=window.homeOriginalWrite;});await pin(triton).focus();await page.keyboard.press('Enter');await group('置顶赛事').locator(`[data-series-id="${triton}"]`).waitFor();await focusRestored(pin(triton,true));
  assert.deepEqual(await ids(group('置顶赛事')),[triton]);assert.deepEqual(await ids(group('即将到来')),[kpc,qpc,jpf,wpt]);assert.equal(await card(triton).count(),1);assert.equal((await savedSettings()).profile.pinnedSeriesId,triton);assert.equal(await page.locator('.series-pin-error').count(),0);
  for(const width of [320,390]){await page.setViewportSize({width,height:900});await page.evaluate(()=>scrollTo(0,0));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);const pinRect=await pin(triton,true).boundingBox();assert.ok(pinRect.width>=44&&pinRect.height>=44);await page.screenshot({path:resolve(output,`pinned-${width}.png`)});}
- // A native Ctrl-click opens a background tab without a window.opener or page popup event.
- const beforePopup=page.url(),popupPromise=context.waitForEvent('page');await card(triton).click({modifiers:['Control']});const popup=await popupPromise;await popup.waitForLoadState();assert.ok(popup.url().includes('view=discover')&&popup.url().includes('series='+triton));assert.equal(page.url(),beforePopup);await popup.close();
+ // Native Cmd-click on macOS / Ctrl-click elsewhere opens a background tab.
+ const beforePopup=page.url(),popupPromise=context.waitForEvent('page');await card(triton).click({modifiers:['ControlOrMeta']});const popup=await popupPromise;await popup.waitForLoadState();assert.ok(popup.url().includes('view=discover')&&popup.url().includes('series='+triton));assert.equal(page.url(),beforePopup);await popup.close();
  // A same-document storage write simulates another tab winning before its storage event arrives.
  const externalSettings={...await savedSettings()};externalSettings.revision++;externalSettings.profile={...externalSettings.profile,pinnedSeriesId:wpt};
  await page.evaluate(settings=>localStorage.setItem('events-pro-settings-v1',JSON.stringify(settings)),externalSettings);await pin(wpt).click();await group('置顶赛事').locator(`[data-series-id="${wpt}"]`).waitFor();await focusRestored(pin(wpt,true));
@@ -77,7 +77,7 @@ try{
  await region('欧洲').click();assert.equal(await card(triton).count(),1);assert.equal(await card(wpt).count(),0);
  pass('region filtering, keyboard selection, empty recovery and reload persistence remain functional');
  const href=await card(triton).getAttribute('href');assert.ok(href.includes('series='+triton)&&href.includes('view=discover'));
- await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
+ await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();await page.waitForFunction(()=>document.querySelector('main h1')===document.activeElement);assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
  const first=page.locator(`.mobile-event[data-entry-id="${triton}/T01/T01-D1A"]`);
  await chooseDiscoveryStatus(page,first,'参加');
  await page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill('T12');
