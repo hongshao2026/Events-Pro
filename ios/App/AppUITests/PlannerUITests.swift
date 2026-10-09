@@ -172,7 +172,8 @@ final class PlannerUITests: XCTestCase {
 
     @MainActor
     private func openKPC(_ app: XCUIApplication) {
-        tap(app.buttons["返回赛事首页"], app)
+        // The fixed navigation stays reachable after scrolling the shortlist.
+        tap(app.buttons["赛事"], app)
         let kpc = app.links.matching(NSPredicate(format: "label CONTAINS %@", "KPC Poker Series Jeju 2026")).firstMatch
         if !kpc.exists {
             tap(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "已结束")).firstMatch, app)
