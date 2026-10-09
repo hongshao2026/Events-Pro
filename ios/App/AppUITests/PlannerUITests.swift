@@ -220,7 +220,13 @@ final class PlannerUITests: XCTestCase {
                 return
             }
             if element.frame.minY >= 0 && element.frame.maxY < app.frame.maxY - 90 { break }
-            app.swipeUp()
+            // Restored page scroll can leave the target above the viewport.
+            // Scroll toward the actual accessible frame, in either direction.
+            if element.frame.midY < app.frame.midY {
+                app.swipeDown()
+            } else {
+                app.swipeUp()
+            }
         }
         capture("failure-not-tappable", app)
         XCTFail("Native element is not tappable: \(element)\n\(app.debugDescription)")
