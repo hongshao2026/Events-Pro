@@ -1,0 +1,62 @@
+{
+  "scope": "Local Mac real iOS Simulator QA. Original XCTest JPEG bytes with public sample KPC choices. No file delivery/restore, changed-code/settings migration, physical-device, signing, TestFlight or store screenshot acceptance.",
+  "models": [
+    {
+      "model": "iPhone 16 Pro",
+      "sourceCommit": "f8cabb95a12f457da145022600d87660502b5acd",
+      "environment": "local Mac",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "sdk": "iphonesimulator27.0",
+      "runtime": "iOS 27.0",
+      "bundleId": "com.example.eventspro",
+      "version": "1.0.0",
+      "baselineNativeBuild": "1",
+      "retentionProbeNativeBuild": "2",
+      "completedAt": "2026-10-09T12:33:38.061Z",
+      "resultsSha256": "1b29dfd73ba9e6a4f20e477cdf42e652876221021a6a0eed8be3d04c21d59d60",
+      "swiftLockSha256": "37aed3e931f98d30be85af6676d8316f594a51b846984847a06e61160dcb8748",
+      "ui": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "afterInstall": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "captures": [
+        {
+          "file": "medium/discovery-unwatch.jpg",
+          "scene": "13-discovery-unwatch",
+          "originalAttachment": "E27DB7CC-741A-4605-9111-84D7506167AE.jpeg",
+          "originalName": "13-discovery-unwatch-jpeg_0_847512A3-4113-4839-A9A3-8E83D05F7AFB.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "405fe93814d4b73782d2fe3f2f4bbfa00323b194a4ea80a5295b993dd88f07ba"
+        },
+        {
+          "file": "medium/shortlist-actions.jpg",
+          "scene": "04-shortlist",
+          "originalAttachment": "5CB9FEBB-D183-4E40-9A75-C3AC76F51296.jpeg",
+          "originalName": "04-shortlist-jpeg_0_7F628215-344F-4081-ACC7-419E3C1532BE.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "6e7bce66859cc75961929cbc0499c0e0e6e2c4537f5a108b1ca2476d70557d17"
+        },
+        {
+          "file": "medium/after-row-removal.jpg",
+          "scene": "12-direct-row-removal",
+          "originalAttachment": "864ED3E4-BC3A-4D3A-99D6-7716F31B8976.jpeg",
+          "originalName": "12-direct-row-removal-jpeg_0_E5BDB3AB-7962-4BDD-8E27-645BD1C99A25.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "c0e1b7085784b9e232a096041c7b4f203f9b3f538f3df8519ee6bfd4bdc4d022"
+        }
+      ]
+    }
+  ]
+}
