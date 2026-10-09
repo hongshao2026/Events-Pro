@@ -75,3 +75,7 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 主界面目前为简体中文，繁体政策和商店草稿已准备；完整繁体 UI 尚未实现。首版无需在线账户，暂不涉及服务器账户删除流程。未来若增加账户、分析、广告或云同步，应同步修改实际功能、政策及商店声明。
 
 Mac 接手见 [MAC-SETUP.md](../../MAC-SETUP.md)，商店材料见 [台湾上架指南](TAIWAN-RELEASE.md)，数据核对见 [隐私实践](PRIVACY-AUDIT.md)。优先克隆 GitHub main，已有离线 Git bundle 仅作其制作时的快照备份，清单记录对应提交及摘要。readiness.json 保持真实 pending 状态，外部项目只有得到真实验收证据后才能改为 verified。
+
+## 2026-10-09 原生存储和可选云服务准备
+
+用户授权先开发相关代码，再说明本人 Supabase 操作。独立分支 codex/account-storage 已准备原生 Preferences 迁移与异步写入、在线手动云备份/恢复、RLS/CAS 和账号删除源码；AUTH/CLOUD 保持关闭，没有真实服务部署。验收及未验证范围见 [ACCOUNT-STORAGE-2026-10-09.md](ACCOUNT-STORAGE-2026-10-09.md)，操作指南见 [SUPABASE-SETUP.md](../../SUPABASE-SETUP.md)。首版离线方向及所有本人发行缺项保持待定。

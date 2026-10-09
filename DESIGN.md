@@ -117,3 +117,5 @@ Motion is limited to color changes and canonical overlay transitions; reduced mo
 JPF reuses the existing card, date picker, filters, price and settings owners. No new theme tokens or screen layouts. Native KRW and USD stay explicit within one series; null fees use 未公布, and the budget states how many fees are excluded. An explicit range currency and conversion guidance explain the amount comparison. JPF branding uses the original supplied masthead colors; the original PDF remains the archival master.
 
 - 报名费最低／最高输入共享一个明确的币种标识；320px 下输入值、单位、错误提示与缺失汇率说明仍须可读。
+
+2026-10-09 optional CloudBackupControl uses the existing settings section, text buttons, purple account styles, 44px actions and canonical AlertDialog. It is rendered once in the profile slot, never in the compact header. It displays explicit manual-backup scope, version, busy/status/error feedback and account deletion confirmation. No token or global palette changes; the native/offline release hides this optional online module.

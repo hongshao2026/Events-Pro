@@ -4,8 +4,8 @@
 
 | 数据/操作 | 处理位置 | 当前代码证据 | 发行前核对 |
 |---|---|---|---|
-| 个人分类、预算方式、待安排记录 | 本机 localStorage | lib/local-store.ts；poker-planner-local-v2 与旧版 key | 重启后保留，清除后移除，备份可恢复 |
-| 用户名、货币、置顶、汇率、赛事修改 | 本机 localStorage | lib/app-settings.ts；events-pro-settings-v1 | 不与远端账号自动同步 |
+| 个人分类、预算方式、待安排记录 | iOS Preferences 原生快照；网页 localStorage | lib/local-store.ts；poker-planner-local-v2 与旧版 key | 重启后保留，清除后移除，备份可恢复 |
+| 用户名、货币、置顶、汇率、赛事修改 | iOS Preferences 原生快照；网页 localStorage | lib/app-settings.ts；events-pro-settings-v1 | 不与远端账号自动同步 |
 | PNG 表格生成 | 本机 canvas/Blob | lib/shortlist-image.ts | 全部列、完整表格，失败不改原记录 |
 | PNG/JSON/PDF 原生导出 | 应用 CACHE，用户选择系统目标 | lib/file-export.ts；Filesystem + Share | 分享后清理；取消不提示已保存；异常退出后清理缓存 |
 | 保存图片到照片 | 用户在系统分享菜单中主动选择；可能请求仅添加权限 | Info.plist 的 NSPhotoLibraryAddUsageDescription | 不读取已有照片；在真机确认允许、拒绝和系统菜单是否提供该选项 |
@@ -19,8 +19,10 @@ Apple 的“收集”通常涉及将数据发送到设备外，并由开发者�
 
 当前 App Privacy 的候选回答是“不从此 App 收集数据”。这不是已经发布的商店声明；仍须核对支持邮件、原生依赖、其他同一 App 平台和实际托管方式。若以后上线登录、云同步、分析或广告，重新评估并更新标签、政策、同意机制及必要的账户删除能力，不能继续复用无登录政策。
 
-PrivacyInfo.xcprivacy 已登记为 Xcode 资源：NSPrivacyTracking=false，收集类别为空，Filesystem 文件时间戳 API 使用理由 C617.1（应用沙盒内用户文件）。这是原生 API 使用说明，不等同于商店隐私标签或法律合规证明。[Filesystem 官方清单要求](https://capacitorjs.com/docs/apis/filesystem)
+PrivacyInfo.xcprivacy 已登记为 Xcode 资源：NSPrivacyTracking=false，收集类别为空，Filesystem 文件时间戳 API 使用理由 C617.1（应用沙盒内用户文件），Preferences 的 UserDefaults API 理由 CA92.1（仅限本应用数据）。这是原生 API 使用说明，不等同于商店隐私标签或法律合规证明。[Filesystem 官方清单要求](https://capacitorjs.com/docs/apis/filesystem)
 
 在 Mac Archive 后用 Organizer 生成/查看完整 Privacy Report，确认所有 SDK 的合并声明、签名及所用 API。2026-10-08 已接手 Mac，并在远程 Mac 完成实际不签名 Swift 编译与模拟器启动、保存实际 SPM 锁；本机完整 Xcode 和签名尚未就绪，尚无正式 Archive 或最终 Privacy Report。不能把资源登记、静态检查或模拟器包当作已复核发行报告，证据见 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md)。
 
 数据导出不加密；系统备份可能保存本机数据；清除按钮不能删除已分享文件、系统备份和其他设备副本。这些限制已写进政策和确认文案。用户已确认运营所在地台湾并写入共享配置；真实主体名称、支持邮箱及网站仍待定，政策继续明确显示测试状态。
+
+2026-10-09 原生持久存储及后续可选云服务代码见 [SUPABASE-SETUP.md](../../SUPABASE-SETUP.md)。云备份与账户删除未接入真实服务，iOS/单文件继续强制关闭；正式在线版必须重做本政策和 App Privacy 核对。原生清除同时覆盖迁移时保留的旧 WebView 副本，不删除其他存储键。

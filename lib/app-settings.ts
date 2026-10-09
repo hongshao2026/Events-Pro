@@ -1,3 +1,4 @@
+import {readLocalValue,writeLocalValues} from './device-storage';
 import {events,type Event} from './schedule';
 import {buildEntries} from './catalog';
 import {seriesList} from './series';
@@ -47,12 +48,12 @@ export function validateSettings(value:unknown):AppSettings{
  return {version:1,revision:data.revision as number,profile:{username:validProfile.username.trim(),currency:validProfile.currency,pinnedSeriesId},fx:{rates:Object.fromEntries(displayCurrencies.map(c=>[c,rates[c]])) as ExchangeRates,source:validFx.source.trim(),asOf:validFx.asOf},eventOverrides:clean};
 }
 export function readSettings():AppSettings{
- try{const raw=localStorage.getItem(SETTINGS_KEY);return raw?validateSettings(JSON.parse(raw)):defaultSettings();}
+ try{const raw=readLocalValue(SETTINGS_KEY);return raw?validateSettings(JSON.parse(raw)):defaultSettings();}
  catch{throw new Error('无法读取个人与管理设置，原记录已保留。可在“我的”重新读取或恢复设置备份。');}
 }
 export function writeSettings(settings:AppSettings){
  const clean=validateSettings(settings);
- try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(clean));}
+ try{return writeLocalValues({[SETTINGS_KEY]:JSON.stringify(clean)});}
  catch{throw new Error('设置未能保存，原设置保持不变。请检查浏览器存储空间或权限。');}
 }
 export function parseSettingsBackup(raw:string):SettingsBackup{

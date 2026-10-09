@@ -8,7 +8,7 @@ const config=await readReleaseConfig();
 if(process.argv.includes('--release'))requireReleaseConfig(config);
 else if(releaseIssues(config).length)console.log('开发构建：正式发行信息仍有待补项，见 npm run release:check。');
 const result=await build({root:projectRoot,configFile:resolve(projectRoot,'vite.config.ts'),
- define:{'import.meta.env.VITE_AUTH_ENABLED':JSON.stringify('false')},build:{outDir:'ios-dist'}});
+ define:{'import.meta.env.VITE_AUTH_ENABLED':JSON.stringify('false'),'import.meta.env.VITE_CLOUD_ENABLED':JSON.stringify('false')},build:{outDir:'ios-dist'}});
 await generateIOSNotices(result);
 const path=resolve(projectRoot,'ios-dist/index.html');
 let html=await readFile(path,'utf8');
