@@ -55,10 +55,10 @@ final class PlannerUITests: XCTestCase {
 
         tap(app.buttons["我的"], app)
         tap(app.buttons["导出备份"], app)
-        dismissNativeShareSheet("10-plan-backup-share", app, titlePrefix: "赛事自选备份-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案"])
+        dismissNativeShareSheet("10-plan-backup-share", app, titlePrefix: "赛事自选备份-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案", "保存到“文件”"])
         XCTAssertFalse(app.staticTexts["未能导出参赛自选备份，请重试。"].exists)
         tap(app.buttons["导出设置备份"], app)
-        dismissNativeShareSheet("11-settings-backup-share", app, titlePrefix: "Events-Pro设置-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案"])
+        dismissNativeShareSheet("11-settings-backup-share", app, titlePrefix: "Events-Pro设置-", fileKind: "JSON", actionLabels: ["Save to Files", "存储到文件", "储存到档案", "保存到“文件”"])
         XCTAssertFalse(app.staticTexts["未能导出设置备份，请重试。"].exists)
         openShortlist(app)
         assertShortlist(app)
@@ -95,8 +95,14 @@ final class PlannerUITests: XCTestCase {
         let details = app.otherElements["LP.CaptionBar.BottomCaption"]
         XCTAssertTrue(details.waitForExistence(timeout: 10))
         XCTAssertTrue(details.label.contains(fileKind), "Native preview must recognize the exported file type")
+        // UIKit's iOS 27 Simplified Chinese action is 保存到“文件”; keep the
+        // observed iOS 26 and other locale labels while requiring a file action.
         let action = app.cells.matching(NSPredicate(format: "identifier == %@ AND label IN %@", "actionGroupCell", actionLabels)).firstMatch
-        XCTAssertTrue(action.waitForExistence(timeout: 20), "Native share file action did not become ready\n\(app.debugDescription)")
+        guard action.waitForExistence(timeout: 20) else {
+            capture("failure-action-" + name, app)
+            XCTFail("Native share file action did not become ready\n\(app.debugDescription)")
+            return
+        }
         let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "关闭")).firstMatch
         capture(name, app)
         // Only dismiss the native controller. No recipient or external app is

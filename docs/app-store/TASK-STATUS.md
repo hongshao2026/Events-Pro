@@ -8,13 +8,13 @@
 |---|---|
 | 仓库 | 已新克隆至 `~/Developer/Events-Pro`，main 干净且最新，确认包含 `f380631` |
 | 工作区 | `~/Developer/Events-Pro-mac-ios`，独立分支 `codex/mac-ios-validation`，基线 `f380631`；源码和原生验证工具已推送该分支，未合入 main |
-| 环境 | Apple Silicon / macOS 26.4；并存 Node 24.21.0、原 Node 25.9.0；Chromium/WebKit 安装完成 |
+| 环境 | Apple Silicon；本人已升级至 macOS 27.0.1（26A434），安装 Xcode 27.0（27A266a）；并存 Node 24.21.0、原 Node 25.9.0；Chromium/WebKit 安装完成 |
 | 本机完整检查 | 修复 Mac 修饰键测试后 `npm run verify` 退出码 0；17 份浏览器报告共 153 项检查通过 |
-| 单独 iOS 资源检查 | `ios:sync`、`ios:check` 通过，四份原生 plist 解析 OK；`ios:open` 已派发打开请求，不代表已安装或启动 Xcode |
+| 单独 iOS 资源检查 | `ios:sync`、`ios:check` 通过，四份原生 plist 解析 OK；Xcode 安装后再次 `ios:check` 通过，`ios:open` 后实际核对独立工作区的 App.xcodeproj 已打开 |
 | 真实 Swift 编译/远程模拟器 | [基线编译](https://github.com/hongshao2026/Events-Pro/actions/runs/37789044340) 在 `f380631` / Xcode 26.3 下通过；[分支启动检查](https://github.com/hongshao2026/Events-Pro/actions/runs/37792355643) 在 `3cc35fa` 完成真实 iPhone 16 Pro / iOS 26.2 安装、启动、首页原图与 Swift 锁捕获，已人工查看；仅启动，不是完整功能验收 |
 | 原生 UI 测试 | `cc213e7` / Run 37805048561 两种 iPhone 的真实 XCTest 各 1 项通过、0 失败；KPC 2 项参加/1 项关注、自选数量、预算 ₩1,600,000、条件日历、图片预览与同次安装重启保留通过。三轮失败及修复证据保留；完整功能矩阵仍未全执行；`e1b1880` 复验同样通过，10 张原生截图草稿已保存，最终取景/安全区待本机复核；`fa85469` / Run 37815336608 两型号首次及同源码原生构建 1→2 覆盖安装后的 XCTest 各 1 项通过/0 失败，计划、预算、日历保留，见 [有限升级报告](SIMULATOR-UPGRADE-2026-10-09.md) |
 | 系统分享与状态栏 | `ce61fc3` 两型号实际 PNG/JSON 文件预览和操作项、取消、图片重试、有限覆盖安装通过；六张原图保存，滚动状态栏重叠已修复。文件保存/恢复及完整 Q10 未验收 |
-| 本机 Xcode/模拟器 | 当前只有 CommandLineTools，本机 xcodebuild 前置失败，Swift 未启动；Mac App Store 当前 Xcode 要求 macOS 26.6，已打开兼容版本的官方历史下载，等待本人登录、安装、接受许可 |
+| 本机 Xcode/模拟器 | 完整 Xcode 27.0、iOS 27.0 SDK/runtime 就绪；模拟器 App、真机目标 App 及原生 UI 测试目标均真实无签名编译通过，SPM 锁一致。本机 iPhone 16 Pro 已安装/启动并人工查看首页；首轮 XCTest 因 iOS 27 的 JSON 保存新标签未识别失败，已修补测试，待完整复验。全局工具切换需本人管理员验证 |
 | 真机与 TestFlight | 未执行。可先用本人 Apple 账号的 Personal Team 直装；TestFlight 待付费会员就绪 |
 | 材料 | 简繁政策预览、真机矩阵与截图执行单已准备，远程首页原图已捕获；正式 URL、完整商店组图和最终审核联系信息尚未完成 |
 | 正式发行检查 | `release:check -- --online` 正确返回 1，共 10 项缺项；未执行线上 URL 检查，四项 readiness 保持 pending |
@@ -61,10 +61,10 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 |---|---|---|
 | 实际运营主体及所在地 | 所在地台湾已配置，主体名称待定 | 确定真实责任人或组织，与账号及政策一致；未推定个人或公司形式 |
 | 支持邮箱、正式域名及 bundleId | 待定 | 填 app-release.config.json；不提供密码、私钥或证书到聊天 |
-| Apple Developer 账号与 Mac | 已接手 arm64 Mac，Node/浏览器就绪；完整 Xcode 待本人安装，会员未注册 | 按 MAC-SETUP.md 安装兼容 Xcode、本人登录、选择 Team 与签名；本人完成身份/付费/协议 |
+| Apple Developer 账号与 Mac | 已接手 arm64 Mac，Node/浏览器、完整 Xcode 和 iOS runtime 就绪；会员未注册 | 继续本机模拟器验收；真机阶段本人登录、选择 Team 与签名；本人完成身份/付费/协议 |
 | 公开政策与支持 URL | 页面源内容已完成，未托管 | 正式信息齐备后构建与托管至用户域名，核对 HTTPS、访问和托管日志告知 |
 | 赛事资料、Logo 和 PDF 使用依据 | Logo 按用户说明保留，具体依据未记录；赛程/PDF 尚未核定 | 逐项记录许可/条款或合法使用依据；完整 PDF 单独核对 |
-| Swift 编译、签名、真机验收与隐私报告 | 远程不签名 Swift 编译及真实模拟器启动通过，实际 SPM 锁已保存；本机编译、完整功能、签名、真机与 Archive 待执行 | 在本机 Xcode/模拟器和真实 iPhone 按 IOS-DEVICE-QA.md 验收；核对已保存的实际 SPM 锁与所有原生依赖 |
+| Swift 编译、签名、真机验收与隐私报告 | 远程真实模拟器有限流程及本机不签名 App Swift 编译通过，实际 SPM 锁一致；本机运行、完整功能、签名、真机与 Archive 待执行 | runtime 就绪后在本机模拟器运行；真实 iPhone 按 IOS-DEVICE-QA.md 验收，继续核对原生依赖与最终隐私报告 |
 | 真正 iPhone 商店截图 | 已捕获远程模拟器首页 QA 原图，完整商店组图未完成 | 按 STORE-SCREENSHOTS.md 从同一验收构建的真机或模拟器生成并核对无透明通道 |
 | TestFlight 与 App Store Connect | 未上传/创建商店记录 | 配置免费、台湾发行范围，据实填写年龄分级、隐私和出口合规，再上传并测试 |
 | 提交审核与发布 | 未执行 | 以实际最终构建和材料复核；获得用户提交指令后再提交，Apple 审核结果不能预先保证 |

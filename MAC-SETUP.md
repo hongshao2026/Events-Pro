@@ -29,7 +29,18 @@ node --version
 
 当前验证版本是 24.21.0。其他 Mac 按实际安装位置设置，不复制这台机器的依赖目录。
 
-如果 `xcode-select -p` 指向 `/Library/Developer/CommandLineTools`，在“Xcode → Settings → Locations → Command Line Tools”选中完整 Xcode。默认安装路径也可这样设置，再按提示完成首次启动：
+2026-10-09 本机已升级至 macOS 27.0.1（26A434），本人安装的 Xcode 实际为 27.0（27A266a）。首次启动检查通过，iOS / iOS Simulator 27.0 SDK 和 iOS 27.0（24A434）runtime 已安装。本机模拟器及真机目标的无签名 App、UI 测试目标均编译通过，App 已在本机 iPhone 16 Pro 模拟器启动并查看首页。功能执行结果见 [本机续验](docs/app-store/MAC-VALIDATION-2026-10-08.md#2026-10-09-本机完整-xcode-续验)，不能用编译成功代替完整功能或真机结果。
+
+如果 `xcode-select -p` 仍指向 `/Library/Developer/CommandLineTools`，可先只在本项目终端指定完整 Xcode，无需修改全局选择：
+
+```sh
+export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+xcodebuild -version
+xcodebuild -checkFirstLaunchStatus
+xcrun simctl list runtimes
+```
+
+本次实际编译采用上述路径；已安装 SDK 足以编译，安装并启动模拟器还需要可用的 iOS runtime。等 Xcode 原有下载完成，不重复启动下载。也可在“Xcode → Settings → Locations → Command Line Tools”选择完整 Xcode；默认安装路径的命令行设置如下，仅在确实需要全局切换和首次启动时使用，许可仍由本人接受：
 
 ```sh
 sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer

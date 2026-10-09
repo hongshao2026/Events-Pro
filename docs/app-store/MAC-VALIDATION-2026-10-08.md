@@ -1,6 +1,6 @@
 # Mac 接手与实际验收记录
 
-日期：2026-10-08，续验更新至 2026-10-09（Asia/Shanghai）。当前结论：本机网页/资源检查通过，远程 Mac 已完成真实不签名 Swift 编译、两种 iPhone 模拟器启动及有限原生功能流程；本机完整 Xcode、本机模拟器、完整功能矩阵、签名、真机、TestFlight 与正式发行材料尚未完成。尚不具备 App Store 提审条件。
+日期：2026-10-08，续验更新至 2026-10-09（Asia/Shanghai）。当前结论：本机网页/资源检查、模拟器及真机目标的无签名 App、UI 测试目标编译通过，已在本机 iPhone 16 Pro / iOS 27.0 安装并启动，首页人工查看正常；首轮 XCTest 因未识别 iOS 27 的 JSON 保存操作新标签失败，测试已修补，待完整复验。远程 Mac 已完成两种 iPhone 模拟器启动及有限原生功能流程。完整功能矩阵、签名、真机、TestFlight 与正式发行材料尚未完成。尚不具备 App Store 提审条件。
 
 ## 仓库与构建身份
 
@@ -23,6 +23,28 @@
 - `npm ci` 成功安装锁定依赖，锁文件未变。Chromium 151 / Playwright v1234 与 WebKit 26.5 / v2336 安装成功。
 - Mac App Store 的当前 Xcode 显示要求 macOS 26.6，点击获取后未开始下载安装。已打开 [Apple 官方历史下载](https://developer.apple.com/download/all/?q=Xcode)，页面要求账号本人登录；[兼容表](https://developer.apple.com/xcode/system-requirements) 显示正式 Xcode 26.6 支持本机 macOS 26.4。用户本人完成登录、许可、安装与首次启动。
 - 用户已说明尚未注册 Apple Developer Program，优先本地验证。没有代用户注册、验证身份、付费或接受协议。
+
+## 2026-10-09 本机完整 Xcode 续验
+
+用户说明 Xcode 已安装、iOS 仍在安装。11:01–11:02（Asia/Shanghai）实际核对：macOS 已升级为 27.0.1（26A434），`/Applications/Xcode.app` 为 Xcode 27.0（27A266a）。`xcodebuild -checkFirstLaunchStatus` 返回 0，iOS 与 iOS Simulator 27.0 SDK 已安装；`simctl list runtimes` 当时为空，Xcode Downloads 实际显示 iOS 27.0 Simulator（24A434）4.43 / 8.05 GB、55%。没有重复启动下载，也没有代本人接受许可。
+
+全局 `xcode-select` 仍指向 CommandLineTools。本轮命令仅指定 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`，未修改全局选择。再次 `npm run ios:check` 返回 0，`npm run ios:open` 返回 0，并通过 Xcode 实际界面确认打开的是本工作区 `ios/App/App.xcodeproj`，分支 `codex/mac-ios-validation`。
+
+源码为 `3ece08b2b3cb742094bc086fd5507668c32ca250`，应用代码与 `ce61fc3` 相同。执行真实 `xcodebuild`，目标 Debug / generic iOS Simulator / `CODE_SIGNING_ALLOWED=NO`，11:01:58 构建结束，退出码 0，日志为 `** BUILD SUCCEEDED **`；AppDelegate、SceneDelegate 的 SwiftCompile 已实际执行。产物 `App.app` 为 `com.example.eventspro` / `1.0.0 (1)` / `iphonesimulator27.0`，可执行文件含 arm64 与 x86_64。SPM 实际解析 Capacitor 8.5.3 与 IONFilesystemLib 2.0.0，工程锁文件未变，SHA-256 为 `37aed3e931f98d30be85af6676d8316f594a51b846984847a06e61160dcb8748`。
+
+日志保存在忽略目录 `.sites-runtime/qa/mac-xcode-2026-10-09/xcodebuild-simulator.log`，SHA-256 `3ec582bd76d202292b27b4c5a0d40ffcdc20536926d9dd83c90d8e955181746f`。有 Filesystem 依赖中未使用 `responseType` 和未依赖 AppIntents.framework 的 metadata 提示，没有编译错误；未修改 node_modules 来隐藏提示。这是本机真实 App 编译，不是 Swift 语法解析或浏览器模拟桥；runtime 未就绪，尚不代表本机运行、XCTest 执行、签名或真机通过。下表早期 CommandLineTools 失败作为历史保留。
+
+继续以相同目标执行 `build-for-testing`，11:02:27 完成，退出码 0，`** TEST BUILD SUCCEEDED **`；`PlannerUITests.swift` 在 arm64/x86_64 均真实编译。日志 `xcodebuild-tests.log` 的 SHA-256 为 `ee842345d10b4e3607ec7880ccd6286ea3db02d73d5bcdbc2803c7b97d8e59b7`。测试目标最低 iOS 15 与当前 SDK 的 XCTest / XCUIAutomation 库最低 iOS 17 存在链接提示，未阻止编译；实际测试将在已下载的 iOS 27 runtime 运行，尚未执行，不将构建测试目标记为测试通过。
+
+此前文档提交 `3ece08b` 的远程 [原生 Run 37830621033](https://github.com/hongshao2026/Events-Pro/actions/runs/37830621033) 两型号成功，[Project checks 37830621052](https://github.com/hongshao2026/Events-Pro/actions/runs/37830621052) 也成功。本机 Xcode 27 续验与远程 Xcode 26.3 / iOS 26.2 的结果分开记录。
+
+11:04:55 完成 Debug / generic iOS / `CODE_SIGNING_ALLOWED=NO` 真机目标编译，退出码 0，`** BUILD SUCCEEDED **`；arm64、SDK `iphoneos27.0`、构建号 1。使用独立的忽略目录 DerivedData，不覆盖模拟器测试产物。日志 `xcodebuild-device-unsigned.log` 的 SHA-256 为 `1b6f1c68c3f77b9a0cc29bd2e0008015bee0f259ca9ab16b29d78e790b6b63d1`。这是无签名编译，未连接或安装到真实 iPhone，不是签名、Archive 或 Privacy Report 验收。
+
+11:05 复查 runtime 已可用：iOS 27.0（24A434）。使用现有模拟器工具新建独立 iPhone 16 Pro，真实安装、启动 App，原生首页 JPEG 已查看，显示正常；同时启用原生 UI 与有限构建 1→2 覆盖安装流程，结果须等待实际完成再登记。临时目录 `.sites-runtime/qa/ios-simulator/1791515185887-iPhone-16-Pro/`；没有操作已有模拟器或真机。
+
+首轮实际执行 1 项 XCTest，0 通过 / 1 失败 / 0 跳过，11:11 结束。已正常创建 KPC 两项参加/一项关注、核对自选/预算/条件日历、生成图片，完成图片分享取消与重试，第二次 PNG 菜单原图人工查看正常。随后参赛 JSON 菜单已显示正确文件名与 `JSON · 576 字节`，实际保存操作标签为 `保存到“文件”`；测试只列出旧标签，在 `Native share file action did not become ready` 断言失败。设置 JSON、重启、覆盖安装阶段未执行，不记通过。实际无障碍树、原图、日志和 xcresult 保留；`results.json` SHA-256 为 `a10aec5f8f69399a934a03215e739ef4f8dfccd21de042483cf07076b4d4c67f`。测试补充这一准确标签，保留文件标题、PNG/JSON 格式和原生保存操作的全部要求；操作缺失时额外采集原图，待复验。
+
+另有诊断收集提示 `xcrun: unable to find utility simctl`：全局选择仍为 CommandLineTools，Xcode 的部分诊断子进程未沿用项目级 DEVELOPER_DIR。`sudo -n xcode-select --switch ...` 因需要管理员密码返回 1，没有切换；已请求本人在 Xcode → Settings → Locations 选择 Xcode 27.0 并自行完成管理员验证，不索取密码。功能测试的失败原因是上述 JSON 标签，不将诊断提示误记成 App 编译或数据丢失。
 
 ## 已执行检查
 
@@ -133,7 +155,7 @@
 
 ## 继续操作与待定项
 
-1. **本人安装 Xcode**：登录上述官方历史下载，安装兼容正式版本至 `/Applications`，启动并本人接受许可，安装 iOS 平台及 iPhone 模拟器。在 Xcode → Settings → Locations 选择完整 Command Line Tools 后告知已就绪。接着按 [Mac 设置](../../MAC-SETUP.md) 运行本机 xcodebuild、启动模拟器、检查实际 SPM 锁及系统分享。
+1. **本机模拟器验收**：完整 Xcode 与 iOS 27.0 runtime 已就绪，本机 App/测试目标编译、启动及实际 Swift 锁核对通过；继续原生 XCTest 和系统分享、文件保存/恢复、完整功能矩阵检查。项目终端可用 DEVELOPER_DIR，无需先修改全局 Command Line Tools 选择。
 2. **本人登录与真机签名**：Xcode → Settings → Accounts 登录 Apple 账号；连接 iPhone，信任电脑，按设备要求本人启用开发者模式；App → Signing & Capabilities → 自动签名 → Personal Team（或会员 Team）。正式 Bundle ID 由用户核定后在 `app-release.config.json` 修改并 sync；不把占位 ID 当作发行身份。
 3. **真机测试与升级**：使用 [真机验收矩阵](IOS-DEVICE-QA.md)，赛事、自选、预算、日历、图片、两种 JSON、飞行模式与数据保留逐项记录。升级前分别备份，保持同一 Bundle ID、不卸载，覆盖安装更高构建号并比对。未执行项不记通过。
 4. **TestFlight**：用户本人完成 Developer Program 身份、会员付费与协议后，在 App Store Connect 创建同 ID 的应用记录。递增 buildNumber、sync、真机 Archive、核对 Privacy Report，再上传 App Store Connect；需要正式候选构建时不选 Internal Only。处理成功后内部测试，按相同矩阵验证 TestFlight 安装/更新并记录实际构建号。完整流程见 [Mac 设置](../../MAC-SETUP.md#6-第一次上传-testflight)。
