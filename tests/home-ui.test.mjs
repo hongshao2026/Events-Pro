@@ -77,7 +77,7 @@ try{
  await region('欧洲').click();assert.equal(await card(triton).count(),1);assert.equal(await card(wpt).count(),0);
  pass('region filtering, keyboard selection, empty recovery and reload persistence remain functional');
  const href=await card(triton).getAttribute('href');assert.ok(href.includes('series='+triton)&&href.includes('view=discover'));
- await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
+ await card(triton).focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:/完整赛程$/}).waitFor();await page.waitForFunction(()=>document.querySelector('main h1')===document.activeElement);assert.equal(await page.locator('main h1').evaluate(e=>e===document.activeElement),true);assert.match(await page.locator('.series-header').innerText(),/EET/);assert.match(await page.locator('.results-bar').innerText(),/29.*22/s);
  const first=page.locator(`.mobile-event[data-entry-id="${triton}/T01/T01-D1A"]`);
  await chooseDiscoveryStatus(page,first,'参加');
  await page.getByRole('textbox',{name:'搜索赛事',exact:true}).fill('T12');

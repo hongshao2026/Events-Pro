@@ -68,7 +68,7 @@ try{
  await page.keyboard.press('Escape');await sheet().waitFor({state:'hidden'});await page.waitForFunction(id=>document.querySelector(`.mobile-event[data-entry-id="${id}"] .event-row-open`)===document.activeElement,openingId);assert.equal(await first.locator('.event-row-open').evaluate(element=>element===document.activeElement),true);
  pass('three-column rows show aligned start/cutoff blocks and complete event amounts, with an unobstructed lower-right watch action and accessible whole-row details at 320/390px');
 
- await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');assert.equal(await sheet().count(),0);assert.equal(await first.locator('.quick-watch').getAttribute('aria-pressed'),'true');
+ await first.locator('.quick-watch').click();assert.equal(await savedStatus(openingId),'watch');assert.equal(await sheet().count(),0);assert.equal(await first.locator('.quick-watch').innerText(),'不关注');assert.match(await first.locator('.quick-watch').getAttribute('aria-label'),/^不关注 /);await actionCorner(first,'.quick-watch');
  await page.reload();assert.equal(await row(openingId).getAttribute('data-status'),'watch');
  await setDiscoveryFilterChecked(page,'全部赛事',false);await setDiscoveryFilterChecked(page,'筛选正在关注',true);
  await first.locator('.quick-watch').focus();await page.keyboard.press('Space');assert.equal(await savedStatus(openingId),'undecided');assert.equal(await first.count(),0);
@@ -78,6 +78,8 @@ try{
   await chooseDiscoveryStatus(page,first,label);assert.equal(await savedStatus(openingId),status);await page.reload();assert.equal(await row(openingId).getAttribute('data-status'),status);
  }
  await openDiscoveryDetails(page,first);await sheet().getByRole('radio',{name:'待定',exact:true}).focus();await page.keyboard.press('ArrowRight');
+ // Radix moves roving radio focus on its scheduled keyboard update.
+ await page.waitForFunction(()=>document.querySelector('.event-detail-actions [role="radio"][aria-label="参加"]')===document.activeElement);
  assert.equal(await sheet().getByRole('radio',{name:'参加',exact:true}).evaluate(element=>element===document.activeElement),true);await page.keyboard.press('Space');
  assert.equal(await savedStatus(openingId),'attend');await closeDiscoveryDetails(page);
  assert.equal(await first.locator('.quick-watch').count(),0);assert.match(await first.locator('.event-planned').innerText(),/参加/);await actionCorner(first,'.event-planned');

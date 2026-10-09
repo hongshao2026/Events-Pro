@@ -117,6 +117,33 @@ try{
  assert.equal(await page.evaluate(legacyKey=>localStorage.getItem(legacyKey)!==null,legacyKey),true);
  await page.screenshot({path:resolve(output,'legacy-assigned.png')});
  pass('legacy unassigned attendance stays pending with one budget and becomes exactly one chosen starting flight');
+
+ await page.evaluate(([key,state])=>localStorage.setItem(key,JSON.stringify({app:'wpt-planner',schemaVersion:2,savedAt:'2026-10-09T00:00:00Z',state})),[key,state]);
+ await page.reload();await row(first).waitFor();await page.setViewportSize({width:320,height:900});
+ const remove=id=>row(id).locator('.remove-selection');
+ await page.locator('.shortlist-table-scroll').evaluate(element=>{element.scrollLeft=element.scrollWidth;});
+ for(const id of [first,watch]){
+  const target=await remove(id).boundingBox();assert.ok(target.x>=0&&target.x+target.width<=320,'Removal stays in the visible fixed event column');assert.ok(target.width>=44&&target.height>=44,'Removal has a 44px touch target');
+ }
+ await page.screenshot({path:resolve(output,'direct-removal-320.png')});
+ await filter('正在关注').click();await remove(watch).focus();await page.keyboard.press('Space');
+ assert.equal(await row(watch).count(),0);assert.equal((await savedState()).selections[watch].status,'undecided');assert.equal(await row(triton).count(),1);
+ assert.match(await page.locator('.cart-budget').innerText(),/\$1,200/);assert.equal(await page.getByRole('dialog').count(),0);
+ await page.waitForFunction(()=>document.querySelector('.shortlist-summary')===document.activeElement);
+ await page.reload();assert.equal(await row(watch).count(),0);assert.equal(await rows().count(),3);
+ const beforeRemovalFailure=await savedState(),rawBeforeRemovalFailure=await page.evaluate(key=>localStorage.getItem(key),key);
+ await page.evaluate(()=>{window.directRemovalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('Full','QuotaExceededError');};});
+ await remove(first).click();await page.getByRole('button',{name:'重新读取',exact:true}).waitFor();
+ assert.deepEqual(await savedState(),beforeRemovalFailure);assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),rawBeforeRemovalFailure);
+ assert.equal(await row(first).count(),1);assert.match(await page.locator('.cart-budget').innerText(),/\$1,200/);assert.equal(await remove(first).isEnabled(),true);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.directRemovalSetItem;});await page.getByRole('button',{name:'重新读取',exact:true}).click();
+ await remove(first).click();assert.equal(await row(first).count(),0);assert.equal(await row(second).count(),1);assert.equal((await savedState()).selections[first].status,'undecided');
+ assert.match(await page.locator('.cart-budget').innerText(),/\$600/);
+ await nav('我的日程');assert.equal(await page.locator(`.agenda-row[data-entry-id="${first}"]`).count(),0);assert.equal(await page.locator(`.agenda-row[data-entry-id="${second}"]`).count(),1);assert.equal(await page.locator(`.agenda-row[data-entry-id="${watch}"]`).count(),0);
+ await nav('我的自选');await remove(second).click();assert.match(await page.locator('.cart-budget').innerText(),/\$0/);
+ await remove(triton).click();assert.equal(await rows().count(),0);assert.equal(await page.getByRole('button',{name:'导出图片',exact:true}).isDisabled(),true);
+ await page.getByRole('button',{name:'去挑比赛',exact:true}).waitFor();await page.reload();assert.equal(await rows().count(),0);
+ pass('visible row removal works offline at 320px without opening detail; failed writes preserve data, keyboard focus recovers and each flight synchronizes budgets/calendar independently');
  assert.deepEqual(errors,[]);assert.deepEqual(requests,[]);pass('table, detail and migration workflows remain fully offline without browser errors');
 }finally{
  await fs.writeFile(resolve(output,'results.json'),JSON.stringify({checks,errors,requests},null,2));await browser.close();

@@ -3,6 +3,7 @@ import {getSeries,type Entry} from '@/lib/catalog';
 import {clock,eventNumber,guarantee,shortDate,type Status} from '@/lib/schedule';
 import {registrationDeadline} from '@/lib/registration';
 import {PriceAmount} from './price-amount';
+import {RemoveSelectionButton} from './controls';
 
 type EventCardProps={
  entry:Entry;
@@ -42,6 +43,6 @@ export function EventCard({entry,status,blocked,onOpen,onChoose}:EventCardProps)
     </span>
    </span>
   </button>
-  {status==='attend'?<span className="event-planned"><Check size={15} aria-hidden="true"/>计划参加</span>:<button type="button" className="quick-watch" disabled={blocked} aria-pressed={status==='watch'} aria-label={`${status==='watch'?'取消关注':'关注'} ${event.title} · ${entry.flightLabel}`} onClick={()=>onChoose(status==='watch'?'undecided':'watch')}><Star size={16} fill={status==='watch'?'currentColor':'none'} aria-hidden="true"/><span>{status==='watch'?'已关注':status==='skip'?'改为关注':'关注'}</span></button>}
+  {status==='attend'?<span className="event-planned"><Check size={15} aria-hidden="true"/>计划参加</span>:status==='watch'?<RemoveSelectionButton entry={entry} status="watch" disabled={blocked} className="quick-watch" onRemove={()=>onChoose('undecided')}/>:<button type="button" className="quick-watch" disabled={blocked} aria-label={`关注 ${event.title} · ${entry.flightLabel}`} onClick={()=>onChoose('watch')}><Star size={16} aria-hidden="true"/><span>{status==='skip'?'改为关注':'关注'}</span></button>}
  </article>;
 }
