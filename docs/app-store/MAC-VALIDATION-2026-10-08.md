@@ -1,6 +1,6 @@
 # Mac 接手与实际验收记录
 
-日期：2026-10-08，续验更新至 2026-10-09（Asia/Shanghai）。当前结论：本机网页/资源检查、模拟器及真机目标的无签名 App、UI 测试目标编译通过，已在本机 iPhone 16 Pro / iOS 27.0 安装并启动，首页人工查看正常；首轮 XCTest 因未识别 iOS 27 的 JSON 保存操作新标签失败，测试已修补，待完整复验。远程 Mac 已完成两种 iPhone 模拟器启动及有限原生功能流程。完整功能矩阵、签名、真机、TestFlight 与正式发行材料尚未完成。尚不具备 App Store 提审条件。
+日期：2026-10-08，续验更新至 2026-10-09（Asia/Shanghai）。当前结论：本机网页/资源检查、模拟器及真机目标的无签名 App、UI 测试目标编译通过；iPhone 16 Pro / Pro Max、iOS 27.0 的真实启动、有限原生功能及同源码构建 1→2 覆盖安装读取通过，各阶段各 1 项 XCTest、0 失败、0 跳过。首轮 iOS 27 JSON 操作新标签失败及修补记录保留，八张本机原图逐图查看并保存。远程 Mac 的 iOS 26.2 流程另记。完整功能矩阵、签名、真机、TestFlight 与正式发行材料尚未完成，尚不具备 App Store 提审条件。
 
 ## 仓库与构建身份
 
@@ -45,6 +45,10 @@
 首轮实际执行 1 项 XCTest，0 通过 / 1 失败 / 0 跳过，11:11 结束。已正常创建 KPC 两项参加/一项关注、核对自选/预算/条件日历、生成图片，完成图片分享取消与重试，第二次 PNG 菜单原图人工查看正常。随后参赛 JSON 菜单已显示正确文件名与 `JSON · 576 字节`，实际保存操作标签为 `保存到“文件”`；测试只列出旧标签，在 `Native share file action did not become ready` 断言失败。设置 JSON、重启、覆盖安装阶段未执行，不记通过。实际无障碍树、原图、日志和 xcresult 保留；`results.json` SHA-256 为 `a10aec5f8f69399a934a03215e739ef4f8dfccd21de042483cf07076b4d4c67f`。测试补充这一准确标签，保留文件标题、PNG/JSON 格式和原生保存操作的全部要求；操作缺失时额外采集原图，待复验。
 
 另有诊断收集提示 `xcrun: unable to find utility simctl`：全局选择仍为 CommandLineTools，Xcode 的部分诊断子进程未沿用项目级 DEVELOPER_DIR。`sudo -n xcode-select --switch ...` 因需要管理员密码返回 1，没有切换；已请求本人在 Xcode → Settings → Locations 选择 Xcode 27.0 并自行完成管理员验证，不索取密码。功能测试的失败原因是上述 JSON 标签，不将诊断提示误记成 App 编译或数据丢失。
+
+`1974145da295a0fc496de46bb0fe6aa90392226a` 复验：11:19:56 完成 Pro，11:27:24 完成 Pro Max；各型号首次与覆盖安装后独立 XCTest 均 1 项通过、0 失败、0 跳过，实际新原生构建号 2，自选 3/2/1、预算 ₩1,600,000、条件日历保留。PNG / 两类 JSON 正确文件预览和原生操作、取消、图片重试及重启保留通过；实际锁一致、附件无错误。八张无透明原图已逐图查看并原样保存，完整范围、源码、原件目录及结果摘要 SHA-256 见 [本机 iOS 27 报告](LOCAL-IOS-2026-10-09.md)。两轮后普通基线重编译返回 0，DerivedData App 实际恢复构建 1；探针仍不是正式候选。
+
+同一 PR head `1974145` 的 [远程原生 Run 37878360589](https://github.com/hongshao2026/Events-Pro/actions/runs/37878360589) 在 Xcode 26.3 / iOS 26.2 两型号均成功，[Project checks 37878360563](https://github.com/hongshao2026/Events-Pro/actions/runs/37878360563) 完整 verify 成功；与本机 Xcode 27 的原件分别保存和登记。
 
 ## 已执行检查
 

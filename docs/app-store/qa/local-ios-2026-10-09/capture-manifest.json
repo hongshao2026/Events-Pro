@@ -1,0 +1,139 @@
+{
+  "scope": "Local Mac real iOS Simulator QA. Original XCTest JPEG bytes with public sample KPC choices. No file delivery/restore, changed-code/settings migration, physical-device, signing, TestFlight or store screenshot acceptance.",
+  "models": [
+    {
+      "model": "iPhone 16 Pro",
+      "sourceCommit": "1974145da295a0fc496de46bb0fe6aa90392226a",
+      "environment": "local Mac",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "sdk": "iphonesimulator27.0",
+      "runtime": "iOS 27.0",
+      "bundleId": "com.example.eventspro",
+      "version": "1.0.0",
+      "baselineNativeBuild": "1",
+      "retentionProbeNativeBuild": "2",
+      "completedAt": "2026-10-09T03:19:56.740Z",
+      "resultsSha256": "27979d87c8c55bd6ae051b6a4d7ea491aa292fe27058b8b3f9f4b68ee0ecc94e",
+      "swiftLockSha256": "37aed3e931f98d30be85af6676d8316f594a51b846984847a06e61160dcb8748",
+      "ui": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "afterInstall": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "captures": [
+        {
+          "file": "medium/image-retry.jpg",
+          "scene": "09-image-share-2",
+          "originalAttachment": "45644637-0351-48CA-B5BF-C6C5419AC9DD.jpeg",
+          "originalName": "09-image-share-2-jpeg_0_C9CF23D9-9C16-4CE5-A6D0-30E22E004D47.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "c8750eb5517ba8d14a4ea2074349e8343076837979e1b253dacd01db08007db7"
+        },
+        {
+          "file": "medium/plan-backup.jpg",
+          "scene": "10-plan-backup-share",
+          "originalAttachment": "8D2E81B5-ADD9-4E4C-8817-11C5645CD537.jpeg",
+          "originalName": "10-plan-backup-share-jpeg_0_6878FD9C-62D3-4F3A-9F78-A4E6C2B3B20F.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "62868a5e62e3feb138e1a37957d427973d75af7a23c20b8b73f5cfc8aed8a5a3"
+        },
+        {
+          "file": "medium/settings-backup.jpg",
+          "scene": "11-settings-backup-share",
+          "originalAttachment": "3087DC44-93E7-471F-8FD1-A34A886BEF3B.jpeg",
+          "originalName": "11-settings-backup-share-jpeg_0_F90C16CB-2D6F-4816-9562-D5ADC22DB2C7.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "db1b50c0dd52575b9a9c409ed6c60b4f73da17a4847c43cefe220df51aca80d0"
+        },
+        {
+          "file": "medium/retained-shortlist.jpg",
+          "scene": "07-installed-build-retains-shortlist",
+          "originalAttachment": "FF18DA92-DE88-4A23-ACCC-3B621BE50CDD.jpeg",
+          "originalName": "07-installed-build-retains-shortlist-jpeg_0_8B9FA184-9483-4331-92FA-4C71A8CFE4E6.jpeg",
+          "width": 1206,
+          "height": 2622,
+          "hasAlpha": false,
+          "sha256": "3a37df34517b6f956b292c85c252bc467fdd5e1b95f2991e76aea686ed780817"
+        }
+      ]
+    },
+    {
+      "model": "iPhone 16 Pro Max",
+      "sourceCommit": "1974145da295a0fc496de46bb0fe6aa90392226a",
+      "environment": "local Mac",
+      "xcode": "Xcode 27.0\nBuild version 27A266a",
+      "sdk": "iphonesimulator27.0",
+      "runtime": "iOS 27.0",
+      "bundleId": "com.example.eventspro",
+      "version": "1.0.0",
+      "baselineNativeBuild": "1",
+      "retentionProbeNativeBuild": "2",
+      "completedAt": "2026-10-09T03:27:24.296Z",
+      "resultsSha256": "d2e443502c0d726cbe908c913b9f4eb410b2211929c60a3135eb4bf7b6c89995",
+      "swiftLockSha256": "37aed3e931f98d30be85af6676d8316f594a51b846984847a06e61160dcb8748",
+      "ui": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "afterInstall": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "captures": [
+        {
+          "file": "large/image-retry.jpg",
+          "scene": "09-image-share-2",
+          "originalAttachment": "2A1C386B-4AC3-4F82-AE42-22F2594F4CB7.jpeg",
+          "originalName": "09-image-share-2-jpeg_0_D397A2C1-7E39-47CF-8C28-998EBB74F1B4.jpeg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "e7e5820269091f66d9feb88a9ac0bf68eb201a2ed59baf9cfab634d9d1610f9d"
+        },
+        {
+          "file": "large/plan-backup.jpg",
+          "scene": "10-plan-backup-share",
+          "originalAttachment": "0AC0DA6D-F298-4934-A1EC-75C11E0791A5.jpeg",
+          "originalName": "10-plan-backup-share-jpeg_0_51A9EC58-88B6-464E-8B5A-4E888DD204D1.jpeg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "892d63f7b65bb9033da69d17b513d113c54618eab1eea5d5e5d1f31c66068e0b"
+        },
+        {
+          "file": "large/settings-backup.jpg",
+          "scene": "11-settings-backup-share",
+          "originalAttachment": "0C5FF6CE-08DD-4CAA-84A3-4EB907EE307B.jpeg",
+          "originalName": "11-settings-backup-share-jpeg_0_F70A873D-F7EC-40C0-B72C-C751D075A245.jpeg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "297c880d1b8e60b2453c851367732eb5d234063cc118b61d32ceeb0584b954b7"
+        },
+        {
+          "file": "large/retained-shortlist.jpg",
+          "scene": "07-installed-build-retains-shortlist",
+          "originalAttachment": "508D319F-9B64-451D-A8DC-A155232C9DBC.jpeg",
+          "originalName": "07-installed-build-retains-shortlist-jpeg_0_B285E180-5594-4AF7-998E-7F5F8C787282.jpeg",
+          "width": 1320,
+          "height": 2868,
+          "hasAlpha": false,
+          "sha256": "027808ec9d7a8a16b18f8de2cf1fdc8852ed479f3694e2c619d87efca2495181"
+        }
+      ]
+    }
+  ]
+}
