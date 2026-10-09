@@ -37,11 +37,11 @@ final class PlannerUITests: XCTestCase {
 
         // Remove directly from the fixed name column, without opening detail.
         tap(app.buttons["不关注 KPC BANKROLL BUILDER · Day 1C"], app)
-        XCTAssertTrue(app.buttons["全部自选 2"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "全部自选 2")).firstMatch.waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["不关注 KPC BANKROLL BUILDER · Day 1C"].exists)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         tap(app.buttons["移出自选 KPC BANKROLL BUILDER · Day 1A"], app)
-        XCTAssertTrue(app.buttons["全部自选 1"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "全部自选 1")).firstMatch.waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["移出自选 KPC BANKROLL BUILDER · Day 1B"].exists, "Removing one flight must retain its sibling")
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "₩1,600,000")).firstMatch.exists)
         capture("12-direct-row-removal", app)
