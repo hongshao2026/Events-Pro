@@ -1,4 +1,5 @@
 "use client";
+import {withLocalWrite,LOCAL_DATA_EVENT} from '@/lib/device-storage';
 import {useCallback,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import {ArrowLeft,CalendarDays,Compass,Download,ExternalLink,HardDrive,MapPin,Search,SlidersHorizontal,Table2,Spade,Upload,X,RotateCcw,UserRound} from 'lucide-react';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
@@ -68,9 +69,9 @@ function plannerHash(filters:Filters,route:AgendaRoute){
 }
 function initialData(){try{return {data:readState(),error:''};}catch(e){return {data:emptyState(),error:e instanceof Error?e.message:'无法读取本地记录'};}}
 
-type PlannerProps={account?:ReactNode;accountInfo?:AccountInfo};
+type PlannerProps={account?:ReactNode;accountInfo?:AccountInfo;cloudBackup?:ReactNode};
 export default function Planner(props:PlannerProps={}){return <SettingsProvider><PlannerContent {...props}/></SettingsProvider>;}
-function PlannerContent({account,accountInfo}:PlannerProps){
+function PlannerContent({account,accountInfo,cloudBackup}:PlannerProps){
  const {settings,settingsError,reloadSettings,catalog,navigateSafely}=useAppSettings();
  const {entries,eventMap}=catalog;
  const [route,setRoute]=useState<AgendaRoute>(agendaFromUrl);
@@ -97,16 +98,16 @@ function PlannerContent({account,accountInfo}:PlannerProps){
  const reload=useCallback(()=>{try{setState(readState());setSaveError('');}catch(e){setSnapshot(s=>({...s,error:e instanceof Error?e.message:'无法读取本地记录'}));}},[setState]);
  useEffect(()=>{
   const refresh=()=>{if(document.visibilityState==='visible')reload();};const storage=(e:StorageEvent)=>{if(e.key===STORAGE_KEY||e.key===LEGACY_KEY||e.key===null)reload();};
-  document.addEventListener('visibilitychange',refresh);window.addEventListener('storage',storage);
-  return()=>{document.removeEventListener('visibilitychange',refresh);window.removeEventListener('storage',storage);};
+  document.addEventListener('visibilitychange',refresh);window.addEventListener('storage',storage);window.addEventListener(LOCAL_DATA_EVENT,reload);
+  return()=>{document.removeEventListener('visibilitychange',refresh);window.removeEventListener('storage',storage);window.removeEventListener(LOCAL_DATA_EVENT,reload);};
  },[reload]);
- const commit=useCallback((mutate:(next:PlannerState)=>void)=>{
+ const commit=useCallback((mutate:(next:PlannerState)=>void)=>withLocalWrite(async()=>{
   try{const latest=readState();if(latest.revision!==stateRef.current.revision){setState(latest);throw new Error('另一窗口已更新自选，已读取最新记录，请重新操作。');}
-   const next=structuredClone(latest);mutate(next);next.revision++;writeState(next);setState(next);setSaveError('');return true;
+   const next=structuredClone(latest);mutate(next);next.revision++;await writeState(next);setState(next);setSaveError('');return true;
   }catch(e){const message=e instanceof Error?e.message:'保存失败，原选择已保留。';setSaveError(message);toast.error(message);return false;}
- },[setState]);
- const choose=useCallback((entry:Entry,status:Status)=>{
-  const ok=commit(next=>{next.selections[entry.id]={status,version:(next.selections[entry.id]?.version||0)+1};if(status==='attend')delete next.pending[entry.eventId];});
+ }),[setState]);
+ const choose=useCallback(async(entry:Entry,status:Status)=>{
+  const ok=await commit(next=>{next.selections[entry.id]={status,version:(next.selections[entry.id]?.version||0)+1};if(status==='attend')delete next.pending[entry.eventId];});
   if(ok&&(status==='attend'||status==='watch'))toast.success(`${status==='attend'?'已加入计划参加':'已加入关注'} · ${entryName(entry)}`,{id:'selection-feedback'});return ok;
  },[commit]);
  const update=useCallback((patch:Partial<Filters>)=>setFilters(f=>({...f,...patch,page:patch.page??1})),[]);
@@ -165,12 +166,12 @@ function PlannerContent({account,accountInfo}:PlannerProps){
   requestAnimationFrame(()=>{resultsRef.current?.scrollIntoView({block:'start'});resultsRef.current?.focus({preventScroll:true});window.history.replaceState({...window.history.state,eventTagScroll:window.scrollY},'',window.location.hash);});
  };
  const importFile=async(file:File)=>{setImportError('');try{if(file.size>500000)throw new Error('文件过大，请选择本工具导出的 JSON 备份。');setPendingBackup(parseBackup(await file.text()));}catch(e){const message=e instanceof Error?e.message:'无法读取备份，当前自选未更改。';setImportError(message);toast.error(message);}};
- const restore=()=>{if(!pendingBackup)return;try{let revision=stateRef.current.revision;try{revision=Math.max(revision,readState().revision);}catch{/* Valid backup can recover a corrupt local record. */}const next=structuredClone(pendingBackup.state);next.revision=revision+1;writeState(next);setState(next);setSaveError('');setImportError('');setPendingBackup(null);toast.success('备份已恢复到本机。');}catch(e){const message=e instanceof Error?e.message:'恢复失败，原记录已保留。';setSaveError(message);toast.error(message);}};
+ const restore=()=>withLocalWrite(async()=>{if(!pendingBackup)return;try{let revision=stateRef.current.revision;try{revision=Math.max(revision,readState().revision);}catch{/* Valid backup can recover a corrupt local record. */}const next=structuredClone(pendingBackup.state);next.revision=revision+1;await writeState(next);setState(next);setSaveError('');setImportError('');setPendingBackup(null);toast.success('备份已恢复到本机。');}catch(e){const message=e instanceof Error?e.message:'恢复失败，原记录已保留。';setSaveError(message);toast.error(message);}});
  useEffect(()=>{
   type ToolContext={registerTool:(tool:{name:string;title:string;description:string;inputSchema:object;annotations:object;execute:(input:unknown)=>unknown},options:{signal:AbortSignal})=>void|Promise<void>};
   const ctx=(document as Document&{modelContext?:ToolContext}).modelContext;if(!ctx?.registerTool)return;const controller=new AbortController();
   const tools=[{name:'read_poker_entries',title:'读取赛事场次和自选',description:'每个起始组为独立场次，读取分类和预算。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({entries:entries.map(e=>({id:e.id,title:entryName(e),date:e.date,buyin:e.buyin,currency:e.currency,status:stateRef.current.selections[e.id]?.status||'undecided'})),pending:stateRef.current.pending,budget:budget(stateRef.current,entries,eventMap)})},
-  {name:'set_poker_entry_classification',title:'设置单个起始组分类',description:'仅保存个人自选，不向赌场报名。',inputSchema:{type:'object',properties:{id:{type:'string'},status:{type:'string',enum:statuses}},required:['id','status'],additionalProperties:false},annotations:{readOnlyHint:false},execute:(input:unknown)=>{const x=input as {id?:string;status?:Status},entry=entries.find(e=>e.id===x?.id);if(!entry||!statuses.includes(x.status!)||blocked)throw new Error('场次、分类或本地记录无效');if(!choose(entry,x.status!))throw new Error('分类未保存');return stateRef.current.selections[entry.id];}}];
+  {name:'set_poker_entry_classification',title:'设置单个起始组分类',description:'仅保存个人自选，不向赌场报名。',inputSchema:{type:'object',properties:{id:{type:'string'},status:{type:'string',enum:statuses}},required:['id','status'],additionalProperties:false},annotations:{readOnlyHint:false},execute:async(input:unknown)=>{const x=input as {id?:string;status?:Status},entry=entries.find(e=>e.id===x?.id);if(!entry||!statuses.includes(x.status!)||blocked)throw new Error('场次、分类或本地记录无效');if(!await choose(entry,x.status!))throw new Error('分类未保存');return stateRef.current.selections[entry.id];}}];
   for(const tool of tools){try{void Promise.resolve(ctx.registerTool(tool,{signal:controller.signal})).catch(()=>{});}catch{/* Optional browser capability. */}}return()=>controller.abort();
  },[choose,blocked,entries,eventMap]);
  const error=snapshot.error||saveError||importError;
@@ -194,7 +195,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
    {settingsError&&<div className="error-banner" role="alert"><span>{settingsError}</span><button onClick={reloadSettings}>重新读取设置</button></div>}
    {error&&<div className="error-banner" role="alert"><span>{error}</span><button onClick={()=>{setImportError('');reload();}}>重新读取</button></div>}
    {cost.pendingCount>0&&route.view!=='shortlist'&&<div className="migration-note"><CalendarDays size={18}/><span>已保留旧版 {cost.pendingCount} 项“参加”记录，尚未确定起始组。</span><button className="text-button" onClick={()=>navigate('shortlist')}>去安排 →</button></div>}
-   {route.view==='profile'?<ProfilePage key={settings.profile.username} accountInfo={accountInfo} account={account} selectionsBackup={localTools} onManage={()=>navigate('admin')}/>:route.view==='admin'?<AdminPage initialSeriesId={series.id} onBack={()=>navigate('profile')}/>:route.view==='home'?<SeriesHome catalog={homeCatalog} region={route.region} onRegionChange={region=>setRoute(r=>({...r,region}))} hrefForSeries={id=>hrefFor('discover',id)} onOpen={id=>navigate('discover',id)}/>:route.view==='shortlist'?<MyShortlist state={state} blocked={blocked} error={error} onChoose={choose} onBudgetModeChange={mode=>{commit(next=>{next.budgetMode=mode;});}} onShowFlights={lookAtEvent} onRemovePending={id=>{commit(next=>{delete next.pending[id];});}} onDiscover={()=>navigate('home')}/>:!selectedSeries?<div className="empty-state"><Compass size={28}/><h3>没有找到这项赛事</h3><p>该赛事尚未收录，或链接已失效。</p><button onClick={()=>navigate('home')}>返回赛事首页</button></div>:route.view==='schedule'?<MySchedule key={series.id} state={state} route={route} onRouteChange={patch=>setRoute(r=>({...r,...patch}))} supplement={filters.supp} onSupplementChange={v=>update({supp:v})} blocked={blocked} error={error} onChoose={choose} onShowFlights={lookAtEvent}/>:<section className="schedule-panel" aria-label="赛事自选表">
+   {route.view==='profile'?<div><ProfilePage key={settings.profile.username} accountInfo={accountInfo} account={account} selectionsBackup={localTools} onManage={()=>navigate('admin')}/>{cloudBackup}</div>:route.view==='admin'?<AdminPage initialSeriesId={series.id} onBack={()=>navigate('profile')}/>:route.view==='home'?<SeriesHome catalog={homeCatalog} region={route.region} onRegionChange={region=>setRoute(r=>({...r,region}))} hrefForSeries={id=>hrefFor('discover',id)} onOpen={id=>navigate('discover',id)}/>:route.view==='shortlist'?<MyShortlist state={state} blocked={blocked} error={error} onChoose={choose} onBudgetModeChange={mode=>{commit(next=>{next.budgetMode=mode;});}} onShowFlights={lookAtEvent} onRemovePending={id=>commit(next=>{delete next.pending[id];})} onDiscover={()=>navigate('home')}/>:!selectedSeries?<div className="empty-state"><Compass size={28}/><h3>没有找到这项赛事</h3><p>该赛事尚未收录，或链接已失效。</p><button onClick={()=>navigate('home')}>返回赛事首页</button></div>:route.view==='schedule'?<MySchedule key={series.id} state={state} route={route} onRouteChange={patch=>setRoute(r=>({...r,...patch}))} supplement={filters.supp} onSupplementChange={v=>update({supp:v})} blocked={blocked} error={error} onChoose={choose} onShowFlights={lookAtEvent}/>:<section className="schedule-panel" aria-label="赛事自选表">
     <div className="discovery-filter-bar" role="region" aria-label="赛程筛选">
      <div className="search"><Search size={17}/><input ref={searchRef} aria-label="搜索赛事" placeholder="搜索赛事、编号或起始组" value={draft} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={e=>{composing.current=false;update({q:e.currentTarget.value});}} onChange={e=>{setDraft(e.target.value);if(!composing.current)update({q:e.target.value});}}/>{draft&&<button aria-label="清空搜索" onClick={()=>{setDraft('');update({q:''});searchRef.current?.focus();}}><X size={16}/></button>}</div>
      <DiscoveryFilterPopover value={filters} counts={counts} currency={filterCurrency} originalCurrency={settings.profile.currency==='original'} rangeNotice={filters.rangeNotice} unavailableBuyins={unavailableBuyins} resetVersion={filterResetVersion} supplementCount={supplementCount} resultCount={filtered.length} open={filterOpen} onOpenChange={setFilterOpen} onChange={update} onRangeChange={(buyinMin,buyinMax)=>update({buyinMin,buyinMax,buyinCurrency:filterCurrency,rangeNotice:''})} onReset={resetFilters}><div className="discovery-quick-controls">
@@ -203,7 +204,7 @@ function PlannerContent({account,accountInfo}:PlannerProps){
       <div className="results-bar"><span ref={resultsRef} tabIndex={-1} aria-live="polite"><span className="sr-only">找到 </span><b>{filtered.length}</b> 个场次 <small className="sr-only">· {new Set(filtered.map(e=>e.eventId)).size} 项赛事</small></span></div>
      </div></DiscoveryFilterPopover>
      {filterSummary&&<div className="discovery-active-filters"><span id="discovery-active-summary" title={filterSummary}>{filterSummary}</span><button className="clear-filters" aria-label="重置筛选" title="重置筛选" onClick={reset}><RotateCcw size={14}/></button></div>}
-    </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} onOpen={trigger=>openDetail(entry,trigger)} onChoose={status=>{const trigger=document.activeElement;if(choose(entry,status))requestAnimationFrame(()=>{if(trigger&&!trigger.isConnected)resultsRef.current?.focus({preventScroll:true});});}}/>)}</div>
+    </div><div className="mobile-events">{shown.map(entry=><EventCard key={entry.id} entry={entry} status={state.selections[entry.id]?.status||'undecided'} blocked={blocked} onOpen={trigger=>openDetail(entry,trigger)} onChoose={async status=>{const trigger=document.activeElement;if(await choose(entry,status))requestAnimationFrame(()=>{if(trigger&&!trigger.isConnected)resultsRef.current?.focus({preventScroll:true});});}}/>)}</div>
     {!shown.length&&<div className="empty-state"><Search size={26}/><h3>没有符合条件的场次</h3><p>{filters.statuses.length?'调整日期、分类或报名费，再找一场想打的。':'当前没有勾选任何分类，请选择至少一种。'}</p><button onClick={reset}>查看全部赛事</button></div>}
     <div className="pagination"><span>{filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)}`:'0'} / {filtered.length} 场次</span><div><button disabled={page===1} onClick={()=>update({page:page-1})}>上一页</button><span>{page} / {pages}</span><button disabled={page===pages} onClick={()=>update({page:page+1})}>下一页</button></div></div>
    </section>}{(route.view==='home'||route.view==='shortlist'||seriesView)&&<footer className="page-foot"><span>{route.view==='home'?'赛程按赛事当地时间显示。':'保底为整项赛事共享；续赛日见详情。移动文件、换浏览器或清理数据前，请导出备份。'}</span>{seriesView&&selectedSeries&&<><a href={series.sourcePdf?.src||series.sourceUrl} download={series.sourcePdf?.filename} target={series.sourcePdf?undefined:'_blank'} rel="noreferrer">{series.sourceLabel} <ExternalLink size={12}/></a>{series.sourceUpdated&&<span>赛程版本：{series.sourceUpdated}</span>}</>}</footer>}

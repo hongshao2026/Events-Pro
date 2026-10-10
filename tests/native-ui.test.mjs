@@ -10,8 +10,9 @@ try{
  await context.addInitScript(()=>{
   window.nativeCalls=[];window.nativeMode='success';
   window.webkit={messageHandlers:{bridge:{postMessage(){}}}};
-  window.Capacitor={PluginHeaders:[{name:'Filesystem',methods:['writeFile','deleteFile','rmdir'].map(name=>({name,rtype:'promise'}))},{name:'Share',methods:[{name:'share',rtype:'promise'}]},{name:'Browser',methods:[{name:'open',rtype:'promise'}]}],nativePromise:async(plugin,method,options)=>{
+  window.Capacitor={PluginHeaders:[{name:'Preferences',methods:['configure','get','set'].map(name=>({name,rtype:'promise'}))},{name:'Filesystem',methods:['writeFile','deleteFile','rmdir'].map(name=>({name,rtype:'promise'}))},{name:'Share',methods:[{name:'share',rtype:'promise'}]},{name:'Browser',methods:[{name:'open',rtype:'promise'}]}],nativePromise:async(plugin,method,options)=>{
    window.nativeCalls.push({plugin,method,options});
+   if(plugin==='Preferences'){if(method==='get')return {value:localStorage.getItem('test-native-pref:'+options.key)};if(method==='set')localStorage.setItem('test-native-pref:'+options.key,options.value);return {};}
    if(plugin==='Filesystem'&&method==='writeFile'){if(window.nativeMode==='write-error')throw new Error('No space');return {uri:'file:///cache/'+options.path};}
    if(plugin==='Share'){
     if(window.nativeMode==='cancel')throw {message:'Share canceled'};

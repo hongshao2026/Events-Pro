@@ -32,13 +32,16 @@
     "ios:release": "npm run release:check && node scripts/build-ios.mjs --release && cap sync ios && node scripts/configure-ios.mjs",
     "test:release:ui": "node tests/release-ui.test.mjs",
     "test:native:ui": "node tests/native-ui.test.mjs",
-    "test:ios:notices": "node tests/ios-notices.test.mjs"
+    "test:ios:notices": "node tests/ios-notices.test.mjs",
+    "test:cloud:ui": "node tests/cloud-ui.test.mjs",
+    "test:storage:ui": "node tests/device-storage-ui.test.mjs"
   },
   "dependencies": {
     "@capacitor/browser": "8.0.5",
     "@capacitor/core": "8.5.3",
     "@capacitor/filesystem": "8.1.4",
     "@capacitor/ios": "8.5.3",
+    "@capacitor/preferences": "8.0.1",
     "@capacitor/share": "8.0.3",
     "@supabase/supabase-js": "2.117.2",
     "class-variance-authority": "0.7.1",
@@ -55,6 +58,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "8.5.3",
+    "@electric-sql/pglite": "0.3.14",
     "@eslint/js": "9.39.4",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",

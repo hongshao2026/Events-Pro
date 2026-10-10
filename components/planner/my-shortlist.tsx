@@ -19,10 +19,10 @@ type MyShortlistProps={
  state:PlannerState;
  blocked:boolean;
  error:string;
- onChoose:(entry:Entry,status:Status)=>boolean;
+ onChoose:(entry:Entry,status:Status)=>Promise<boolean>;
  onBudgetModeChange:(mode:PlannerState['budgetMode'])=>void;
  onShowFlights:(eventId:string)=>void;
- onRemovePending:(eventId:string)=>void;
+ onRemovePending:(eventId:string)=>Promise<boolean>;
  onDiscover:()=>void;
 };
 
@@ -41,15 +41,15 @@ export function MyShortlist({state,blocked,error,onChoose,onBudgetModeChange,onS
  ].sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour||a.id.localeCompare(b.id));
  const detail=openId?entryMap.get(openId):undefined,detailStatus=detail?state.selections[detail.id]?.status||'undecided':'undecided';
  const detailSeries=detail?getSeries(detail.seriesId):undefined;
- const choose=(entry:Entry,status:Status)=>{
-  if(onChoose(entry,status)&&(status!=='attend'&&status!=='watch'||filter!=='all'&&status!==filter))setOpenId(null);
+ const choose=async(entry:Entry,status:Status)=>{
+  if(await onChoose(entry,status)&&(status!=='attend'&&status!=='watch'||filter!=='all'&&status!==filter))setOpenId(null);
  };
  const showFlights=(eventId:string)=>{setOpenId(null);onShowFlights(eventId);};
- const removeEntry=(entry:Entry)=>{
-  if(onChoose(entry,'undecided'))requestAnimationFrame(()=>summaryRef.current?.focus({preventScroll:true}));
+ const removeEntry=async(entry:Entry)=>{
+  if(await onChoose(entry,'undecided'))requestAnimationFrame(()=>summaryRef.current?.focus({preventScroll:true}));
  };
- const removePending=(eventId:string,button:HTMLButtonElement)=>{
-  onRemovePending(eventId);
+ const removePending=async(eventId:string,button:HTMLButtonElement)=>{
+  if(!await onRemovePending(eventId))return;
   requestAnimationFrame(()=>{if(!button.isConnected)summaryRef.current?.focus({preventScroll:true});});
  };
  return <section className="my-shortlist" aria-label="我的自选表格">

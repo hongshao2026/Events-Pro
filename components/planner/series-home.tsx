@@ -36,7 +36,7 @@ export function SeriesHome({catalog,region,onRegionChange,hrefForSeries,onOpen}:
   const regional=filterSeries(region,catalog),filtered=regional.filter(item=>item.id!==pinned?.id);
   const groups={ongoing:[] as Series[],upcoming:[] as Series[],ended:[] as Series[]};
   filtered.forEach(item=>groups[getSeriesPhase(item,now)].push(item));
-  const [pinError,setPinError]=useState(''),[archiveOpen,setArchiveOpen]=useState(false);
+  const [pinError,setPinError]=useState(''),[archiveOpen,setArchiveOpen]=useState(false),[focusVersion,setFocusVersion]=useState(0);
   const pinButtons=useRef(new Map<string,HTMLButtonElement>()),pendingFocus=useRef<string|null>(null),resultsRef=useRef<HTMLDivElement>(null);
   useLayoutEffect(()=>{
     const id=pendingFocus.current;if(!id)return;pendingFocus.current=null;
@@ -45,18 +45,19 @@ export function SeriesHome({catalog,region,onRegionChange,hrefForSeries,onOpen}:
     target?.focus({preventScroll:true});
     if(id===pinnedId)target?.closest('.pinned-series')?.scrollIntoView({block:'start'});
     else target?.scrollIntoView({block:'nearest'});
-  },[pinnedId,pinError]);
-  const togglePin=(item:Series)=>{
+  },[pinnedId,pinError,focusVersion]);
+  const togglePin=async(item:Series)=>{
     const removing=pinnedId===item.id;
-    setPinError('');pendingFocus.current=item.id;
+    setPinError('');pendingFocus.current=null;
     try{
-      saveSettings(next=>{next.profile.pinnedSeriesId=removing?null:item.id;});
+      await saveSettings(next=>{next.profile.pinnedSeriesId=removing?null:item.id;});
+      pendingFocus.current=item.id;setFocusVersion(value=>value+1);
       if(removing&&getSeriesPhase(item,now)==='ended')setArchiveOpen(true);
       toast.success(removing?'已取消置顶':`已置顶 ${item.shortTitle}`,{id:'series-pin-feedback'});
     }catch(error){
       const message=error instanceof Error?error.message:'未能保存设置。';
       const stale=message.startsWith('另一窗口已更新设置');
-      if(!stale)pendingFocus.current=null;
+      pendingFocus.current=stale?item.id:null;if(stale)setFocusVersion(value=>value+1);
       const feedback=stale?'另一窗口已更新设置，已显示最新置顶。请重试。':`置顶未保存：${message} 请重试。`;
       setPinError(feedback);toast.error(feedback,{id:'series-pin-feedback'});
     }

@@ -75,3 +75,13 @@ main 交接版本包含原有紧凑界面、自选/预算/图片导出，以及 
 主界面目前为简体中文，繁体政策和商店草稿已准备；完整繁体 UI 尚未实现。首版无需在线账户，暂不涉及服务器账户删除流程。未来若增加账户、分析、广告或云同步，应同步修改实际功能、政策及商店声明。
 
 Mac 接手见 [MAC-SETUP.md](../../MAC-SETUP.md)，商店材料见 [台湾上架指南](TAIWAN-RELEASE.md)，数据核对见 [隐私实践](PRIVACY-AUDIT.md)。优先克隆 GitHub main，已有离线 Git bundle 仅作其制作时的快照备份，清单记录对应提交及摘要。readiness.json 保持真实 pending 状态，外部项目只有得到真实验收证据后才能改为 verified。
+
+## 2026-10-09 原生存储和可选云服务准备
+
+用户授权先开发相关代码，再说明本人 Supabase 操作。独立分支 codex/account-storage 已准备原生 Preferences 迁移与异步写入、在线手动云备份/恢复、RLS/CAS 和账号删除源码；AUTH/CLOUD 保持关闭，没有真实服务部署。验收及未验证范围见 [ACCOUNT-STORAGE-2026-10-09.md](ACCOUNT-STORAGE-2026-10-09.md)，操作指南见 [SUPABASE-SETUP.md](../../SUPABASE-SETUP.md)。首版离线方向及所有本人发行缺项保持待定。
+
+更新至 2026-10-10：源码 `e75e755` 已推送并建立[草稿 PR #3](https://github.com/hongshao2026/Events-Pro/pull/3)，未合入 main。本机全量 verify、真实 Swift 编译、iPhone 16 Pro / iOS 27.0 首次流程及同源码较高构建覆盖安装后的两阶段 XCTest 均通过；GitHub 全量检查和两种 iPhone 原生检查全部通过。原生开源声明增加 Preferences 后为 67 项，UserDefaults 理由为 CA92.1。以上是有限模拟器验收，未完成真机、真实 Supabase、原生认证、签名、Archive 或 TestFlight。
+
+另已完成旧 WebView App→新 Preferences App 的真实代码变化覆盖安装：旧计划由真实 UI 创建，设置为明确的隔离数据库测试样本；覆盖后只读 XCTest 通过，两份原始字符串在实际 UserDefaults 中逐字相同。报告与验证器失败/修正记录见本轮验收文档。用户原有预览未卸载、清除或用于测试；其安装仍保持之前版本。
+
+2026-10-10 本人已提供 Supabase 公开项目配置，真实 Auth health/settings 请求返回 200。本机配置保存且仍关闭 AUTH/CLOUD，网页构建与 iOS 同步/检查通过，离线 JS 与之前原生验收包完全一致。Dashboard 只读元数据检查确认业务表与 RPC 未创建；事务建表脚本已准备，新增数据库访问权限的执行确认待本人回复。删除函数、邮件及真实账号业务验收仍未完成，见 [实际连接记录](SUPABASE-CONNECTION-2026-10-10.md)。

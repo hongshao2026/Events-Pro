@@ -13,9 +13,9 @@ export function PrivacySupport(){
  const trigger=useRef<HTMLButtonElement|null>(null);
  const content=page?legalPage(page,language):null;
  const open=(next:LegalPage,button:HTMLButtonElement)=>{trigger.current=button;setLanguage('zh-CN');setPage(next);};
- const clear=()=>{
+ const clear=async()=>{
   setError('');
-  try{clearLocalPlannerData();window.location.reload();}
+  try{await clearLocalPlannerData();window.location.reload();}
   catch(cause){setError(cause instanceof Error?cause.message:'未能清除本机记录，请重试。');}
  };
  return <section className="settings-section privacy-support"><h2>隐私与支持</h2>

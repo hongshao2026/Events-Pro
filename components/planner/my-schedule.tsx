@@ -21,7 +21,7 @@ function ScheduleDayButton(props:ComponentProps<typeof CalendarDayButton>){
  const summary=day?statuses.filter(s=>day.counts[s]).map(s=>`${day.counts[s]}场${statusLabels[s]}`).join('，'):'';
  return <CalendarDayButton {...props} className={`${props.className||''} schedule-day-button`} aria-label={`${props['aria-label']||shortDate(dateValue(props.day.date))}${day?'，'+day.total+'场比赛，'+summary:''}`}><span className="calendar-day-number">{props.day.date.getDate()}</span><span className="calendar-status-dots" aria-hidden="true">{day&&statuses.filter(s=>day.counts[s]).map(s=><i data-status={s} key={s}/>)}</span><small className="calendar-day-count">{day?day.total+'场':''}</small></CalendarDayButton>;
 }
-export function MySchedule({state,route,onRouteChange,supplement,onSupplementChange,blocked,error,onChoose,onShowFlights}:{state:PlannerState;route:AgendaRoute;onRouteChange:(patch:Partial<AgendaRoute>)=>void;supplement:boolean;onSupplementChange:(v:boolean)=>void;blocked:boolean;error:string;onChoose:(entry:Entry,status:Status)=>boolean;onShowFlights:(id:string)=>void}){
+export function MySchedule({state,route,onRouteChange,supplement,onSupplementChange,blocked,error,onChoose,onShowFlights}:{state:PlannerState;route:AgendaRoute;onRouteChange:(patch:Partial<AgendaRoute>)=>void;supplement:boolean;onSupplementChange:(v:boolean)=>void;blocked:boolean;error:string;onChoose:(entry:Entry,status:Status)=>Promise<boolean>;onShowFlights:(id:string)=>void}){
  const {catalog:{entries}}=useAppSettings();
  const series=getSeries(route.seriesId),hasSupplements=entries.some(entry=>entry.seriesId===series.id&&entry.event.supplement);
  const [openId,setOpenId]=useState<string|null>(null);

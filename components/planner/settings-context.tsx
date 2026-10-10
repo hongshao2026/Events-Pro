@@ -1,3 +1,4 @@
+import {withLocalWrite,LOCAL_DATA_EVENT} from '@/lib/device-storage';
 import {createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import {defaultSettings,managedCatalog,readSettings,SETTINGS_KEY,validateSettings,writeSettings,type AppSettings} from '@/lib/app-settings';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
@@ -11,19 +12,19 @@ function useSettingsState(){
  useEffect(()=>{
   const storage=(event:StorageEvent)=>{if(event.key===SETTINGS_KEY||event.key===null)reload();};
   const visible=()=>{if(document.visibilityState==='visible')reload();};
-  window.addEventListener('storage',storage);document.addEventListener('visibilitychange',visible);
-  return()=>{window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visible);};
+  window.addEventListener('storage',storage);window.addEventListener(LOCAL_DATA_EVENT,reload);document.addEventListener('visibilitychange',visible);
+  return()=>{window.removeEventListener('storage',storage);window.removeEventListener(LOCAL_DATA_EVENT,reload);document.removeEventListener('visibilitychange',visible);};
  },[reload]);
- const save=useCallback((mutate:(next:AppSettings)=>void,expectedRevision?:number)=>{
+ const save=useCallback((mutate:(next:AppSettings)=>void,expectedRevision?:number)=>withLocalWrite(async()=>{
   const latest=readSettings();
   if(latest.revision!==(expectedRevision??latestRef.current.revision)){accept(latest);throw new Error('另一窗口已更新设置。请重新打开编辑页后再保存，当前草稿未写入。');}
-  const next=structuredClone(latest);mutate(next);next.revision++;const checked=validateSettings(next);writeSettings(checked);accept(checked);return checked;
- },[accept]);
- const restore=useCallback((data:AppSettings)=>{
+  const next=structuredClone(latest);mutate(next);next.revision++;const checked=validateSettings(next);await writeSettings(checked);accept(checked);return checked;
+ }),[accept]);
+ const restore=useCallback((data:AppSettings)=>withLocalWrite(async()=>{
   const next=validateSettings(data);let revision=latestRef.current.revision;
   try{revision=Math.max(revision,readSettings().revision);}catch{/* A validated backup can recover an unreadable record. */}
-  next.revision=revision+1;writeSettings(next);accept(next);
- },[accept]);
+  next.revision=revision+1;await writeSettings(next);accept(next);
+ }),[accept]);
  const catalog=useMemo(()=>managedCatalog(snapshot.data.eventOverrides),[snapshot.data.eventOverrides]);
  const setDirty=useCallback((value:boolean)=>{dirtyRef.current=value;},[]);
  const navigateSafely=useCallback((run:()=>void)=>{if(dirtyRef.current){setPendingNavigation({run});return false;}run();return true;},[]);

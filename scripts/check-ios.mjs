@@ -11,11 +11,11 @@ assert.equal(capacitor.appId,config.bundleId);assert.equal(capacitor.webDir,'ios
 assert.ok(pbx.includes(`PRODUCT_BUNDLE_IDENTIFIER = ${config.bundleId};`));
 assert.ok(pbx.includes(`MARKETING_VERSION = ${config.version};`));assert.ok(pbx.includes(`CURRENT_PROJECT_VERSION = ${config.buildNumber};`));
 assert.ok(pbx.includes('PrivacyInfo.xcprivacy in Resources'));assert.ok(pbx.includes('E10A00010000000000000001 /* PrivacyInfo.xcprivacy in Resources */,')&&pbx.includes('E10A00010000000000000002 /* PrivacyInfo.xcprivacy */,'));
-assert.match(privacy,/<key>NSPrivacyTracking<\/key>\s*<false\/>/);assert.match(privacy,/NSPrivacyAccessedAPICategoryFileTimestamp/);assert.match(privacy,/C617\.1/);
+assert.match(privacy,/<key>NSPrivacyTracking<\/key>\s*<false\/>/);assert.match(privacy,/NSPrivacyAccessedAPICategoryFileTimestamp/);assert.match(privacy,/C617\.1/);assert.match(privacy,/NSPrivacyAccessedAPICategoryUserDefaults/);assert.match(privacy,/CA92\.1/);
 assert.doesNotMatch(info,/NSAllowsArbitraryLoads|NSCameraUsageDescription|NSPhotoLibraryUsageDescription|NSLocationWhenInUseUsageDescription/);
 assert.match(info,/NSPhotoLibraryAddUsageDescription/,'Saving a shared PNG to Photos needs the add-only purpose string');
 assert.match(info,/<key>CFBundleLocalizations<\/key>\s*<array><string>zh-Hans<\/string><\/array>/,'The declared app language must match its actual interface');
-for(const name of ['CapacitorShare','CapacitorFilesystem','CapacitorBrowser'])assert.ok(spm.includes(name),`${name} missing from native package`);
+for(const name of ['CapacitorShare','CapacitorFilesystem','CapacitorBrowser','CapacitorPreferences'])assert.ok(spm.includes(name),`${name} missing from native package`);
 const licensePolicy=JSON.parse(await read('vendor/ios-notices/config.json'));
 assert.ok(spm.includes(`.package(url: "${licensePolicy.nativeFilesystem.url}", exact: "${licensePolicy.nativeFilesystem.version}")`),'Native filesystem must match its reviewed license version');
 assert.ok(pbx.includes('E20A00010000000000000001 /* Settings.bundle in Resources */,')&&pbx.includes('E20A00010000000000000002 /* Settings.bundle */,'),'License Settings bundle must be registered as an app resource');

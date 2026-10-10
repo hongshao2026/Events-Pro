@@ -27,3 +27,6 @@ Thumbs.db
 *.pem
 .codex/
 .agents/
+
+supabase/.temp/
+supabase/.branches/

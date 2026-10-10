@@ -1,3 +1,4 @@
+import {readLocalValue,writeLocalValues} from './device-storage';
 import {statuses,type Status} from './schedule';
 import {entries,entryMap,eventMap} from './catalog';
 import type {Currency} from './money';
@@ -42,13 +43,13 @@ export function parseBackup(text:string):Backup {
 export const makeBackup=(state:PlannerState):Backup=>({app:'wpt-planner',schemaVersion:2,savedAt:new Date().toISOString(),state});
 export function readState():PlannerState {
  let raw:string|null,legacy:string|null;
- try{raw=localStorage.getItem(STORAGE_KEY);legacy=raw?null:localStorage.getItem(LEGACY_KEY);}catch{throw new Error('浏览器不允许读取本地数据，请允许此文件保存数据后重试。');}
+ try{raw=readLocalValue(STORAGE_KEY);legacy=raw?null:readLocalValue(LEGACY_KEY);}catch{throw new Error('浏览器不允许读取本地数据，请允许此文件保存数据后重试。');}
  if(!raw&&!legacy)return emptyState();
  try{return parseBackup(raw||legacy!).state;}catch{throw new Error('本地记录无法读取。原记录已保留，可通过“恢复备份”导入有效文件。');}
 }
-export function writeState(state:PlannerState):void {
+export function writeState(state:PlannerState):void|Promise<void> {
  const text=JSON.stringify(makeBackup(state));
- try{localStorage.setItem(STORAGE_KEY,text);}catch{throw new Error('未能保存到本机，原选择未更改。请检查浏览器存储权限或可用空间。');}
+ try{return writeLocalValues({[STORAGE_KEY]:text});}catch{throw new Error('未能保存到本机，原选择未更改。请检查浏览器存储权限或可用空间。');}
 }
 export async function downloadBackup(state:PlannerState):Promise<import('./file-export').FileDelivery> {
  const backup=makeBackup(state);

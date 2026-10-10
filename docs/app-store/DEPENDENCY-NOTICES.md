@@ -29,3 +29,5 @@
 `npm run ios:check` 核对原生资源登记和版本固定。`npm run test:ios:notices` 核对所有记录的原文、摘要、原生复制、图标衍生声明、可复现生成，以及缺失/未核定许可的拒绝行为。plist 的 XML 结构另在本地使用标准 plistlib 解析。
 
 Windows 交接阶段未运行 iOS 系统设置页面、Swift 编译或 Archive。本次 [Mac 验收记录](MAC-VALIDATION-2026-10-08.md) 已记录远程真实 Swift 编译和模拟器启动通过，实际解析 capacitor-swift-pm 8.5.3（`4c7f346d16196e21fbe23d4a7a6fc7af62af6742`）和 IONFilesystemLib 2.0.0（`13848aab4f3447ff98dfdbe72ff8ef31bf333db0`）。远程 Xcode 生成的锁文件已保留在 `ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`；本机解析、系统设置显示与最终 Archive 尚待执行。真机验收检查入口、版本、长文滚动及最终安装包资源，并核对所有解析后的原生框架。contentRights 仍为 pending；本记录不会自动把运营或赛事资料使用权改成已核定。
+
+2026-10-09 原生存储准备：新增 @capacitor/preferences 8.0.1，当前生成 67 项完整声明，UserDefaults 理由 CA92.1 已加入应用隐私清单。PGlite 仅为本地数据库验收开发依赖，不进入 App；Supabase 仍不进入离线原生包。真实原生编译与新增存储验证以 ACCOUNT-STORAGE-2026-10-09.md 的最终记录为准。

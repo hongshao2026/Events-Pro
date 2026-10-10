@@ -41,3 +41,9 @@
 @keyframes auth-spin { to { transform:rotate(360deg); } }
 @media(max-width:360px) { .auth-heading { padding:30px 18px 20px; } .auth-scroll { padding:24px 18px; } }
 @media(prefers-reduced-motion:reduce) { .auth-spinner { animation:none; } }
+
+.cloud-backup{border-top:1px solid var(--border);margin-top:16px;padding-top:16px;}
+.cloud-backup h3{font-size:14px;font-weight:600;}
+.cloud-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.cloud-actions button,.cloud-backup>.text-button{min-height:44px;}
+.cloud-backup [role=status]{font-size:13px;color:var(--muted-foreground);}
