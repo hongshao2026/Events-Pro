@@ -83,3 +83,5 @@ Mac 接手见 [MAC-SETUP.md](../../MAC-SETUP.md)，商店材料见 [台湾上架
 更新至 2026-10-10：源码 `e75e755` 已推送并建立[草稿 PR #3](https://github.com/hongshao2026/Events-Pro/pull/3)，未合入 main。本机全量 verify、真实 Swift 编译、iPhone 16 Pro / iOS 27.0 首次流程及同源码较高构建覆盖安装后的两阶段 XCTest 均通过；GitHub 全量检查和两种 iPhone 原生检查全部通过。原生开源声明增加 Preferences 后为 67 项，UserDefaults 理由为 CA92.1。以上是有限模拟器验收，未完成真机、真实 Supabase、原生认证、签名、Archive 或 TestFlight。
 
 另已完成旧 WebView App→新 Preferences App 的真实代码变化覆盖安装：旧计划由真实 UI 创建，设置为明确的隔离数据库测试样本；覆盖后只读 XCTest 通过，两份原始字符串在实际 UserDefaults 中逐字相同。报告与验证器失败/修正记录见本轮验收文档。用户原有预览未卸载、清除或用于测试；其安装仍保持之前版本。
+
+2026-10-10 本人已提供 Supabase 公开项目配置，真实 Auth health/settings 请求返回 200。本机配置保存且仍关闭 AUTH/CLOUD，网页构建与 iOS 同步/检查通过，离线 JS 与之前原生验收包完全一致。Dashboard 只读元数据检查确认业务表与 RPC 未创建；事务建表脚本已准备，新增数据库访问权限的执行确认待本人回复。删除函数、邮件及真实账号业务验收仍未完成，见 [实际连接记录](SUPABASE-CONNECTION-2026-10-10.md)。

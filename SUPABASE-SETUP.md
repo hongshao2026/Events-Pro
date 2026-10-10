@@ -1,6 +1,8 @@
 # Events Pro 的 Supabase 配置与验收
 
-2026-10-09：代码准备阶段。没有创建、连接或部署真实 Supabase 项目；没有发送邮件或上传个人计划。iOS 与单文件首版继续免费、离线，强制关闭登录与云端功能。这里的配置面向后续可选在线网页版本；不能通过打开 `.env` 开关让现有 iPhone 版本支持登录。
+2026-10-09 完成代码准备；2026-10-10 本人已创建 Free 项目并提供公开客户端配置。配置仅写入 Git 忽略的 `.env.local`，AUTH/CLOUD 仍为 false；真实 Auth health/settings 的只读请求返回 200。业务表和保存函数经本人已登录 Dashboard 的只读查询确认尚不存在，删除函数接口返回 404；建表脚本已准备，执行待当场确认。没有发送邮件或上传个人计划。详细状态见 [实际连接记录](docs/app-store/SUPABASE-CONNECTION-2026-10-10.md)。
+
+iOS 与单文件首版继续免费、离线，强制关闭登录与云端功能。这里的配置面向后续可选在线网页版本；不能通过打开 `.env` 开关让现有 iPhone 版本支持登录。
 
 ## 已准备的能力
 
@@ -30,7 +32,9 @@
 - 函数：[delete-account](supabase/functions/delete-account/index.ts)。部署前将 `EVENTS_PRO_ALLOWED_ORIGINS` 设置为实际网页 origin（协议、域名、端口；没有路径），多项用逗号分隔。默认未配置不允许浏览器跨源调用。Supabase 平台的服务端环境持有 admin key；密钥绝不放入 `VITE_` 配置或 App。
 - 保留函数网关 JWT 验证，函数内再次通过 Auth `getUser(token)` 验证用户。仅验证令牌文本或接受 body 中的 user_id 都不够。
 
-本机原有全局 Supabase CLI 二进制签名无效，未改动它。准备过程使用隔离的 `npm exec --yes --package=supabase@2.120.0 -- supabase …`。后续登录/部署前先查看当前 CLI `--help`，再用本人浏览器授权、项目 ref 连接；没有在本次开发中运行远端 db push、函数部署或登录。
+本机原有全局 Supabase CLI 二进制签名无效，未改动它。准备过程使用隔离的 `npm exec --yes --package=supabase@2.120.0 -- supabase …`。后续登录/部署前先查看当前 CLI `--help`，再用本人浏览器授权、项目 ref 连接；未运行远端 db push 或函数部署，CLI 管理授权尚未完成。
+
+2026-10-10 补充：可复用本人已登录的 Dashboard 执行项目检查。SQL Editor 中已准备原有版本化迁移的事务包装，新增仅本人可访问的账号备份权限须当场确认后执行；当前只执行了只读结构查询。CLI 登录没有完成，已取消等待，不创建或记录管理令牌；不把公开 Publishable key 当成管理授权。
 
 ## 登录与邮件
 
